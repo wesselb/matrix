@@ -27,10 +27,10 @@ class AbstractMatrix:
     def __rmul__(self, other):
         return B.multiply(other, self)
 
-    def __div__(self, other):
+    def __truediv__(self, other):
         return B.divide(self, other)
 
-    def __rdiv__(self, other):
+    def __rtruediv__(self, other):
         return B.divide(other, self)
 
     def __pow__(self, power, modulo=None):
