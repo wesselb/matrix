@@ -7,13 +7,17 @@ from matrix import AbstractMatrix, Dense, Diagonal
 
 __all__ = ['allclose',
            'approx',
-           'check_op',
+           'check_un_op',
+           'check_bin_op',
 
            # Fixtures:
-           'mat',
-           'vec',
+           'mat1',
            'vec1',
-           'vec2']
+           'vec2',
+           'dense1',
+           'dense2',
+           'diag1',
+           'diag2']
 
 _dispatch = Dispatcher()
 
@@ -39,7 +43,21 @@ def allclose(x, y):
     assert_allclose(x, y)
 
 
-def check_op(op, x, y, asserted_type):
+def check_un_op(op, x, asserted_type):
+    """Assert the correct of a unary operation by checking whether the
+    result is the same on the dense version of the argument.
+
+    Args:
+        op (function): Unary operation to check.
+        x (object): Argument.
+        asserted_type (type): Type of result.
+    """
+    x_dense = B.dense(x)
+    allclose(op(x), op(x_dense))
+    assert isinstance(op(x), asserted_type)
+
+
+def check_bin_op(op, x, y, asserted_type):
     """Assert the correct of a binary operation by checking whether the
     result is the same on the dense versions of the arguments.
 
@@ -62,14 +80,9 @@ def check_op(op, x, y, asserted_type):
 
 # Fixtures:
 
-@pytest.fixture(params=[(3, 3), (4, 3), (3, 4)])
-def mat(request):
-    return B.randn(*request.param)
-
-
 @pytest.fixture()
-def vec():
-    yield B.randn(3)
+def mat1():
+    return B.randn(3, 3)
 
 
 @pytest.fixture()

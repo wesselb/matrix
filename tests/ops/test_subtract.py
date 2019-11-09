@@ -4,22 +4,22 @@ from matrix import Dense, Diagonal
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
-    check_op,
+    check_bin_op,
 
-    diag1,
-    diag2,
     dense1,
-    dense2
+    dense2,
+    diag1,
+    diag2
 )
 
 
 def test_add_dense(dense1, dense2):
-    check_op(B.subtract, dense1, dense2, asserted_type=Dense)
+    check_bin_op(B.subtract, dense1, dense2, asserted_type=Dense)
 
 
 def test_add_diag_dense(diag1, dense2):
-    check_op(B.subtract, diag1, dense2, asserted_type=Dense)
+    check_bin_op(B.subtract, diag1, dense2, asserted_type=Dense)
 
 
 def test_add_diagonal(diag1, diag2):
-    check_op(B.subtract, diag1, diag2, asserted_type=Diagonal)
+    check_bin_op(B.subtract, diag1, diag2, asserted_type=Diagonal)

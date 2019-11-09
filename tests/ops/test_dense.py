@@ -1,17 +1,21 @@
 import lab as B
 
-from matrix import Dense, Diagonal
 # noinspection PyUnresolvedReferences
-from ..util import allclose, mat, vec
+from ..util import (
+    allclose,
+    mat1,
+    dense1,
+    diag1
+)
 
 
-def test_dense_numeric(mat):
-    allclose(B.dense(mat), mat)
+def test_dense_numeric(mat1):
+    allclose(B.dense(mat1), mat1)
 
 
-def test_dense_dense(mat):
-    allclose(B.dense(Dense(mat)), mat)
+def test_dense_dense(dense1):
+    allclose(B.dense(dense1), dense1.mat)
 
 
-def test_dense_diagonal(vec):
-    allclose(B.dense(Diagonal(vec)), B.diag(vec))
+def test_dense_diagonal(diag1):
+    allclose(B.dense(diag1), B.diag(diag1.diag))
