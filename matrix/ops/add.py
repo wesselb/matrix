@@ -1,8 +1,8 @@
 import lab as B
 from plum import promote
 
-from ..matrix import AbstractMatrix, Dense
 from ..diagonal import Diagonal
+from ..matrix import AbstractMatrix, Dense
 
 __all__ = []
 
