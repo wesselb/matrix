@@ -22,6 +22,30 @@ Then simply
 pip install backends-matrix
 ```
 
+## Basic Usage
+```python
+>>> import lab as B
+
+>>> from matrix import Diagonal
+
+>>> d = Diagonal(B.ones(3))
+
+>>> d
+Diagonal matrix with diagonal
+  [1. 1. 1.]
+  
+>>> d + d
+Diagonal matrix with diagonal
+  [2. 2. 2.]
+  
+>>> d + B.randn(3, 3)
+Dense matrix:
+  (3x3 array of data type float64)
+  [[ 0.231  1.107 -0.648]
+   [-1.199  1.668 -1.344]
+   [ 0.545  0.807  0.934]]
+```
+
 ## Matrix Types
 
 Coming soon.
