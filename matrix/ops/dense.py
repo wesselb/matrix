@@ -1,4 +1,5 @@
 import lab as B
+from ..matrix import Dense
 from ..diagonal import Diagonal
 
 __all__ = []
@@ -10,6 +11,11 @@ def dense(a):
 
 
 B.dense = dense
+
+
+@B.dispatch(Dense)
+def dense(a):
+    return a.mat
 
 
 @B.dispatch(Diagonal)

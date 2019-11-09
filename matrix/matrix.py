@@ -1,7 +1,6 @@
 import lab as B
-from plum import add_promotion_rule, add_conversion_method
 
-__all__ = ['AbstractMatrix']
+__all__ = ['AbstractMatrix', 'Dense']
 
 
 class AbstractMatrix:
@@ -39,5 +38,8 @@ class AbstractMatrix:
         return B.power(self, power)
 
 
-add_promotion_rule(AbstractMatrix, B.Numeric, B.Numeric)
-add_conversion_method(AbstractMatrix, B.Numeric, lambda x: B.dense(x))
+class Dense(AbstractMatrix):
+    """Dense matrix."""
+
+    def __init__(self, mat):
+        self.mat = mat
