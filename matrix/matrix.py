@@ -1,4 +1,8 @@
 import lab as B
+import wbml.out
+import abc
+
+from .util import indent
 
 __all__ = ['AbstractMatrix', 'Dense']
 
@@ -37,9 +41,20 @@ class AbstractMatrix:
         assert modulo is None  # TODO: Implement this.
         return B.power(self, power)
 
+    def __repr__(self):
+        return str(self)
+
+    @abc.abstractmethod
+    def __str__(self):  # pragma: no cover
+        pass
+
 
 class Dense(AbstractMatrix):
     """Dense matrix."""
 
     def __init__(self, mat):
         self.mat = mat
+
+    def __str__(self):
+        return (f'Dense matrix:\n'
+                f'{indent(wbml.out.format(self.mat))}')
