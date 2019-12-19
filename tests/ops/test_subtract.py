@@ -6,6 +6,8 @@ from ..util import (
     allclose,
     check_bin_op,
 
+    zero1,
+    zero2,
     dense1,
     dense2,
     diag1,
@@ -14,6 +16,11 @@ from ..util import (
     const1,
     const2
 )
+
+
+def test_subtract_zero_diag(zero1, diag2):
+    check_bin_op(B.subtract, zero1, diag2, asserted_type=Diagonal)
+    check_bin_op(B.subtract, diag2, zero1, asserted_type=Diagonal)
 
 
 def test_subtract_dense(dense1, dense2):
