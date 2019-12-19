@@ -3,6 +3,8 @@ import lab as B
 from ..diagonal import Diagonal
 from ..matrix import Dense
 from ..constant import Constant
+from ..lowrank import LowRank
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -20,3 +22,13 @@ def negative(a):
 @B.dispatch(Constant)
 def negative(a):
     return Constant(-a.const, a.rows, a.cols)
+
+
+@B.dispatch(LowRank)
+def negative(a):
+    return LowRank(-a.left, a.right)
+
+
+@B.dispatch(Woodbury)
+def negative(a):
+    return Woodbury(B.negative(a.diag), B.negative(a.lr))
