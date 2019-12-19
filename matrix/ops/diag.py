@@ -5,6 +5,7 @@ from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import Dense
 from ..woodbury import Woodbury
+from ..kronecker import Kronecker
 
 __all__ = []
 
@@ -37,3 +38,8 @@ def diag(a):
 @B.dispatch(Woodbury)
 def diag(a):
     return B.diag(a.diag) + B.diag(a.lr)
+
+
+@B.dispatch(Kronecker)
+def diag(a):
+    return B.kron(B.diag(a.left), B.diag(a.right))

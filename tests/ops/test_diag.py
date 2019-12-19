@@ -9,7 +9,8 @@ from ..util import (
     diag1,
     const1,
     lr1,
-    wb1
+    wb1,
+    kron1
 )
 
 
@@ -31,3 +32,7 @@ def test_diag_lr(lr1):
 
 def test_diag_wb(wb1):
     check_un_op(B.diag, wb1)
+
+
+def test_diag_kron(kron1):
+    check_un_op(B.diag, kron1)
