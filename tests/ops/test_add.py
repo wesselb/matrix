@@ -13,6 +13,7 @@ from ..util import (
     diag1,
     diag2,
     const_or_scalar1,
+    const_or_scalar2,
     const1,
     const2,
     lr1,
@@ -63,3 +64,18 @@ def test_add_const_lr(const_or_scalar1, lr2):
 
 def test_add_wb(wb1, wb2):
     check_bin_op(B.add, wb1, wb2, asserted_type=Woodbury)
+
+
+def test_add_wb_diag(wb1, diag1):
+    check_bin_op(B.add, wb1, diag1, asserted_type=Woodbury)
+    check_bin_op(B.add, diag1, wb1, asserted_type=Woodbury)
+
+
+def test_add_wb_constant(wb1, const_or_scalar2):
+    check_bin_op(B.add, wb1, const_or_scalar2, asserted_type=Woodbury)
+    check_bin_op(B.add, const_or_scalar2, wb1, asserted_type=Woodbury)
+
+
+def test_add_wb_lr(wb1, lr2):
+    check_bin_op(B.add, wb1, lr2, asserted_type=Woodbury)
+    check_bin_op(B.add, lr2, wb1, asserted_type=Woodbury)

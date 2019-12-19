@@ -77,3 +77,25 @@ def add(a, b):
 @B.dispatch(Woodbury, Woodbury)
 def add(a, b):
     return Woodbury(a.diag + b.diag, a.lr + b.lr)
+
+
+@B.dispatch(Woodbury, Diagonal)
+def add(a, b):
+    return Woodbury(a.diag + b, a.lr)
+
+
+@B.dispatch(Diagonal, Woodbury)
+def add(a, b):
+    return add(b, a)
+
+
+@B.dispatch.multi((Woodbury, Constant),
+                  (Woodbury, LowRank))
+def add(a, b):
+    return Woodbury(a.diag, a.lr + b)
+
+
+@B.dispatch.multi((Constant, Woodbury),
+                  (LowRank, Woodbury))
+def add(a, b):
+    return add(b, a)
