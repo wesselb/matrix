@@ -73,6 +73,16 @@ def add(a, b):
     return add(b, a)
 
 
+@B.dispatch(Diagonal, LowRank)
+def add(a, b):
+    return Woodbury(a, b)
+
+
+@B.dispatch(LowRank, Diagonal)
+def add(a, b):
+    return Woodbury(b, a)
+
+
 @B.dispatch(Woodbury, Woodbury)
 def add(a, b):
     return Woodbury(a.diag + b.diag, a.lr + b.lr)

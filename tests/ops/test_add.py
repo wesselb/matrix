@@ -62,6 +62,11 @@ def test_add_const_lr(const_or_scalar1, lr2):
     check_bin_op(B.add, lr2, const_or_scalar1, asserted_type=LowRank)
 
 
+def test_add_diag_lr(diag1, lr2):
+    check_bin_op(B.add, diag1, lr2, asserted_type=Woodbury)
+    check_bin_op(B.add, lr2, diag1, asserted_type=Woodbury)
+
+
 def test_add_wb(wb1, wb2):
     check_bin_op(B.add, wb1, wb2, asserted_type=Woodbury)
 
