@@ -1,6 +1,6 @@
 import lab as B
 
-from matrix import Dense, Diagonal, Constant
+from matrix import Dense, Diagonal, Constant, LowRank
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -14,7 +14,9 @@ from ..util import (
     diag2,
     const_or_scalar1,
     const1,
-    const2
+    const2,
+    lr1,
+    lr2
 )
 
 
@@ -46,3 +48,7 @@ def test_add_const_diag(const_or_scalar1, diag2):
 
 def test_add_const(const_or_scalar1, const2):
     check_bin_op(B.add, const_or_scalar1, const2, asserted_type=Constant)
+
+
+def test_add_lr(lr1, lr2):
+    check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)

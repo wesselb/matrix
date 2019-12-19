@@ -5,6 +5,8 @@ from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..matrix import AbstractMatrix, Dense
 from ..shape import assert_compatible, broadcast
+from ..lowrank import LowRank
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -47,3 +49,10 @@ def add(a, b):
 def add(a, b):
     assert_compatible(a, b)
     return Dense(B.dense(a) + b.const)
+
+
+@B.dispatch(LowRank, LowRank)
+def add(a, b):
+    assert_compatible(a, b)
+    return LowRank(left=B.concat(a.left, b.left, axis=1),
+                   right=B.concat(a.right, b.right, axis=1))
