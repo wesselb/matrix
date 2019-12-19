@@ -1,6 +1,6 @@
 import lab as B
 
-from matrix import Dense, Diagonal, Zero, Constant
+from matrix import Dense, Diagonal, Zero, Constant, LowRank, Woodbury
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -13,8 +13,13 @@ from ..util import (
     diag1,
     diag2,
     const_or_scalar1,
+    const_or_scalar2,
     const1,
-    const2
+    const2,
+    lr1,
+    lr2,
+    wb1,
+    wb2
 )
 
 
@@ -47,3 +52,7 @@ def test_multiply_const_diag(const_or_scalar1, diag2):
 
 def test_multiply_const(const_or_scalar1, const2):
     check_bin_op(B.multiply, const_or_scalar1, const2, asserted_type=Constant)
+
+
+def test_multiply_lr(lr1, lr2):
+    check_bin_op(B.multiply, lr1, lr2, asserted_type=LowRank)

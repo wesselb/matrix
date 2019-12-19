@@ -4,6 +4,8 @@ from algebra import proven
 from ..diagonal import Diagonal
 from ..matrix import AbstractMatrix, Dense
 from ..constant import Zero, Constant
+from ..lowrank import LowRank
+from ..woodbury import Woodbury
 from ..shape import assert_compatible, broadcast
 
 __all__ = []
@@ -59,3 +61,22 @@ def multiply(a, b):
 def multiply(a, b):
     assert_compatible(a, b)
     return Diagonal(b.const * a.diag)
+
+
+@B.dispatch(LowRank, LowRank)
+def multiply(a, b):
+    assert_compatible(a, b)
+
+    # Pick apart the matrices.
+    al, ar = B.unstack(a.left, axis=1), B.unstack(a.right, axis=1)
+    bl, br = B.unstack(b.left, axis=1), B.unstack(b.right, axis=1)
+
+    # Construct the factors.
+    left = B.stack(*[ali * blk
+                     for ali in al
+                     for blk in bl], axis=1)
+    right = B.stack(*[arj * brl
+                      for arj in ar
+                      for brl in br], axis=1)
+
+    return LowRank(left, right)
