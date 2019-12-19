@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from plum import Dispatcher
 
-from matrix import AbstractMatrix, Dense, Diagonal
+from matrix import AbstractMatrix, Dense, Diagonal, Constant
 
 __all__ = ['allclose',
            'approx',
@@ -12,12 +12,20 @@ __all__ = ['allclose',
 
            # Fixtures:
            'mat1',
+           'mat2',
            'vec1',
            'vec2',
+           'scalar1',
+           'scalar2',
+
            'dense1',
            'dense2',
            'diag1',
-           'diag2']
+           'diag2',
+           'const1',
+           'const2',
+           'const_or_scalar1',
+           'const_or_scalar2']
 
 _dispatch = Dispatcher()
 
@@ -86,6 +94,11 @@ def mat1():
 
 
 @pytest.fixture()
+def mat2():
+    return B.randn(3, 3)
+
+
+@pytest.fixture()
 def vec1():
     yield B.randn(3)
 
@@ -93,6 +106,16 @@ def vec1():
 @pytest.fixture()
 def vec2():
     yield B.randn(3)
+
+
+@pytest.fixture()
+def scalar1():
+    yield B.randn()
+
+
+@pytest.fixture()
+def scalar2():
+    yield B.randn()
 
 
 @pytest.fixture()
@@ -113,3 +136,29 @@ def diag1():
 @pytest.fixture()
 def diag2():
     yield Diagonal(B.randn(3))
+
+
+@pytest.fixture()
+def const1():
+    yield Constant(B.randn(), 3, 3)
+
+
+@pytest.fixture()
+def const2():
+    yield Constant(B.randn(), 3, 3)
+
+
+@pytest.fixture(params=[True, False])
+def const_or_scalar1(request):
+    if request.param:
+        yield B.randn()
+    else:
+        yield Constant(B.randn(), 3, 3)
+
+
+@pytest.fixture(params=[True, False])
+def const_or_scalar2(request):
+    if request.param:
+        yield B.randn()
+    else:
+        yield Constant(B.randn(), 3, 3)
