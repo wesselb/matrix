@@ -1,8 +1,10 @@
-import lab as B
-import wbml.out
 import abc
 
-from .util import indent
+import lab as B
+import wbml.out
+
+from .shape import assert_matrix
+from .util import indent, dtype_str
 
 __all__ = ['AbstractMatrix', 'Dense']
 
@@ -53,8 +55,12 @@ class Dense(AbstractMatrix):
     """Dense matrix."""
 
     def __init__(self, mat):
+        assert_matrix(mat, 'Input is not a rank-2 tensor. Can only construct '
+                           'dense matrices from rank-2 tensors.')
         self.mat = mat
 
     def __str__(self):
-        return (f'Dense matrix:\n'
-                f'{indent(wbml.out.format(self.mat))}')
+        rows, cols = B.shape(self)
+        return f'Dense {rows}x{cols} matrix ' + \
+               f'of data type {dtype_str(self)}:\n' + \
+               indent(wbml.out.format(self.mat, info=False))

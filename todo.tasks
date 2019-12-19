@@ -1,6 +1,9 @@
 TODO:
-     ☐ Remove clutter, e.g. `.git` and `.idea`.
+
 
 ＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
 Archive:
- ✓ Also rename `matrix` folder. @done (19-06-12 13:54)
+ ✓ Diagonal matrix @done (20-12-19 17:30) @project(TODO)
+ ✓ Shape and dtype @done (19-12-19 17:30) @project(TODO)
+ ✓ Improve printing of matrices @done (19-12-19 17:30) @project(TODO)
+ x Shape? @cancelled (19-12-19 17:30) @project(TODO)

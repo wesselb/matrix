@@ -13,5 +13,5 @@ from ..util import (
 )
 
 
-def test_multiply_dense(dense1, dense2):
+def test_divide_dense(dense1, dense2):
     check_bin_op(B.divide, dense1, dense2, asserted_type=Dense)

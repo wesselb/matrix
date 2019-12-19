@@ -2,6 +2,7 @@ import lab as B
 
 from ..diagonal import Diagonal
 from ..matrix import Dense
+from ..constant import Constant
 
 __all__ = []
 
@@ -14,3 +15,8 @@ def negative(a):
 @B.dispatch(Diagonal)
 def negative(a):
     return Diagonal(B.negative(a.diag))
+
+
+@B.dispatch(Constant)
+def negative(a):
+    return Constant(-a.const, a.rows, a.cols)

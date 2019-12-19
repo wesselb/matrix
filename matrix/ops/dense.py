@@ -1,6 +1,8 @@
 import lab as B
-from ..matrix import Dense
+
+from ..constant import Constant
 from ..diagonal import Diagonal
+from ..matrix import Dense
 
 __all__ = []
 
@@ -21,3 +23,8 @@ def dense(a):
 @B.dispatch(Diagonal)
 def dense(a):
     return B.diag(a.diag)
+
+
+@B.dispatch(Constant)
+def dense(a):
+    return a.const * B.ones(B.dtype(a.const), a.rows, a.cols)

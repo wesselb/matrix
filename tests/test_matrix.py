@@ -17,9 +17,13 @@ def test_dispatch(dense1, dense2):
     assert isinstance(dense1 ** 2, Dense)
 
 
-def test_repr():
-    assert str(Dense(B.ones(3))) == repr(Dense(B.ones(3)))
+def test_repr(dense1):
+    assert str(dense1) == repr(dense1)
 
 
 def test_dense_str():
-    assert str(Dense(B.ones(3))) == 'Dense matrix:\n  [1. 1. 1.]'
+    assert str(Dense(B.ones(3, 3))) == \
+           'Dense 3x3 matrix of data type float64:\n' \
+           '  [[1. 1. 1.]\n' \
+           '   [1. 1. 1.]\n' \
+           '   [1. 1. 1.]]'

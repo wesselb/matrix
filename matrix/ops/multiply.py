@@ -1,15 +1,11 @@
 import lab as B
-from plum import promote
 
 from ..diagonal import Diagonal
 from ..matrix import AbstractMatrix, Dense
+from ..constant import Constant
+from ..shape import assert_compatible, broadcast
 
 __all__ = []
-
-
-@B.dispatch({B.Numeric, AbstractMatrix}, {B.Numeric, AbstractMatrix})
-def multiply(a, b):
-    return B.multiply(*promote(a, b))
 
 
 @B.dispatch(Dense, Dense)
@@ -20,3 +16,21 @@ def multiply(a, b):
 @B.dispatch(Diagonal, Diagonal)
 def multiply(a, b):
     return Diagonal(B.multiply(a.diag, b.diag))
+
+
+@B.dispatch(Constant, Constant)
+def multiply(a, b):
+    assert_compatible(a, b)
+    return Constant(a.const * b.const, *broadcast(a, b))
+
+
+@B.dispatch(Constant, AbstractMatrix)
+def multiply(a, b):
+    assert_compatible(a, b)
+    return Dense(a.const * B.dense(b))
+
+
+@B.dispatch(AbstractMatrix, Constant)
+def multiply(a, b):
+    assert_compatible(a, b)
+    return Dense(B.dense(a) * b.const)
