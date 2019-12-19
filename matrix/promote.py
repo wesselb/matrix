@@ -1,7 +1,7 @@
 import lab as B
 from plum import add_promotion_rule, conversion_method
 
-from .constant import Constant
+from .constant import Zero, Constant
 from .matrix import AbstractMatrix, Dense
 
 __all__ = []
@@ -13,7 +13,10 @@ add_promotion_rule(AbstractMatrix, AbstractMatrix, Dense)
 @conversion_method(B.Numeric, AbstractMatrix)
 def convert(x):
     if B.rank(x) == 0:
-        return Constant(x, 1, 1)
+        if isinstance(x, B.Number) and x == 0:
+            return Zero(1, 1)
+        else:
+            return Constant(x, 1, 1)
     elif B.rank(x) == 2:
         return Dense(x)
     else:
