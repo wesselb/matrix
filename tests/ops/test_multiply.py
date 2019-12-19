@@ -30,10 +30,12 @@ def test_multiply_diagonal(diag1, diag2):
 
 def test_multiply_const_dense(const_or_scalar1, dense1):
     check_bin_op(B.multiply, const_or_scalar1, dense1, asserted_type=Dense)
+    check_bin_op(B.multiply, dense1, const_or_scalar1, asserted_type=Dense)
 
 
 def test_multiply_const_diag(const_or_scalar1, diag1):
-    check_bin_op(B.multiply, const_or_scalar1, diag1, asserted_type=Dense)
+    check_bin_op(B.multiply, const_or_scalar1, diag1, asserted_type=Diagonal)
+    check_bin_op(B.multiply, diag1, const_or_scalar1, asserted_type=Diagonal)
 
 
 def test_multiply_const(const_or_scalar1, const2):

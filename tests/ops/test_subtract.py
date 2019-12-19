@@ -30,6 +30,7 @@ def test_subtract_diagonal(diag1, diag2):
 
 def test_subtract_const_dense(const_or_scalar1, dense1):
     check_bin_op(B.subtract, const_or_scalar1, dense1, asserted_type=Dense)
+    check_bin_op(B.subtract, dense1, const_or_scalar1, asserted_type=Dense)
 
 
 def test_subtract_const_diag(const_or_scalar1, diag1):

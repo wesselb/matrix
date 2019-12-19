@@ -30,6 +30,7 @@ def test_add_diag(diag1, diag2):
 
 def test_add_const_dense(const_or_scalar1, dense1):
     check_bin_op(B.add, const_or_scalar1, dense1, asserted_type=Dense)
+    check_bin_op(B.add, dense1, const_or_scalar1, asserted_type=Dense)
 
 
 def test_add_const_diag(const_or_scalar1, diag1):

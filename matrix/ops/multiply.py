@@ -34,3 +34,15 @@ def multiply(a, b):
 def multiply(a, b):
     assert_compatible(a, b)
     return Dense(B.dense(a) * b.const)
+
+
+@B.dispatch(Constant, Diagonal)
+def multiply(a, b):
+    assert_compatible(a, b)
+    return Diagonal(a.const * b.diag)
+
+
+@B.dispatch(Diagonal, Constant)
+def multiply(a, b):
+    assert_compatible(a, b)
+    return Diagonal(b.const * a.diag)
