@@ -2,6 +2,7 @@ import lab as B
 
 from ..constant import Constant
 from ..diagonal import Diagonal
+from ..lowrank import LowRank
 from ..matrix import Dense
 
 __all__ = []
@@ -20,3 +21,8 @@ def dtype(a):
 @B.dispatch(Constant)
 def dtype(a):
     return B.dtype(a.const)
+
+
+@B.dispatch(LowRank)
+def dtype(a):
+    return B.dtype(a.left)
