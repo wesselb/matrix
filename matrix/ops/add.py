@@ -1,11 +1,24 @@
 import lab as B
+from algebra import proven
 
-from ..constant import Constant
+from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..matrix import AbstractMatrix, Dense
 from ..shape import assert_compatible, broadcast
 
 __all__ = []
+
+
+@B.dispatch(AbstractMatrix, Zero, precedence=proven())
+def add(a, b):
+    assert_compatible(a, b)
+    return a
+
+
+@B.dispatch(Zero, AbstractMatrix, precedence=proven())
+def add(a, b):
+    assert_compatible(a, b)
+    return b
 
 
 @B.dispatch(Dense, Dense)

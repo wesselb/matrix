@@ -3,7 +3,7 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from plum import Dispatcher
 
-from matrix import AbstractMatrix, Dense, Diagonal, Constant
+from matrix import AbstractMatrix, Dense, Diagonal, Zero, Constant
 
 __all__ = ['allclose',
            'approx',
@@ -116,6 +116,16 @@ def scalar1():
 @pytest.fixture()
 def scalar2():
     yield B.randn()
+
+
+@pytest.fixture()
+def zero1():
+    yield Zero(3, 3)
+
+
+@pytest.fixture()
+def zero2():
+    yield Zero(3, 3)
 
 
 @pytest.fixture()
