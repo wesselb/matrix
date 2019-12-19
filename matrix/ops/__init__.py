@@ -1,5 +1,6 @@
 from .add import *
 from .dense import *
+from .diag import *
 from .divide import *
 from .dtype import *
 from .multiply import *
