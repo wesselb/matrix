@@ -47,8 +47,7 @@ def multiply(a, b):
 
 @B.dispatch(AbstractMatrix, Constant)
 def multiply(a, b):
-    assert_compatible(a, b)
-    return Dense(B.dense(a) * b.const)
+    return multiply(b, a)
 
 
 @B.dispatch(Constant, Diagonal)
@@ -59,8 +58,7 @@ def multiply(a, b):
 
 @B.dispatch(Diagonal, Constant)
 def multiply(a, b):
-    assert_compatible(a, b)
-    return Diagonal(b.const * a.diag)
+    return multiply(b, a)
 
 
 @B.dispatch(LowRank, LowRank)
@@ -80,3 +78,14 @@ def multiply(a, b):
                       for brl in br], axis=1)
 
     return LowRank(left, right)
+
+
+@B.dispatch(Constant, LowRank)
+def multiply(a, b):
+    assert_compatible(a, b)
+    return LowRank(a.const * b.left, b.right)
+
+
+@B.dispatch(LowRank, Constant)
+def multiply(a, b):
+    return multiply(b, a)

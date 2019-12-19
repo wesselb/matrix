@@ -56,3 +56,8 @@ def test_multiply_const(const_or_scalar1, const2):
 
 def test_multiply_lr(lr1, lr2):
     check_bin_op(B.multiply, lr1, lr2, asserted_type=LowRank)
+
+
+def test_multiply_const_lr(const_or_scalar1, lr2):
+    check_bin_op(B.multiply, const_or_scalar1, lr2, asserted_type=LowRank)
+    check_bin_op(B.multiply, lr2, const_or_scalar1, asserted_type=LowRank)
