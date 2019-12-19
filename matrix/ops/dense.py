@@ -5,6 +5,7 @@ from ..diagonal import Diagonal
 from ..matrix import Dense
 from ..lowrank import LowRank
 from ..woodbury import Woodbury
+from ..kronecker import Kronecker
 
 __all__ = []
 
@@ -40,3 +41,8 @@ def dense(a):
 @B.dispatch(Woodbury)
 def dense(a):
     return B.dense(a.diag) + B.dense(a.lr)
+
+
+@B.dispatch(Kronecker)
+def dense(a):
+    return B.kron(B.dense(a.left), B.dense(a.right))

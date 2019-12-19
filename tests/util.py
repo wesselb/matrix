@@ -10,7 +10,8 @@ from matrix import (
     Zero,
     Constant,
     LowRank,
-    Woodbury
+    Woodbury,
+    Kronecker
 )
 
 __all__ = ['allclose',
@@ -111,22 +112,22 @@ def check_bin_op(op, x, y, asserted_type=object):
 
 @pytest.fixture()
 def mat1():
-    return B.randn(3, 3)
+    return B.randn(6, 6)
 
 
 @pytest.fixture()
 def mat2():
-    return B.randn(3, 3)
+    return B.randn(6, 6)
 
 
 @pytest.fixture()
 def vec1():
-    yield B.randn(3)
+    yield B.randn(6)
 
 
 @pytest.fixture()
 def vec2():
-    yield B.randn(3)
+    yield B.randn(6)
 
 
 @pytest.fixture()
@@ -141,42 +142,42 @@ def scalar2():
 
 @pytest.fixture()
 def zero1():
-    yield Zero(3, 3)
+    yield Zero(6, 6)
 
 
 @pytest.fixture()
 def zero2():
-    yield Zero(3, 3)
+    yield Zero(6, 6)
 
 
 @pytest.fixture()
 def dense1():
-    yield Dense(B.randn(3, 3))
+    yield Dense(B.randn(6, 6))
 
 
 @pytest.fixture()
 def dense2():
-    yield Dense(B.randn(3, 3))
+    yield Dense(B.randn(6, 6))
 
 
 @pytest.fixture()
 def diag1():
-    yield Diagonal(B.randn(3))
+    yield Diagonal(B.randn(6))
 
 
 @pytest.fixture()
 def diag2():
-    yield Diagonal(B.randn(3))
+    yield Diagonal(B.randn(6))
 
 
 @pytest.fixture()
 def const1():
-    yield Constant(B.randn(), 3, 3)
+    yield Constant(B.randn(), 6, 6)
 
 
 @pytest.fixture()
 def const2():
-    yield Constant(B.randn(), 3, 3)
+    yield Constant(B.randn(), 6, 6)
 
 
 @pytest.fixture(params=[True, False])
@@ -184,7 +185,7 @@ def const_or_scalar1(request):
     if request.param:
         yield B.randn()
     else:
-        yield Constant(B.randn(), 3, 3)
+        yield Constant(B.randn(), 6, 6)
 
 
 @pytest.fixture(params=[True, False])
@@ -192,28 +193,44 @@ def const_or_scalar2(request):
     if request.param:
         yield B.randn()
     else:
-        yield Constant(B.randn(), 3, 3)
+        yield Constant(B.randn(), 6, 6)
 
 
 @pytest.fixture(params=[1, 2, 3])
 def lr1(request):
-    yield LowRank(B.randn(3, request.param), B.randn(3, request.param))
+    yield LowRank(B.randn(6, request.param), B.randn(6, request.param))
 
 
 @pytest.fixture(params=[1, 2, 3])
 def lr2(request):
-    yield LowRank(B.randn(3, request.param), B.randn(3, request.param))
+    yield LowRank(B.randn(6, request.param), B.randn(6, request.param))
 
 
 @pytest.fixture(params=[1, 2, 3])
 def wb1(request):
-    d = Diagonal(B.randn(3))
-    lr = LowRank(B.randn(3, request.param), B.randn(3, request.param))
+    d = Diagonal(B.randn(6))
+    lr = LowRank(B.randn(6, request.param), B.randn(6, request.param))
     return Woodbury(d, lr)
 
 
 @pytest.fixture(params=[1, 2, 3])
 def wb2(request):
-    d = Diagonal(B.randn(3))
-    lr = LowRank(B.randn(3, request.param), B.randn(3, request.param))
+    d = Diagonal(B.randn(6))
+    lr = LowRank(B.randn(6, request.param), B.randn(6, request.param))
     return Woodbury(d, lr)
+
+
+@pytest.fixture(params=[(2, 3), (3, 2)])
+def kron1(request):
+    size_left, size_right = request.param
+    left = Dense(B.randn(size_left, size_left))
+    right = Dense(B.randn(size_right, size_right))
+    return Kronecker(left, right)
+
+
+@pytest.fixture(params=[(2, 3), (3, 2)])
+def kron2(request):
+    size_left, size_right = request.param
+    left = Dense(B.randn(size_left, size_left))
+    right = Dense(B.randn(size_right, size_right))
+    return Kronecker(left, right)

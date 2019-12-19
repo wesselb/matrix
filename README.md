@@ -77,16 +77,19 @@ pip install backends-matrix
 ## Matrix Types
 
 All matrix types are subclasses of `AbstractMatrix`.
-The following types are provided:
+
+The following base types are provided:
 
 ```
 Dense
-
 Zero
 Constant
 Diagonal
 LowRank
+```
 
+The following composite types are provided:
+```
 Woodbury
 Kronecker
 ```

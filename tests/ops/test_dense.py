@@ -8,7 +8,8 @@ from ..util import (
     diag1,
     const1,
     lr1,
-    wb1
+    wb1,
+    kron1
 )
 
 
@@ -35,3 +36,7 @@ def test_dense_lr(lr1):
 def test_dense_wb(wb1):
     allclose(B.dense(wb1),
              B.diag(wb1.diag.diag) + B.outer(wb1.lr.left, wb1.lr.right))
+
+
+def test_dense_kron(kron1):
+    allclose(B.dense(kron1), B.kron(B.dense(kron1.left), B.dense(kron1.right)))
