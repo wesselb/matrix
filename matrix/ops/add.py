@@ -1,12 +1,11 @@
 import lab as B
 from algebra import proven
-from plum import promote
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
+from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense
 from ..shape import assert_compatible, broadcast
-from ..lowrank import LowRank
 from ..woodbury import Woodbury
 
 __all__ = []
