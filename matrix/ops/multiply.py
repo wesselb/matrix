@@ -33,6 +33,17 @@ def multiply(a, b):
     return Diagonal(B.multiply(a.diag, b.diag))
 
 
+@B.dispatch(Diagonal, AbstractMatrix)
+def multiply(a, b):
+    assert_compatible(a, b)
+    return Diagonal(a.diag * B.diag(b))
+
+
+@B.dispatch(AbstractMatrix, Diagonal)
+def multiply(a, b):
+    return multiply(b, a)
+
+
 @B.dispatch(Constant, Constant)
 def multiply(a, b):
     assert_compatible(a, b)

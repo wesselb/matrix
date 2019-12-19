@@ -33,7 +33,7 @@ def test_multiply_dense(dense1, dense2):
 
 
 def test_multiply_diag_dense(diag1, dense2):
-    check_bin_op(B.multiply, diag1, dense2, asserted_type=Dense)
+    check_bin_op(B.multiply, diag1, dense2, asserted_type=Diagonal)
 
 
 def test_multiply_diag(diag1, diag2):
@@ -61,6 +61,11 @@ def test_multiply_lr(lr1, lr2):
 def test_multiply_const_lr(const_or_scalar1, lr2):
     check_bin_op(B.multiply, const_or_scalar1, lr2, asserted_type=LowRank)
     check_bin_op(B.multiply, lr2, const_or_scalar1, asserted_type=LowRank)
+
+
+def test_multiply_diag_lr(diag1, lr2):
+    check_bin_op(B.multiply, diag1, lr2, asserted_type=Diagonal)
+    check_bin_op(B.multiply, lr2, diag1, asserted_type=Diagonal)
 
 
 def test_multiply_const_wb(const_or_scalar1, wb2):
