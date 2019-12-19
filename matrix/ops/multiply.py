@@ -70,10 +70,10 @@ def multiply(a, b):
     bl, br = B.unstack(b.left, axis=1), B.unstack(b.right, axis=1)
 
     # Construct the factors.
-    left = B.stack(*[ali * blk
+    left = B.stack(*[B.multiply(ali, blk)
                      for ali in al
                      for blk in bl], axis=1)
-    right = B.stack(*[arj * brl
+    right = B.stack(*[B.multiply(arj, brl)
                       for arj in ar
                       for brl in br], axis=1)
 
@@ -83,9 +83,19 @@ def multiply(a, b):
 @B.dispatch(Constant, LowRank)
 def multiply(a, b):
     assert_compatible(a, b)
-    return LowRank(a.const * b.left, b.right)
+    return LowRank(B.multiply(a.const, b.left), b.right)
 
 
 @B.dispatch(LowRank, Constant)
+def multiply(a, b):
+    return multiply(b, a)
+
+
+@B.dispatch(Constant, Woodbury)
+def multiply(a, b):
+    return Woodbury(B.multiply(a, b.diag), B.multiply(a, b.lr))
+
+
+@B.dispatch(Woodbury, Constant)
 def multiply(a, b):
     return multiply(b, a)
