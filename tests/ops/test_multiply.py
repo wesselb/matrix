@@ -71,3 +71,12 @@ def test_multiply_diag_lr(diag1, lr2):
 def test_multiply_const_wb(const_or_scalar1, wb2):
     check_bin_op(B.multiply, const_or_scalar1, wb2, asserted_type=Woodbury)
     check_bin_op(B.multiply, wb2, const_or_scalar1, asserted_type=Woodbury)
+
+
+def test_multiply_wb(wb1, wb2):
+    check_bin_op(B.multiply, wb1, wb2, asserted_type=Woodbury)
+
+
+def test_multiply_lr_wb(lr1, wb2):
+    check_bin_op(B.multiply, lr1, wb2, asserted_type=Woodbury)
+    check_bin_op(B.multiply, wb2, lr1, asserted_type=Woodbury)

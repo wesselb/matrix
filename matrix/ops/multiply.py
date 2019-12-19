@@ -110,3 +110,14 @@ def multiply(a, b):
 @B.dispatch(Woodbury, Constant)
 def multiply(a, b):
     return multiply(b, a)
+
+
+@B.dispatch.multi((Woodbury, Woodbury),
+                  (Woodbury, LowRank))
+def multiply(a, b):
+    return B.add(B.multiply(a.diag, b), B.multiply(a.lr, b))
+
+
+@B.dispatch(LowRank, Woodbury)
+def multiply(a, b):
+    return multiply(b, a)
