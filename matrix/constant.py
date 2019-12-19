@@ -40,7 +40,7 @@ class Zero(Constant):
     """
 
     def __init__(self, rows, cols):
-        Constant.__init__(self, 0.0, rows, cols)
+        Constant.__init__(self, 0, rows, cols)
 
     def __str__(self):
         rows, cols = B.shape(self)

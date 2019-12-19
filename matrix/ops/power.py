@@ -1,10 +1,15 @@
 import lab as B
 
-from ..constant import Constant
+from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..matrix import Dense
 
 __all__ = []
+
+
+@B.dispatch(Zero, B.Numeric)
+def power(a, b):
+    return a
 
 
 @B.dispatch(Dense, B.Numeric)
