@@ -4,6 +4,7 @@ from ..constant import Constant
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import Dense
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -26,3 +27,8 @@ def dtype(a):
 @B.dispatch(LowRank)
 def dtype(a):
     return B.dtype(a.left)
+
+
+@B.dispatch(Woodbury)
+def dtype(a):
+    return B.dtype(a.lr)

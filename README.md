@@ -62,7 +62,7 @@ pip install backends-matrix
         [2.]]>
 
 >>> d + lr
-<Woodbury matrix:
+<Woodbury matrix: shape=3x3, dtype=float64,
  diag=<diagonal matrix: shape=3x3, dtype=float64,
        diag=[1. 1. 1.]>,
  lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1,

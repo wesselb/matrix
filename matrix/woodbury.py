@@ -1,10 +1,11 @@
 from plum import Dispatcher, Self
+import lab as B
 
 from .diagonal import Diagonal
 from .lowrank import LowRank
 from .matrix import AbstractMatrix
 from .shape import assert_compatible
-from .util import indent
+from .util import indent, dtype_str
 
 __all__ = ['Woodbury']
 
@@ -27,6 +28,9 @@ class Woodbury(AbstractMatrix):
         self.lr = lr
 
     def __str__(self):
-        return '<Woodbury matrix:\n' \
-               ' diag=' + indent(str(self.diag), ' ' * 6).strip() + ',\n' + \
-               ' lr=' + indent(str(self.lr), ' ' * 4).strip() + '>'
+        rows, cols = B.shape(self)
+        return f'<Woodbury matrix:\n' \
+               f' shape={rows}x{cols},' \
+               f' dtype={dtype_str(self)},\n' + \
+               f' diag=' + indent(str(self.diag), ' ' * 6).strip() + ',\n' + \
+               f' lr=' + indent(str(self.lr), ' ' * 4).strip() + '>'
