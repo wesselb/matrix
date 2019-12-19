@@ -1,9 +1,11 @@
 import lab as B
 import wbml.out
-from .util import dtype_str
-from .shape import assert_scalar
 
 from .matrix import AbstractMatrix
+from .shape import assert_scalar
+from .util import dtype_str
+
+__all__ = ['Constant', 'Zero']
 
 
 class Constant(AbstractMatrix):
@@ -27,3 +29,19 @@ class Constant(AbstractMatrix):
         return f'Constant {rows}x{cols} matrix ' + \
                f'of data type {dtype_str(self)} ' + \
                f'with constant ' + wbml.out.format(self.const, info=False)
+
+
+class Zero(Constant):
+    """Zero matrix.
+
+    Args:
+        rows (int): Number of rows.
+        cols (int): Number of columns.
+    """
+
+    def __init__(self, rows, cols):
+        Constant.__init__(self, 0.0, rows, cols)
+
+    def __str__(self):
+        rows, cols = B.shape(self)
+        return f'Constant {rows}x{cols} matrix of zeros'
