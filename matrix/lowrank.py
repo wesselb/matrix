@@ -40,6 +40,6 @@ class LowRank(AbstractMatrix):
                f' left=' + \
                indent(wbml.out.format(self.left, info=False),
                       ' ' * 6).strip() + ',\n' + \
-               ' right=' + \
+               f' right=' + \
                indent(wbml.out.format(self.right, info=False),
                       ' ' * 7).strip() + '>'

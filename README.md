@@ -80,10 +80,13 @@ All matrix types are subclasses of `AbstractMatrix`.
 The following types are provided:
 
 ```
+Dense
+
 Zero
 Constant
 Diagonal
 LowRank
-WoodBury
-Dense
+
+Woodbury
+Kronecker
 ```

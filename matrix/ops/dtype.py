@@ -5,6 +5,7 @@ from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import Dense
 from ..woodbury import Woodbury
+from ..kronecker import Kronecker
 
 __all__ = []
 
@@ -32,3 +33,8 @@ def dtype(a):
 @B.dispatch(Woodbury)
 def dtype(a):
     return B.dtype(a.lr)
+
+
+@B.dispatch(Kronecker)
+def dtype(a):
+    return B.dtype(a.left)

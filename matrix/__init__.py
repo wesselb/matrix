@@ -5,3 +5,4 @@ from .matrix import *
 from .ops import *
 from .promote import *
 from .woodbury import *
+from .kronecker import *

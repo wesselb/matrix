@@ -5,6 +5,7 @@ from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import Dense
 from ..woodbury import Woodbury
+from ..kronecker import Kronecker
 
 __all__ = []
 
@@ -33,3 +34,10 @@ def shape(a):
 @B.dispatch(Woodbury)
 def shape(a):
     return B.shape(a.lr)
+
+
+@B.dispatch(Kronecker)
+def shape(a):
+    left_rows, left_cols = B.shape(a.left)
+    right_rows, right_cols = B.shape(a.right)
+    return left_rows * right_rows, left_cols * right_cols
