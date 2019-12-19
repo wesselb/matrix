@@ -65,6 +65,11 @@ def allclose(x, y):
     assert_allclose(x, y)
 
 
+def _assert_instance(x, asserted_type):
+    assert isinstance(x, asserted_type), \
+        f'Expected instance of type {asserted_type} but got {type(x)}.'
+
+
 def check_un_op(op, x, asserted_type):
     """Assert the correct of a unary operation by checking whether the
     result is the same on the dense version of the argument.
@@ -75,8 +80,9 @@ def check_un_op(op, x, asserted_type):
         asserted_type (type): Type of result.
     """
     x_dense = B.dense(x)
-    allclose(op(x), op(x_dense))
-    assert isinstance(op(x), asserted_type)
+    res = op(x)
+    allclose(res, op(x_dense))
+    _assert_instance(res, asserted_type)
 
 
 def check_bin_op(op, x, y, asserted_type):
@@ -91,13 +97,14 @@ def check_bin_op(op, x, y, asserted_type):
     """
     x_dense = B.dense(x)
     y_dense = B.dense(y)
+    res = op(x, y)
 
-    allclose(op(x, y), op(x_dense, y_dense))
+    allclose(res, op(x_dense, y_dense))
     allclose(op(x_dense, y), op(x_dense, y_dense))
     allclose(op(x, y_dense), op(x_dense, y_dense))
     allclose(op(x_dense, y_dense), op(x_dense, y_dense))
 
-    assert isinstance(op(x, y), asserted_type)
+    _assert_instance(res, asserted_type)
 
 
 # Fixtures:

@@ -52,3 +52,8 @@ def test_add_const(const_or_scalar1, const2):
 
 def test_add_lr(lr1, lr2):
     check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
+
+
+def test_add_const_lr(const_or_scalar1, lr2):
+    check_bin_op(B.add, const_or_scalar1, lr2, asserted_type=LowRank)
+    check_bin_op(B.add, lr2, const_or_scalar1, asserted_type=LowRank)

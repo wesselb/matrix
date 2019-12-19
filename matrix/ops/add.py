@@ -1,5 +1,6 @@
 import lab as B
 from algebra import proven
+from plum import promote
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -47,8 +48,7 @@ def add(a, b):
 
 @B.dispatch(AbstractMatrix, Constant)
 def add(a, b):
-    assert_compatible(a, b)
-    return Dense(B.dense(a) + b.const)
+    return add(b, a)
 
 
 @B.dispatch(LowRank, LowRank)
@@ -56,3 +56,19 @@ def add(a, b):
     assert_compatible(a, b)
     return LowRank(left=B.concat(a.left, b.left, axis=1),
                    right=B.concat(a.right, b.right, axis=1))
+
+
+@B.dispatch(Constant, LowRank)
+def add(a, b):
+    assert_compatible(a, b)
+    dtype = B.dtype(b)
+    rows, cols = B.shape(b)
+    ones_left = B.ones(dtype, rows, 1)
+    ones_right = B.ones(dtype, cols, 1)
+    return LowRank(left=B.concat(ones_left, b.left, axis=1),
+                   right=B.concat(a.const * ones_right, b.right, axis=1))
+
+
+@B.dispatch(LowRank, Constant)
+def add(a, b):
+    return add(b, a)
