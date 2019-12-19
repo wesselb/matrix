@@ -8,7 +8,8 @@ requirements = ['numpy>=1.16',
 
                 'backends',
                 'plum-dispatch',
-                'wbml']
+                'wbml',
+                'algebra']
 
 setup(packages=find_packages(exclude=['docs']),
       python_requires='>=3.6',
