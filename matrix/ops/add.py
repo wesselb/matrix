@@ -72,3 +72,8 @@ def add(a, b):
 @B.dispatch(LowRank, Constant)
 def add(a, b):
     return add(b, a)
+
+
+@B.dispatch(Woodbury, Woodbury)
+def add(a, b):
+    return Woodbury(a.diag + b.diag, a.lr + b.lr)

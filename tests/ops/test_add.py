@@ -1,6 +1,6 @@
 import lab as B
 
-from matrix import Dense, Diagonal, Constant, LowRank
+from matrix import Dense, Diagonal, Constant, LowRank, Woodbury
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -16,7 +16,9 @@ from ..util import (
     const1,
     const2,
     lr1,
-    lr2
+    lr2,
+    wb1,
+    wb2
 )
 
 
@@ -57,3 +59,7 @@ def test_add_lr(lr1, lr2):
 def test_add_const_lr(const_or_scalar1, lr2):
     check_bin_op(B.add, const_or_scalar1, lr2, asserted_type=LowRank)
     check_bin_op(B.add, lr2, const_or_scalar1, asserted_type=LowRank)
+
+
+def test_add_wb(wb1, wb2):
+    check_bin_op(B.add, wb1, wb2, asserted_type=Woodbury)
