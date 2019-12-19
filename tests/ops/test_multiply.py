@@ -31,7 +31,7 @@ def test_multiply_diag_dense(diag1, dense2):
     check_bin_op(B.multiply, diag1, dense2, asserted_type=Dense)
 
 
-def test_multiply_diagonal(diag1, diag2):
+def test_multiply_diag(diag1, diag2):
     check_bin_op(B.multiply, diag1, diag2, asserted_type=Diagonal)
 
 

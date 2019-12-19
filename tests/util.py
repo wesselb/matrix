@@ -3,7 +3,15 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from plum import Dispatcher
 
-from matrix import AbstractMatrix, Dense, Diagonal, Zero, Constant
+from matrix import (
+    AbstractMatrix,
+    Dense,
+    Diagonal,
+    Zero,
+    Constant,
+    LowRank,
+    Woodbury
+)
 
 __all__ = ['allclose',
            'approx',
@@ -18,6 +26,8 @@ __all__ = ['allclose',
            'scalar1',
            'scalar2',
 
+           'zero1',
+           'zero2',
            'dense1',
            'dense2',
            'diag1',
@@ -25,7 +35,11 @@ __all__ = ['allclose',
            'const1',
            'const2',
            'const_or_scalar1',
-           'const_or_scalar2']
+           'const_or_scalar2',
+           'lr1',
+           'lr2',
+           'wb1',
+           'wb2']
 
 _dispatch = Dispatcher()
 
@@ -172,3 +186,27 @@ def const_or_scalar2(request):
         yield B.randn()
     else:
         yield Constant(B.randn(), 3, 3)
+
+
+@pytest.fixture(params=[1, 2, 3])
+def lr1(request):
+    yield LowRank(B.randn(3, request.param), B.randn(3, request.param))
+
+
+@pytest.fixture(params=[1, 2, 3])
+def lr2(request):
+    yield LowRank(B.randn(3, request.param), B.randn(3, request.param))
+
+
+@pytest.fixture(params=[1, 2, 3])
+def wb1(request):
+    d = Diagonal(B.randn(3))
+    lr = LowRank(B.randn(3, request.param), B.randn(3, request.param))
+    return Woodbury(d, lr)
+
+
+@pytest.fixture(params=[1, 2, 3])
+def wb2(request):
+    d = Diagonal(B.randn(3))
+    lr = LowRank(B.randn(3, request.param), B.randn(3, request.param))
+    return Woodbury(d, lr)
