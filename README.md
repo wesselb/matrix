@@ -31,24 +31,24 @@ pip install backends-matrix
 >>> d = Diagonal(B.ones(3))
 
 >>> d
-Diagonal 3x3 matrix of data type float64 with diagonal
-  [1. 1. 1.]
+<diagonal matrix: shape=3x3, data type=float64,
+ diagonal=[1. 1. 1.]>
   
 >>> 2 * d
-Diagonal 3x3 matrix of data type float64 with diagonal
-  [2. 2. 2.]
+<diagonal matrix: shape=3x3, data type=float64,
+ diagonal=[2. 2. 2.]>
 
 >>> 2 + d
-Dense 3x3 matrix of data type float64:
-  [[3. 2. 2.]
-   [2. 3. 2.]
-   [2. 2. 3.]]
+<dense matrix: shape=3x3, data type=float64,
+ content=[[3. 2. 2.]
+          [2. 3. 2.]
+          [2. 2. 3.]]>
   
 >>> d + B.randn(3, 3)
-Dense 3x3 matrix of data type float64:
-  [[ 0.231  1.107 -0.648]
-   [-1.199  1.668 -1.344]
-   [ 0.545  0.807  0.934]]
+<dense matrix: shape=3x3, data type=float64,
+ content=[[ 1.83  -0.799 -2.36 ]
+          [-0.09   2.371  0.572]
+          [ 0.064  1.721  2.14 ]]>
 ```
 
 ## Matrix Types

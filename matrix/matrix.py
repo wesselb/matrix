@@ -61,6 +61,9 @@ class Dense(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'Dense {rows}x{cols} matrix ' + \
-               f'of data type {dtype_str(self)}:\n' + \
-               indent(wbml.out.format(self.mat, info=False))
+        return f'<dense matrix:' \
+               f' shape={rows}x{cols},' \
+               f' data type={dtype_str(self)},\n' + \
+               f' content=' + \
+               indent(wbml.out.format(self.mat, info=False),
+                      ' ' * 9).strip() + '>'

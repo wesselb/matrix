@@ -22,7 +22,9 @@ class Diagonal(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'Diagonal {rows}x{cols} matrix ' + \
-               f'of data type {dtype_str(self)} ' + \
-               f'with diagonal\n' + \
-               indent(wbml.out.format(self.diag, info=False))
+        return f'<diagonal matrix:' \
+               f' shape={rows}x{cols},' \
+               f' data type={dtype_str(self)},\n' + \
+               f' diagonal=' + \
+               indent(wbml.out.format(self.diag, info=False),
+                      ' ' * 10).strip() + '>'

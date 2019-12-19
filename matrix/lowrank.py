@@ -33,9 +33,13 @@ class LowRank(AbstractMatrix):
     def __str__(self):
         rows, cols = B.shape(self)
         rank = B.shape(self.left)[1]
-        return f'Rank-{rank} {rows}x{cols} matrix ' + \
-               f'of data type {dtype_str(self)} ' + \
-               f'with left factor\n' + \
-               indent(wbml.out.format(self.left, info=False)) + '\n' + \
-               f'and right factor\n' + \
-               indent(wbml.out.format(self.right, info=False))
+        return f'<low-rank matrix:' \
+               f' shape={rows}x{cols},' \
+               f' data type={dtype_str(self)},' + \
+               f' rank={rank},\n' + \
+               f' left=' + \
+               indent(wbml.out.format(self.left, info=False),
+                      ' ' * 6).strip() + ',\n' + \
+               ' right=' + \
+               indent(wbml.out.format(self.right, info=False),
+                      ' ' * 7).strip() + '>'

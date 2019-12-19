@@ -23,7 +23,7 @@ def test_repr(dense1):
 
 def test_dense_str():
     assert str(Dense(B.ones(3, 3))) == \
-           'Dense 3x3 matrix of data type float64:\n' \
-           '  [[1. 1. 1.]\n' \
-           '   [1. 1. 1.]\n' \
-           '   [1. 1. 1.]]'
+           '<dense matrix: shape=3x3, data type=float64,\n' \
+           ' content=[[1. 1. 1.]\n' \
+           '          [1. 1. 1.]\n' \
+           '          [1. 1. 1.]]>'

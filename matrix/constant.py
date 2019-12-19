@@ -26,9 +26,10 @@ class Constant(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'Constant {rows}x{cols} matrix ' + \
-               f'of data type {dtype_str(self)} ' + \
-               f'with constant ' + wbml.out.format(self.const, info=False)
+        return f'<constant matrix:' \
+               f' shape={rows}x{cols},' \
+               f' data type={dtype_str(self)},' + \
+               f' constant=' + wbml.out.format(self.const, info=False) + '>'
 
 
 class Zero(Constant):
@@ -44,4 +45,5 @@ class Zero(Constant):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'Constant {rows}x{cols} matrix of zeros'
+        return f'<zero matrix: shape={rows}x{cols}>' \
+
