@@ -5,6 +5,7 @@ from ..matrix import Dense
 from ..constant import Constant
 from ..lowrank import LowRank
 from ..woodbury import Woodbury
+from ..kronecker import Kronecker
 
 __all__ = []
 
@@ -32,3 +33,8 @@ def negative(a):
 @B.dispatch(Woodbury)
 def negative(a):
     return Woodbury(B.negative(a.diag), B.negative(a.lr))
+
+
+@B.dispatch(Kronecker)
+def negative(a):
+    return Kronecker(B.negative(a.left), a.right)

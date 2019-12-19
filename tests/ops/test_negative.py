@@ -1,6 +1,6 @@
 import lab as B
 
-from matrix import Dense, Diagonal, Constant, LowRank, Woodbury
+from matrix import Dense, Diagonal, Constant, LowRank, Woodbury, Kronecker
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -10,7 +10,8 @@ from ..util import (
     diag1,
     const1,
     lr1,
-    wb1
+    wb1,
+    kron1
 )
 
 
@@ -32,3 +33,7 @@ def test_negative_lr(lr1):
 
 def test_negative_wb(wb1):
     check_un_op(B.negative, wb1, asserted_type=Woodbury)
+
+
+def test_negative_kron(kron1):
+    check_un_op(B.negative, kron1, asserted_type=Kronecker)
