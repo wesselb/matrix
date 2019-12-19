@@ -152,7 +152,8 @@ def assert_compatible(x1, x2):
         x2 (object): Second object.
     """
     if not compatible(x1, x2):
-        raise AssertionError(f'Shapes {x1} and {x2} are asserted to be '
+        s1, s2 = get_shape(x1, x2)
+        raise AssertionError(f'Shapes {s1} and {s2} are asserted to be '
                              f'compatible, but they are not.')
 
 

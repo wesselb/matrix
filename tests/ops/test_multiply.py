@@ -1,6 +1,6 @@
 import lab as B
 
-from matrix import Dense, Diagonal, Zero, Constant, LowRank, Woodbury
+from matrix import Dense, Diagonal, Zero, Constant, LowRank, Woodbury, Kronecker
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -19,7 +19,9 @@ from ..util import (
     lr1,
     lr2,
     wb1,
-    wb2
+    wb2,
+    kron1,
+    kron2
 )
 
 
@@ -80,3 +82,8 @@ def test_multiply_wb(wb1, wb2):
 def test_multiply_lr_wb(lr1, wb2):
     check_bin_op(B.multiply, lr1, wb2, asserted_type=Woodbury)
     check_bin_op(B.multiply, wb2, lr1, asserted_type=Woodbury)
+
+
+def test_multiply_const_kron(const_or_scalar1, kron2):
+    check_bin_op(B.multiply, const_or_scalar1, kron2, asserted_type=Kronecker)
+    check_bin_op(B.multiply, kron2, const_or_scalar1, asserted_type=Kronecker)

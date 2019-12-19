@@ -1,12 +1,13 @@
 import lab as B
 from algebra import proven
 
-from ..diagonal import Diagonal
-from ..matrix import AbstractMatrix, Dense
 from ..constant import Zero, Constant
+from ..diagonal import Diagonal
+from ..kronecker import Kronecker
 from ..lowrank import LowRank
-from ..woodbury import Woodbury
+from ..matrix import AbstractMatrix, Dense
 from ..shape import assert_compatible, broadcast
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -119,5 +120,16 @@ def multiply(a, b):
 
 
 @B.dispatch(LowRank, Woodbury)
+def multiply(a, b):
+    return multiply(b, a)
+
+
+@B.dispatch(Constant, Kronecker)
+def multiply(a, b):
+    assert_compatible(a, b)
+    return Kronecker(a.const * b.left, b.right)
+
+
+@B.dispatch(Kronecker, Constant)
 def multiply(a, b):
     return multiply(b, a)
