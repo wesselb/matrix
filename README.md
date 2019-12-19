@@ -26,35 +26,58 @@ pip install backends-matrix
 ```python
 >>> import lab as B
 
->>> from matrix import Diagonal
+>>> from matrix import Diagonal, LowRank
 
 >>> d = Diagonal(B.ones(3))
 
 >>> d
 <diagonal matrix: shape=3x3, data type=float64,
- diagonal=[1. 1. 1.]>
+ diag=[1. 1. 1.]>
   
 >>> 2 * d
 <diagonal matrix: shape=3x3, data type=float64,
- diagonal=[2. 2. 2.]>
+ diag=[2. 2. 2.]>
 
 >>> 2 + d
 <dense matrix: shape=3x3, data type=float64,
- content=[[3. 2. 2.]
-          [2. 3. 2.]
-          [2. 2. 3.]]>
+ mat=[[3. 2. 2.]
+      [2. 3. 2.]
+      [2. 2. 3.]]>
   
 >>> d + B.randn(3, 3)
 <dense matrix: shape=3x3, data type=float64,
- content=[[ 1.83  -0.799 -2.36 ]
-          [-0.09   2.371  0.572]
-          [ 0.064  1.721  2.14 ]]>
+ mat=[[ 1.83  -0.799 -2.36 ]
+      [-0.09   2.371  0.572]
+      [ 0.064  1.721  2.14 ]]>
+
+>>> lr = LowRank(left=B.ones(3, 1), right=2 * B.ones(3, 1))
+
+>>> lr
+<low-rank matrix: shape=3x3, dtype=float64, rank=1,
+ left=[[1.]
+       [1.]
+       [1.]],
+ right=[[2.]
+        [2.]
+        [2.]]>
+
+>>> d + lr
+<Woodbury matrix:
+ diag=<diagonal matrix: shape=3x3, dtype=float64,
+       diag=[1. 1. 1.]>,
+ lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1,
+     left=[[1.]
+           [1.]
+           [1.]],
+     right=[[2.]
+            [2.]
+            [2.]]>>
 ```
 
 ## Matrix Types
 
 All matrix types are subclasses of `AbstractMatrix`.
-The following matrix types are provided:
+The following types are provided:
 
 ```
 Zero

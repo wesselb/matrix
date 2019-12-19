@@ -2,6 +2,7 @@ import abc
 
 import lab as B
 import wbml.out
+from plum import Referentiable
 
 from .shape import assert_matrix
 from .util import indent, dtype_str
@@ -9,7 +10,7 @@ from .util import indent, dtype_str
 __all__ = ['AbstractMatrix', 'Dense']
 
 
-class AbstractMatrix:
+class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
     """Abstract matrix type."""
 
     def __neg__(self):
@@ -63,7 +64,7 @@ class Dense(AbstractMatrix):
         rows, cols = B.shape(self)
         return f'<dense matrix:' \
                f' shape={rows}x{cols},' \
-               f' data type={dtype_str(self)},\n' + \
-               f' content=' + \
+               f' dtype={dtype_str(self)},\n' + \
+               f' mat=' + \
                indent(wbml.out.format(self.mat, info=False),
-                      ' ' * 9).strip() + '>'
+                      ' ' * 5).strip() + '>'

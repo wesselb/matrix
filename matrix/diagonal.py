@@ -24,7 +24,7 @@ class Diagonal(AbstractMatrix):
         rows, cols = B.shape(self)
         return f'<diagonal matrix:' \
                f' shape={rows}x{cols},' \
-               f' data type={dtype_str(self)},\n' + \
-               f' diagonal=' + \
+               f' dtype={dtype_str(self)},\n' + \
+               f' diag=' + \
                indent(wbml.out.format(self.diag, info=False),
-                      ' ' * 10).strip() + '>'
+                      ' ' * 6).strip() + '>'

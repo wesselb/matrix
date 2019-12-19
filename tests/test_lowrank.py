@@ -5,7 +5,7 @@ from matrix import LowRank
 
 def test_lowrank_str():
     assert str(LowRank(B.ones(3, 1), 2 * B.ones(3, 1))) == \
-           '<low-rank matrix: shape=3x3, data type=float64, rank=1,\n' \
+           '<low-rank matrix: shape=3x3, dtype=float64, rank=1,\n' \
            ' left=[[1.]\n' \
            '       [1.]\n' \
            '       [1.]],\n' \

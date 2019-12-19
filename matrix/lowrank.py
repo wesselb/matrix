@@ -35,7 +35,7 @@ class LowRank(AbstractMatrix):
         rank = B.shape(self.left)[1]
         return f'<low-rank matrix:' \
                f' shape={rows}x{cols},' \
-               f' data type={dtype_str(self)},' + \
+               f' dtype={dtype_str(self)},' + \
                f' rank={rank},\n' + \
                f' left=' + \
                indent(wbml.out.format(self.left, info=False),

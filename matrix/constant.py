@@ -28,8 +28,8 @@ class Constant(AbstractMatrix):
         rows, cols = B.shape(self)
         return f'<constant matrix:' \
                f' shape={rows}x{cols},' \
-               f' data type={dtype_str(self)},' + \
-               f' constant=' + wbml.out.format(self.const, info=False) + '>'
+               f' dtype={dtype_str(self)},' + \
+               f' const=' + wbml.out.format(self.const, info=False) + '>'
 
 
 class Zero(Constant):
