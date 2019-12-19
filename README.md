@@ -31,16 +31,21 @@ pip install backends-matrix
 >>> d = Diagonal(B.ones(3))
 
 >>> d
-Diagonal matrix with diagonal
+Diagonal 3x3 matrix of data type float64 with diagonal
   [1. 1. 1.]
   
->>> d + d
-Diagonal matrix with diagonal
+>>> 2 * d
+Diagonal 3x3 matrix of data type float64 with diagonal
   [2. 2. 2.]
+
+>>> 2 + d
+Dense 3x3 matrix of data type float64:
+  [[3. 2. 2.]
+   [2. 3. 2.]
+   [2. 2. 3.]]
   
 >>> d + B.randn(3, 3)
-Dense matrix:
-  (3x3 array of data type float64)
+Dense 3x3 matrix of data type float64:
   [[ 0.231  1.107 -0.648]
    [-1.199  1.668 -1.344]
    [ 0.545  0.807  0.934]]
@@ -48,5 +53,14 @@ Dense matrix:
 
 ## Matrix Types
 
-Coming soon.
+All matrix types are subclasses of `AbstractMatrix`.
+The following matrix types are provided:
 
+```
+Zero
+Constant
+Diagonal
+LowRank
+WoodBury
+Dense
+```
