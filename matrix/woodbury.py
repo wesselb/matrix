@@ -13,7 +13,8 @@ __all__ = ['Woodbury']
 class Woodbury(AbstractMatrix):
     """Woodbury matrix.
 
-    The data type of a Woodbury matrix is the data type of the low-rank part.
+    The shape and data type of a Woodbury matrix are the shape and data type of
+    the low-rank part.
 
     Args:
         diag (:class:`.diagonal.Diagonal`): Diagonal part.
@@ -29,7 +30,7 @@ class Woodbury(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<Woodbury matrix:\n' \
+        return f'<Woodbury matrix:' \
                f' shape={rows}x{cols},' \
                f' dtype={dtype_str(self)},\n' + \
                f' diag=' + indent(str(self.diag), ' ' * 6).strip() + ',\n' + \
