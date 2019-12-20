@@ -2,12 +2,17 @@ import lab as B
 
 from ..diagonal import Diagonal
 from ..matrix import Dense
-from ..constant import Constant
+from ..constant import Zero, Constant
 from ..lowrank import LowRank
 from ..woodbury import Woodbury
 from ..kronecker import Kronecker
 
 __all__ = []
+
+
+@B.dispatch(Zero)
+def negative(a):
+    return a
 
 
 @B.dispatch(Dense)

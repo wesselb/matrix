@@ -81,8 +81,8 @@ All matrix types are subclasses of `AbstractMatrix`.
 The following base types are provided:
 
 ```
-Dense
 Zero
+Dense
 Constant
 Diagonal
 LowRank
@@ -92,4 +92,15 @@ The following composite types are provided:
 ```
 Woodbury
 Kronecker
+```
+
+
+## Functions
+
+The following functions are added to LAB.
+They can be accessed with `B.function` where `import lab as B`.
+
+```
+dense(a)
+fill_diag(a, diag_len)
 ```

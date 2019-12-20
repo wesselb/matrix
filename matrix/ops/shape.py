@@ -1,6 +1,6 @@
 import lab as B
 
-from ..constant import Constant
+from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import Dense
@@ -21,7 +21,7 @@ def shape(a):
     return diag_len, diag_len
 
 
-@B.dispatch(Constant)
+@B.dispatch({Zero, Constant})
 def shape(a):
     return a.rows, a.cols
 

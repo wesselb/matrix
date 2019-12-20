@@ -29,24 +29,29 @@ __all__ = ['allclose',
 
            'zero1',
            'zero2',
+           'zero_r',
            'dense1',
            'dense2',
+           'dense_r',
            'dense_pd',
            'diag1',
            'diag2',
            'diag_pd',
            'const1',
            'const2',
+           'const_r',
            'const_pd',
            'const_or_scalar1',
            'const_or_scalar2',
            'lr1',
            'lr2',
+           'lr_r',
            'lr_pd',
            'wb1',
            'wb2',
            'kron1',
            'kron2',
+           'kron_r',
            'kron_pd']
 
 _dispatch = Dispatcher()
@@ -149,12 +154,17 @@ def scalar2():
 
 @pytest.fixture()
 def zero1():
-    yield Zero(6, 6)
+    yield Zero(float, 6, 6)
 
 
 @pytest.fixture()
 def zero2():
-    yield Zero(6, 6)
+    yield Zero(float, 6, 6)
+
+
+@pytest.fixture()
+def zero_r():
+    yield Zero(float, 6, 4)
 
 
 @pytest.fixture()
@@ -165,6 +175,11 @@ def dense1():
 @pytest.fixture()
 def dense2():
     yield Dense(B.randn(6, 6))
+
+
+@pytest.fixture()
+def dense_r():
+    yield Dense(B.randn(6, 4))
 
 
 @pytest.fixture()
@@ -195,6 +210,11 @@ def const1():
 
 @pytest.fixture()
 def const2():
+    yield Constant(B.randn(), 6, 6)
+
+
+@pytest.fixture()
+def const_r():
     yield Constant(B.randn(), 6, 6)
 
 
@@ -230,6 +250,11 @@ def lr2(request):
 
 
 @pytest.fixture(params=[1, 2, 3])
+def lr_r(request):
+    yield LowRank(B.randn(6, request.param), B.randn(4, request.param))
+
+
+@pytest.fixture(params=[1, 2, 3])
 def lr_pd(request):
     yield LowRank(B.randn(6, request.param))
 
@@ -261,6 +286,14 @@ def kron2(request):
     size_left, size_right = request.param
     left = B.randn(size_left, size_left)
     right = B.randn(size_right, size_right)
+    return Kronecker(Dense(left), Dense(right))
+
+
+@pytest.fixture(params=[(2, 3), (3, 2)])
+def kron_r(request):
+    size_left, size_right = request.param
+    left = B.randn(size_left, 2)
+    right = B.randn(size_right, 2)
     return Kronecker(Dense(left), Dense(right))
 
 

@@ -7,4 +7,4 @@ def test_constant_str():
 
 
 def test_zero_str():
-    assert str(Zero(3, 3)) == '<zero matrix: shape=3x3>'
+    assert str(Zero(int, 3, 3)) == '<zero matrix: shape=3x3, dtype=int>'

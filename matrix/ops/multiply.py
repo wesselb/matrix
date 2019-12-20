@@ -116,6 +116,7 @@ def multiply(a, b):
 @B.dispatch.multi((Woodbury, Woodbury),
                   (Woodbury, LowRank))
 def multiply(a, b):
+    # Expand out Woodbury matrices.
     return B.add(B.multiply(a.diag, b), B.multiply(a.lr, b))
 
 

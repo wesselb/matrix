@@ -14,7 +14,7 @@ add_promotion_rule(AbstractMatrix, AbstractMatrix, Dense)
 def convert(x):
     if B.rank(x) == 0:
         if isinstance(x, B.Number) and x == 0:
-            return Zero(1, 1)
+            return Zero(B.dtype(x), 1, 1)
         else:
             return Constant(x, 1, 1)
     elif B.rank(x) == 2:

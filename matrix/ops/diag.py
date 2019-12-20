@@ -1,6 +1,6 @@
 import lab as B
 
-from ..constant import Constant
+from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import Dense
@@ -8,6 +8,15 @@ from ..woodbury import Woodbury
 from ..kronecker import Kronecker
 
 __all__ = []
+
+
+def _diag_len(a):
+    return B.minimum(*B.shape(a))
+
+
+@B.dispatch(Zero)
+def diag(a):
+    return B.zeros(B.dtype(a), _diag_len(a))
 
 
 @B.dispatch(Dense)
@@ -18,10 +27,6 @@ def diag(a):
 @B.dispatch(Diagonal)
 def diag(a):
     return a.diag
-
-
-def _diag_len(a):
-    return B.minimum(*B.shape(a))
 
 
 @B.dispatch(Constant)

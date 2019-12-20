@@ -1,7 +1,10 @@
+from plum import Dispatcher
 import lab as B
 
 __all__ = ['indent',
            'dtype_str']
+
+_dispatch = Dispatcher()
 
 
 def indent(x, indentation='  '):
@@ -17,6 +20,7 @@ def indent(x, indentation='  '):
     return indentation + x.replace('\n', '\n' + indentation)
 
 
+@_dispatch(object)
 def dtype_str(x):
     """Get the data type of an object as string.
 
@@ -26,7 +30,11 @@ def dtype_str(x):
     Returns:
         str: Data type of `x`.
     """
-    dtype = B.dtype(x)
+    return dtype_str(B.dtype(x))
+
+
+@_dispatch(B.DType)
+def dtype_str(dtype):
     if isinstance(dtype, type):
         return dtype.__name__
     else:

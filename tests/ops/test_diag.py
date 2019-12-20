@@ -5,6 +5,7 @@ from ..util import (
     allclose,
     check_un_op,
 
+    zero1,
     dense1,
     diag1,
     const1,
@@ -12,6 +13,10 @@ from ..util import (
     wb1,
     kron1
 )
+
+
+def test_diag_zero(zero1):
+    check_un_op(B.diag, zero1)
 
 
 def test_diag_dense(dense1):

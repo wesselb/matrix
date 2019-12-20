@@ -1,6 +1,6 @@
 import lab as B
 
-from ..constant import Constant
+from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..matrix import Dense
 from ..lowrank import LowRank
@@ -16,6 +16,11 @@ def dense(a):
 
 
 B.dense = dense
+
+
+@B.dispatch(Zero)
+def dense(a):
+    return B.zeros(a.dtype, a.rows, a.cols)
 
 
 @B.dispatch(Dense)

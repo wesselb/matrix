@@ -3,7 +3,9 @@ import lab as B
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
+
     mat1,
+    zero1,
     dense1,
     diag1,
     const1,
@@ -11,6 +13,10 @@ from ..util import (
     wb1,
     kron1
 )
+
+
+def test_dense_zero(zero1):
+    allclose(B.dense(zero1), B.zeros(zero1.rows, zero1.cols))
 
 
 def test_dense_numeric(mat1):

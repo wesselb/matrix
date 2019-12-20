@@ -1,6 +1,6 @@
 import lab as B
 
-from ..constant import Constant
+from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
@@ -13,6 +13,12 @@ __all__ = []
 def _assert_square_cholesky(a):
     assert_square(a, 'Can only take the Cholesky decomposition of square '
                      'matrices.')
+
+
+@B.dispatch(Zero)
+def cholesky(a):
+    _assert_square_cholesky(a)
+    return a
 
 
 @B.dispatch(Dense)

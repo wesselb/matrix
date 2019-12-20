@@ -1,12 +1,13 @@
 import lab as B
 import pytest
 
-from matrix import Dense, Diagonal, Kronecker
+from matrix import Dense, Diagonal, Kronecker, Zero
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_un_op,
 
+    zero1,
     dense_pd,
     diag_pd,
     const_pd,
@@ -19,6 +20,10 @@ from ..util import (
 def test_cholesky_square_assertion():
     with pytest.raises(AssertionError):
         B.cholesky(Dense(B.randn(3, 4)))
+
+
+def test_cholesky_zero(zero1):
+    check_un_op(B.cholesky, zero1, asserted_type=Zero)
 
 
 def test_cholesky_dense(dense_pd):

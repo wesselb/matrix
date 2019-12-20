@@ -5,7 +5,32 @@ from .matrix import AbstractMatrix
 from .shape import assert_scalar
 from .util import dtype_str
 
-__all__ = ['Constant', 'Zero']
+__all__ = ['Zero', 'Constant']
+
+
+class Zero(AbstractMatrix):
+    """Zero matrix.
+
+    Attributes:
+        dtype (dtype): Data type.
+        rows (int): Number of rows.
+        cols (int): Number of columns.
+
+    Args:
+        dtype (dtype): Data type.
+        rows (int): Number of rows.
+        cols (int): Number of columns.
+    """
+
+    def __init__(self, dtype, rows, cols):
+        self.dtype = dtype
+        self.rows = rows
+        self.cols = cols
+
+    def __str__(self):
+        rows, cols = B.shape(self)
+        return f'<zero matrix: shape={rows}x{cols}, ' \
+               f'dtype={dtype_str(self.dtype)}>'
 
 
 class Constant(AbstractMatrix):
@@ -38,19 +63,3 @@ class Constant(AbstractMatrix):
                f' shape={rows}x{cols},' \
                f' dtype={dtype_str(self)},' + \
                f' const=' + wbml.out.format(self.const, info=False) + '>'
-
-
-class Zero(Constant):
-    """Zero matrix.
-
-    Args:
-        rows (int): Number of rows.
-        cols (int): Number of columns.
-    """
-
-    def __init__(self, rows, cols):
-        Constant.__init__(self, 0, rows, cols)
-
-    def __str__(self):
-        rows, cols = B.shape(self)
-        return f'<zero matrix: shape={rows}x{cols}>'
