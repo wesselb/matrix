@@ -44,7 +44,10 @@ __all__ = ['allclose',
            'lr2',
            'lr_pd',
            'wb1',
-           'wb2']
+           'wb2',
+           'kron1',
+           'kron2',
+           'kron_pd']
 
 _dispatch = Dispatcher()
 
