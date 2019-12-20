@@ -1,7 +1,7 @@
 import lab as B
 import pytest
 
-from matrix import Dense, Diagonal, Constant, Kronecker
+from matrix import Dense, Diagonal, Kronecker
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
