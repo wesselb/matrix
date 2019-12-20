@@ -8,3 +8,4 @@ from .negative import *
 from .power import *
 from .shape import *
 from .subtract import *
+from .transpose import *
