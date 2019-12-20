@@ -23,7 +23,7 @@ def test_cholesky_square_assertion():
 
 
 def test_cholesky_zero(zero1):
-    check_un_op(B.cholesky, zero1, asserted_type=Zero)
+    assert B.cholesky(zero1) is zero1
 
 
 def test_cholesky_dense(dense_pd):
