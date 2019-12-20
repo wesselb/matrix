@@ -5,6 +5,7 @@ from .diag import *
 from .divide import *
 from .dtype import *
 from .fill_diag import *
+from .inv import *
 from .logdet import *
 from .multiply import *
 from .negative import *
