@@ -13,6 +13,10 @@ class Kronecker(AbstractMatrix):
     The data type of a Kronecker product is the data type of the left matrix
     in the product.
 
+    Attributes:
+        left (:class:`.matrix.AbstractMatrix`): Left matrix in the product.
+        right (:class:`.matrix.AbstractMatrix`): Right matrix in the product.
+
     Args:
         left (:class:`.matrix.AbstractMatrix`): Left matrix in the product.
         right (:class:`.matrix.AbstractMatrix`): Right matrix in the product.

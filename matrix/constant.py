@@ -11,6 +11,13 @@ __all__ = ['Constant', 'Zero']
 class Constant(AbstractMatrix):
     """Constant matrix.
 
+    Attributes:
+        const (scalar): Constant of the matrix.
+        rows (int): Number of rows.
+        cols (int): Number of columns.
+        cholesky (:class:`.constant.Constant` or None): Cholesky
+            decomposition of the matrix, once it has been computed.
+
     Args:
         const (scalar): Constant.
         rows (int): Number of rows.
@@ -23,6 +30,7 @@ class Constant(AbstractMatrix):
         self.const = const
         self.rows = rows
         self.cols = cols
+        self.cholesky = None
 
     def __str__(self):
         rows, cols = B.shape(self)
@@ -45,5 +53,4 @@ class Zero(Constant):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<zero matrix: shape={rows}x{cols}>' \
-
+        return f'<zero matrix: shape={rows}x{cols}>'

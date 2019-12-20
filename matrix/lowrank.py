@@ -12,6 +12,16 @@ class LowRank(AbstractMatrix):
     """Low-rank matrix.
 
     The data type of a low-rank matrix is the data type of the left factor.
+    The Cholesky decomposition is not exactly the Cholesky decomposition,
+    but returns a matrix `L` such that `L transpose(L)` is the original martix.
+
+    Attributes:
+        left (matrix): Left factor.
+        right (matrix): Right factor.
+        symmetric (bool): Boolean indicating whether this is a symmetric
+            low-rank matrix.
+        cholesky (:class:`.matrix.Dense` or None): Cholesky-like
+            decomposition of the matrix, once it has been computed.
 
     Args:
         left (matrix): Left factor.
@@ -19,12 +29,18 @@ class LowRank(AbstractMatrix):
     """
 
     def __init__(self, left, right=None):
-        for factor in [left, right]:
+        if right is None:
+            check_factors = [left]
+        else:
+            check_factors = [left, right]
+        for factor in check_factors:
             assert_matrix(factor, 'Factors are not rank-2 tensors. Can only '
                                   'construct low-rank matrices from matrix '
                                   'factors.')
         self.left = left
         self.right = left if right is None else right
+        self.symmetric = right is None
+        self.cholesky = None
 
         if not B.shape(self.left)[1] == B.shape(self.right)[1]:
             raise ValueError('Left and right factor must have an equal number '

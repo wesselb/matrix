@@ -4,6 +4,7 @@ from plum import Dispatcher
 __all__ = ['assert_scalar',
            'assert_vector',
            'assert_matrix',
+           'assert_square',
            'get_shape',
            'compatible',
            'assert_compatible',
@@ -45,6 +46,19 @@ def assert_matrix(x, message):
             matrix.
     """
     if B.rank(x) != 2:
+        raise AssertionError(message)
+
+
+def assert_square(x, message):
+    """Assert that a tensor is a square matrix.
+
+    Args
+        x (tensor): Tensor that must be a matrix.
+        message (str): Error message to raise in the case that `x` is not a
+            square matrix.
+    """
+    shape = B.shape(x)
+    if len(shape) != 2 or shape[0] != shape[1]:
         raise AssertionError(message)
 
 

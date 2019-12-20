@@ -53,12 +53,22 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
 
 
 class Dense(AbstractMatrix):
-    """Dense matrix."""
+    """Dense matrix.
+
+    Attributes:
+        mat (matrix): Matrix.
+        cholesky (:class:`.matrix.Dense` or None): Cholesky decomposition of
+            the matrix, once it has been computed.
+
+    Args:
+        mat (matrix): Matrix.
+    """
 
     def __init__(self, mat):
         assert_matrix(mat, 'Input is not a rank-2 tensor. Can only construct '
                            'dense matrices from rank-2 tensors.')
         self.mat = mat
+        self.cholesky = None
 
     def __str__(self):
         rows, cols = B.shape(self)

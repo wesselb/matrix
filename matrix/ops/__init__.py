@@ -1,4 +1,5 @@
 from .add import *
+from .cholesky import *
 from .dense import *
 from .diag import *
 from .divide import *

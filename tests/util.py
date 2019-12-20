@@ -31,14 +31,18 @@ __all__ = ['allclose',
            'zero2',
            'dense1',
            'dense2',
+           'dense_pd',
            'diag1',
            'diag2',
+           'diag_pd',
            'const1',
            'const2',
+           'const_pd',
            'const_or_scalar1',
            'const_or_scalar2',
            'lr1',
            'lr2',
+           'lr_pd',
            'wb1',
            'wb2']
 
@@ -63,7 +67,7 @@ def allclose(x, y):
 
 @_dispatch({B.Number, B.NPNumeric}, {B.Number, B.NPNumeric})
 def allclose(x, y):
-    assert_allclose(x, y)
+    assert_allclose(x, y, rtol=1e-7, atol=1e-14)
 
 
 def _assert_instance(x, asserted_type):
@@ -161,6 +165,12 @@ def dense2():
 
 
 @pytest.fixture()
+def dense_pd():
+    mat = B.randn(6, 6)
+    yield Dense(B.matmul(mat, mat, tr_b=True))
+
+
+@pytest.fixture()
 def diag1():
     yield Diagonal(B.randn(6))
 
@@ -171,6 +181,11 @@ def diag2():
 
 
 @pytest.fixture()
+def diag_pd():
+    yield Diagonal(B.randn(6) ** 2)
+
+
+@pytest.fixture()
 def const1():
     yield Constant(B.randn(), 6, 6)
 
@@ -178,6 +193,11 @@ def const1():
 @pytest.fixture()
 def const2():
     yield Constant(B.randn(), 6, 6)
+
+
+@pytest.fixture()
+def const_pd():
+    yield Constant(B.randn() ** 2, 6, 6)
 
 
 @pytest.fixture(params=[True, False])
@@ -207,6 +227,11 @@ def lr2(request):
 
 
 @pytest.fixture(params=[1, 2, 3])
+def lr_pd(request):
+    yield LowRank(B.randn(6, request.param))
+
+
+@pytest.fixture(params=[1, 2, 3])
 def wb1(request):
     d = Diagonal(B.randn(6))
     lr = LowRank(B.randn(6, request.param), B.randn(6, request.param))
@@ -223,14 +248,23 @@ def wb2(request):
 @pytest.fixture(params=[(2, 3), (3, 2)])
 def kron1(request):
     size_left, size_right = request.param
-    left = Dense(B.randn(size_left, size_left))
-    right = Dense(B.randn(size_right, size_right))
-    return Kronecker(left, right)
+    left = B.randn(size_left, size_left)
+    right = B.randn(size_right, size_right)
+    return Kronecker(Dense(left), Dense(right))
 
 
 @pytest.fixture(params=[(2, 3), (3, 2)])
 def kron2(request):
     size_left, size_right = request.param
-    left = Dense(B.randn(size_left, size_left))
-    right = Dense(B.randn(size_right, size_right))
-    return Kronecker(left, right)
+    left = B.randn(size_left, size_left)
+    right = B.randn(size_right, size_right)
+    return Kronecker(Dense(left), Dense(right))
+
+
+@pytest.fixture(params=[(2, 3), (3, 2)])
+def kron_pd(request):
+    size_left, size_right = request.param
+    left = B.randn(size_left, size_left)
+    right = B.randn(size_right, size_right)
+    return Kronecker(Dense(B.matmul(left, left, tr_b=True)),
+                     Dense(B.matmul(right, right, tr_b=True)))

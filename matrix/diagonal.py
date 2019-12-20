@@ -11,6 +11,11 @@ __all__ = ['Diagonal']
 class Diagonal(AbstractMatrix):
     """Diagonal matrix.
 
+    Attributes:
+        diag (vector): Diagonal of the matrix.
+        cholesky (:class:`.constant.Diagonal` or none): Cholesky
+            decomposition of the matrix, once it has been computed.
+
     Args:
         diag (vector): Diagonal of matrix.
     """
@@ -19,6 +24,7 @@ class Diagonal(AbstractMatrix):
         assert_vector(diag, 'Input is not a rank-1 tensor. Can only construct '
                             'diagonal matrices from rank-1 tensors.')
         self.diag = diag
+        self.cholesky = None
 
     def __str__(self):
         rows, cols = B.shape(self)
