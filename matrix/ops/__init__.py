@@ -7,6 +7,7 @@ from .dtype import *
 from .fill_diag import *
 from .inv import *
 from .logdet import *
+from .matmul import *
 from .multiply import *
 from .negative import *
 from .power import *
