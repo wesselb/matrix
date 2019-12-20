@@ -61,7 +61,7 @@ def allclose(x, y):
     allclose(B.to_numpy(x), B.to_numpy(y))
 
 
-@_dispatch(B.NPNumeric, B.NPNumeric)
+@_dispatch({B.Number, B.NPNumeric}, {B.Number, B.NPNumeric})
 def allclose(x, y):
     assert_allclose(x, y)
 
