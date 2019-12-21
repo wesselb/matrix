@@ -52,6 +52,7 @@ __all__ = ['allclose',
            'kron1',
            'kron2',
            'kron_r',
+           'kron_mixed',
            'kron_pd']
 
 _dispatch = Dispatcher()
@@ -273,7 +274,7 @@ def wb2(request):
     return Woodbury(d, lr)
 
 
-@pytest.fixture(params=[(2, 3), (3, 2)])
+@pytest.fixture(params=[(1, 6), (2, 3), (3, 2), (6, 1)])
 def kron1(request):
     size_left, size_right = request.param
     left = B.randn(size_left, size_left)
@@ -281,7 +282,7 @@ def kron1(request):
     return Kronecker(Dense(left), Dense(right))
 
 
-@pytest.fixture(params=[(2, 3), (3, 2)])
+@pytest.fixture(params=[(1, 6), (2, 3), (3, 2), (6, 1)])
 def kron2(request):
     size_left, size_right = request.param
     left = B.randn(size_left, size_left)
@@ -289,7 +290,7 @@ def kron2(request):
     return Kronecker(Dense(left), Dense(right))
 
 
-@pytest.fixture(params=[(2, 3), (3, 2)])
+@pytest.fixture(params=[(1, 6), (2, 3), (3, 2), (6, 1)])
 def kron_r(request):
     size_left, size_right = request.param
     left = B.randn(size_left, 2)
@@ -297,7 +298,18 @@ def kron_r(request):
     return Kronecker(Dense(left), Dense(right))
 
 
-@pytest.fixture(params=[(2, 3), (3, 2)])
+@pytest.fixture(params=[((1, 6), (6, 1)),
+                        ((2, 3), (3, 2)),
+                        ((3, 2), (2, 3)),
+                        ((6, 1), (1, 6))])
+def kron_mixed(request):
+    sizes_left, sizes_right = request.param
+    left = B.randn(*sizes_left)
+    right = B.randn(*sizes_right)
+    return Kronecker(Dense(left), Dense(right))
+
+
+@pytest.fixture(params=[(1, 6), (2, 3), (3, 2), (6, 1)])
 def kron_pd(request):
     size_left, size_right = request.param
     left = B.randn(size_left, size_left)
