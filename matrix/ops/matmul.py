@@ -44,3 +44,15 @@ def matmul(a, b, tr_a=False, tr_b=False):
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     return Diagonal(B.multiply(a.diag, b.diag))
+
+
+@B.dispatch(Diagonal, Dense)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    return Dense(a.diag[:, None] * _tr(b.mat, tr_b))
+
+
+@B.dispatch(Dense, Diagonal)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    return Dense(_tr(a.mat, tr_a) * b.diag[None, :])

@@ -56,3 +56,8 @@ def test_matmul_dense(dense1, dense2):
 
 def test_matmul_diag(diag1, diag2):
     _check_matmul(diag1, diag2, asserted_type=Diagonal)
+
+
+def test_matmul_diag_dense(diag1, dense2):
+    _check_matmul(diag1, dense2, asserted_type=Dense)
+    _check_matmul(dense2, diag1, asserted_type=Dense)
