@@ -85,3 +85,8 @@ def test_matmul_lr(lr1, lr2):
 def test_matmul_diag_lr(diag1, lr2):
     _check_matmul(diag1, lr2, asserted_type=LowRank)
     _check_matmul(lr2, diag1, asserted_type=LowRank)
+
+
+def test_matmul_const_lr(const1, lr2):
+    _check_matmul(const1, lr2, asserted_type=LowRank)
+    _check_matmul(lr2, const1, asserted_type=LowRank)
