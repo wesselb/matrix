@@ -85,6 +85,8 @@ Zero
 Dense
 Diagonal
 Constant
+LowerTriangular
+UpperTriangular
 ```
 
 The following composite types are provided:
