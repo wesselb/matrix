@@ -84,3 +84,16 @@ def matmul(a, b, tr_a=False, tr_b=False):
     ones = B.ones(B.dtype(b), b.cols, 1)
     return LowRank(left=B.expand_dims(B.sum(a, axis=1), axis=1),
                    right=b.const * ones)
+
+
+@B.dispatch(LowRank, LowRank)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    a = _tr(a, tr_a)
+    b = _tr(b, tr_b)
+    middle = B.matmul(a.right, b.left, tr_a=True)
+    rows, cols = B.shape(middle)
+    if rows < cols:
+        return LowRank(B.matmul(a.left, middle), b.right)
+    else:
+        return LowRank(a.left, B.matmul(b.right, middle, tr_b=True))

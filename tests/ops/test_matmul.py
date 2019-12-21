@@ -75,3 +75,7 @@ def test_matmul_const_dense(const1, dense2):
 def test_matmul_const_diag(const1, diag2):
     _check_matmul(const1, diag2, asserted_type=LowRank)
     _check_matmul(diag2, const1, asserted_type=LowRank)
+
+
+def test_matmul_lr(lr1, lr2):
+    _check_matmul(lr1, lr2, asserted_type=LowRank)
