@@ -79,3 +79,4 @@ def test_matmul_const_diag(const1, diag2):
 
 def test_matmul_lr(lr1, lr2):
     _check_matmul(lr1, lr2, asserted_type=LowRank)
+    assert B.matmul(lr1, lr2).rank == min(lr1.rank, lr2.rank)

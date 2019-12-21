@@ -93,7 +93,7 @@ def matmul(a, b, tr_a=False, tr_b=False):
     b = _tr(b, tr_b)
     middle = B.matmul(a.right, b.left, tr_a=True)
     rows, cols = B.shape(middle)
-    if rows < cols:
+    if rows > cols:
         return LowRank(B.matmul(a.left, middle), b.right)
     else:
         return LowRank(a.left, B.matmul(b.right, middle, tr_b=True))

@@ -18,6 +18,7 @@ class LowRank(AbstractMatrix):
     Attributes:
         left (matrix): Left factor.
         right (matrix): Right factor.
+        rank (int): Rank of the low-rank matrix.
         symmetric (bool): Boolean indicating whether this is a symmetric
             low-rank matrix.
         cholesky (:class:`.matrix.Dense` or None): Cholesky-like
@@ -39,6 +40,7 @@ class LowRank(AbstractMatrix):
                                   'factors.')
         self.left = left
         self.right = left if right is None else right
+        self.rank = B.shape(self.left)[1]
         self.symmetric = right is None
         self.cholesky = None
 
@@ -48,11 +50,10 @@ class LowRank(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        rank = B.shape(self.left)[1]
         return f'<low-rank matrix:' \
                f' shape={rows}x{cols},' \
                f' dtype={dtype_str(self)},' + \
-               f' rank={rank},\n' + \
+               f' rank={self.rank},\n' + \
                f' left=' + \
                indent(wbml.out.format(self.left, info=False),
                       ' ' * 6).strip() + ',\n' + \
