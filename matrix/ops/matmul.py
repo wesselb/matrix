@@ -97,3 +97,17 @@ def matmul(a, b, tr_a=False, tr_b=False):
         return LowRank(B.matmul(a.left, middle), b.right)
     else:
         return LowRank(a.left, B.matmul(b.right, middle, tr_b=True))
+
+
+@B.dispatch(Diagonal, LowRank)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    b = _tr(b, tr_b)
+    return LowRank(a.diag[:, None] * b.left, b.right)
+
+
+@B.dispatch(LowRank, Diagonal)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    a = _tr(a, tr_a)
+    return LowRank(a.left, a.right * b.diag[:, None])
