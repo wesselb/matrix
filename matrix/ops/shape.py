@@ -2,15 +2,16 @@ import lab as B
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
+from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import Dense
+from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
-from ..kronecker import Kronecker
 
 __all__ = []
 
 
-@B.dispatch(Dense)
+@B.dispatch({Dense, LowerTriangular, UpperTriangular})
 def shape(a):
     return B.shape(a.mat)
 

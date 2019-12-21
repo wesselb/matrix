@@ -82,6 +82,5 @@ class Dense(AbstractMatrix):
         return f'<dense matrix:' \
                f' shape={rows}x{cols},' \
                f' dtype={dtype_str(self)},\n' + \
-               f' mat=' + \
-               indent(wbml.out.format(self.mat, info=False),
-                      ' ' * 5).strip() + '>'
+               f' mat=' + indent(wbml.out.format(self.mat, info=False),
+                                 ' ' * 5).strip() + '>'

@@ -35,10 +35,6 @@ def _check_matmul(a, b, asserted_type=object):
                          a, b, asserted_type=asserted_type)
 
 
-def test_shorthand(dense1, dense2):
-    allclose(dense1 @ dense2, B.matmul(dense1.mat, dense2.mat))
-
-
 def test_matmul_assertion(zero_r, dense2):
     with pytest.raises(AssertionError):
         B.matmul(zero_r, dense2)

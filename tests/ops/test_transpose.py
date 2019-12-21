@@ -16,10 +16,6 @@ from ..util import (
 )
 
 
-def test_shorthand(dense_r):
-    check_un_op(lambda a: a.T, dense_r, asserted_type=Dense)
-
-
 def test_transpose_zero(zero_r):
     check_un_op(B.transpose, zero_r, asserted_type=Zero)
 

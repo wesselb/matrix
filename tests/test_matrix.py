@@ -6,6 +6,7 @@ import lab as B
 
 def test_dispatch(dense1, dense2):
     assert isinstance(-dense1, Dense)
+    assert isinstance(dense1.T, Dense)
     assert isinstance(dense1 + dense2, Dense)
     assert isinstance(dense1.__radd__(dense2), Dense)
     assert isinstance(dense1 - dense2, Dense)
@@ -15,6 +16,7 @@ def test_dispatch(dense1, dense2):
     assert isinstance(dense1 / dense2, Dense)
     assert isinstance(dense1.__rtruediv__(dense2), Dense)
     assert isinstance(dense1 ** 2, Dense)
+    assert isinstance(dense1 @ dense2, Dense)
 
 
 def test_repr(dense1):

@@ -1,5 +1,4 @@
 import lab as B
-from plum import Dispatcher, Self
 
 from .matrix import AbstractMatrix
 from .util import indent, dtype_str
@@ -14,16 +13,14 @@ class Kronecker(AbstractMatrix):
     in the product.
 
     Attributes:
-        left (:class:`.matrix.AbstractMatrix`): Left matrix in the product.
-        right (:class:`.matrix.AbstractMatrix`): Right matrix in the product.
+        left (matrix): Left matrix in the product.
+        right (matrix): Right matrix in the product.
 
     Args:
-        left (:class:`.matrix.AbstractMatrix`): Left matrix in the product.
-        right (:class:`.matrix.AbstractMatrix`): Right matrix in the product.
+        left (matrix): Left matrix in the product.
+        right (matrix): Right matrix in the product.
     """
-    _dispatch = Dispatcher(in_class=Self)
 
-    @_dispatch(AbstractMatrix, AbstractMatrix)
     def __init__(self, left, right):
         self.left = left
         self.right = right
