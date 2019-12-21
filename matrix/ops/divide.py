@@ -1,10 +1,10 @@
 import lab as B
 
-from ..matrix import Dense
+from ..matrix import AbstractMatrix, Dense
 
 __all__ = []
 
 
-@B.dispatch(Dense, Dense)
+@B.dispatch(AbstractMatrix, AbstractMatrix)
 def divide(a, b):
-    return Dense(B.divide(a.mat, b.mat))
+    return Dense(B.divide(B.dense(a), B.dense(b)))

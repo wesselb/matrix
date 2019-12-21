@@ -12,6 +12,16 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
+def _redirect(types_from, types_to):
+    target_method = B.multiply.invoke(*types_to)
+    B.multiply.extend(*types_from)(target_method)
+
+    target_method = B.multiply.invoke(*reversed(types_to))
+    B.multiply.extend(*reversed(types_from))(target_method)
+
+
+# Zero
+
 @B.dispatch(AbstractMatrix, Zero, precedence=proven())
 def multiply(a, b):
     assert_compatible(a, b)
@@ -24,10 +34,14 @@ def multiply(a, b):
     return a
 
 
+# Dense
+
 @B.dispatch(Dense, Dense)
 def multiply(a, b):
     return Dense(B.multiply(a.mat, b.mat))
 
+
+# Diagonal
 
 @B.dispatch(Diagonal, Diagonal)
 def multiply(a, b):
@@ -44,6 +58,8 @@ def multiply(a, b):
 def multiply(a, b):
     return multiply(b, a)
 
+
+# Constant
 
 @B.dispatch(Constant, Constant)
 def multiply(a, b):
@@ -72,6 +88,8 @@ def multiply(a, b):
 def multiply(a, b):
     return multiply(b, a)
 
+
+# LowRank
 
 @B.dispatch(LowRank, LowRank)
 def multiply(a, b):
@@ -103,26 +121,36 @@ def multiply(a, b):
     return multiply(b, a)
 
 
-@B.dispatch(Constant, Woodbury)
-def multiply(a, b):
-    return Woodbury(B.multiply(a, b.diag), B.multiply(a, b.lr))
-
-
-@B.dispatch(Woodbury, Constant)
-def multiply(a, b):
-    return multiply(b, a)
-
+# Woodbury
 
 @B.dispatch.multi((Woodbury, Woodbury),
-                  (Woodbury, LowRank))
+                  (Woodbury, AbstractMatrix))
 def multiply(a, b):
     # Expand out Woodbury matrices.
     return B.add(B.multiply(a.diag, b), B.multiply(a.lr, b))
 
 
-@B.dispatch(LowRank, Woodbury)
+@B.dispatch(AbstractMatrix, Woodbury)
 def multiply(a, b):
     return multiply(b, a)
+
+
+_redirect((Woodbury, Diagonal), (AbstractMatrix, Diagonal))
+_redirect((Woodbury, Constant), (Woodbury, AbstractMatrix))
+
+
+# Kronecker
+
+@B.dispatch(Kronecker, Kronecker)
+def multiply(a, b):
+    assert (B.shape(a.left) == B.shape(b.left) and
+            B.shape(a.right) == B.shape(b.right)), \
+        f'Kronecker products {a} and {b} must be compatible, ' \
+        f'but they are not.'
+    assert_compatible(a.left, b.left)
+    assert_compatible(a.right, b.right)
+    return Kronecker(B.multiply(a.left, b.left),
+                     B.multiply(a.right, b.right))
 
 
 @B.dispatch(Constant, Kronecker)

@@ -1,12 +1,12 @@
-from algebra import proven
 import lab as B
+from algebra import proven
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense
-from ..shape import assert_compatible, get_shape
+from ..shape import get_shape
 from ..woodbury import Woodbury
 
 __all__ = []
@@ -24,6 +24,16 @@ def _assert_composable(a, b, tr_a=False, tr_b=False):
                            f'composable, but they are not.'
 
 
+def _redirect(types_from, types_to):
+    target_method = B.matmul.invoke(*types_to)
+    B.matmul.extend(*types_from)(target_method)
+
+    target_method = B.matmul.invoke(*reversed(types_to))
+    B.matmul.extend(*reversed(types_from))(target_method)
+
+
+# Zero
+
 @B.dispatch(AbstractMatrix, Zero, precedence=proven())
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
@@ -36,10 +46,14 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return _tr(a, tr_a)
 
 
+# Dense
+
 @B.dispatch(Dense, Dense)
 def matmul(a, b, tr_a=False, tr_b=False):
     return Dense(B.matmul(a.mat, b.mat, tr_a=tr_a, tr_b=tr_b))
 
+
+# Diagonal
 
 @B.dispatch(Diagonal, Diagonal)
 def matmul(a, b, tr_a=False, tr_b=False):
@@ -47,17 +61,19 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return Diagonal(B.multiply(a.diag, b.diag))
 
 
-@B.dispatch(Diagonal, Dense)
+@B.dispatch(Diagonal, AbstractMatrix)
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
-    return Dense(a.diag[:, None] * _tr(b.mat, tr_b))
+    return Dense(B.expand_dims(a.diag, axis=1)) * _tr(b, tr_b)
 
 
-@B.dispatch(Dense, Diagonal)
+@B.dispatch(AbstractMatrix, Diagonal)
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
-    return Dense(_tr(a.mat, tr_a) * b.diag[None, :])
+    return _tr(a, tr_a) * Dense(B.expand_dims(b.diag, axis=0))
 
+
+# Constant
 
 @B.dispatch(Constant, Constant)
 def matmul(a, b, tr_a=False, tr_b=False):
@@ -85,6 +101,11 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return LowRank(B.expand_dims(B.sum(a, axis=1), axis=1), b.const * ones)
 
 
+_redirect((Constant, Diagonal), (Constant, AbstractMatrix))
+
+
+# LowRank
+
 @B.dispatch(LowRank, LowRank)
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
@@ -98,19 +119,27 @@ def matmul(a, b, tr_a=False, tr_b=False):
         return LowRank(a.left, B.matmul(b.right, middle, tr_b=True))
 
 
-@B.dispatch(Diagonal, LowRank)
-def matmul(a, b, tr_a=False, tr_b=False):
-    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
-    b = _tr(b, tr_b)
-    return LowRank(a.diag[:, None] * b.left, b.right)
-
-
-@B.dispatch(LowRank, Diagonal)
+@B.dispatch(LowRank, AbstractMatrix)
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     a = _tr(a, tr_a)
-    return LowRank(a.left, a.right * b.diag[:, None])
+    b = _tr(b, tr_b)
+    return LowRank(a.left, B.matmul(b, a.right, tr_a=True))
 
+
+@B.dispatch(AbstractMatrix, LowRank)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    a = _tr(a, tr_a)
+    b = _tr(b, tr_b)
+    return LowRank(B.matmul(a, b.left), b.right)
+
+
+_redirect((LowRank, Diagonal), (LowRank, AbstractMatrix))
+_redirect((LowRank, Constant), (AbstractMatrix, Constant))
+
+
+# Woodbury
 
 @B.dispatch.multi((Woodbury, Woodbury),
                   (Woodbury, AbstractMatrix))
@@ -127,6 +156,13 @@ def matmul(a, b, tr_a=False, tr_b=False):
                  B.matmul(a, b.lr, tr_a=tr_a, tr_b=tr_b))
 
 
+_redirect((Woodbury, Diagonal), (Woodbury, AbstractMatrix))
+_redirect((Woodbury, Constant), (Woodbury, AbstractMatrix))
+_redirect((Woodbury, LowRank), (Woodbury, AbstractMatrix))
+
+
+# Kronecker
+
 @B.dispatch(Kronecker, Kronecker)
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a.left, b.left, tr_a=tr_a, tr_b=tr_b)
@@ -142,24 +178,25 @@ def _reshape_cols(a, *indices):
 _reshape_rows = B.reshape
 
 
-def _kron_id_a_x(a, b):
+def _kron_id_a_b(a, b):
     reshaped = _reshape_cols(b, B.shape(a)[1], -1)
     return _reshape_cols(B.matmul(a, reshaped), -1, B.shape(b)[1])
 
 
-def _kron_a_id_x(a, b):
+def _kron_a_id_b(a, b):
     reshaped = _reshape_rows(b, B.shape(a)[1], -1)
     return _reshape_rows(B.matmul(a, reshaped), -1, B.shape(b)[1])
 
 
-@B.dispatch(Kronecker, Dense)
+@B.dispatch(Kronecker, AbstractMatrix)
 def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a, tr_b)
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
 
     # Extract the factors of the product.
-    left = a.left.mat
-    right = a.right.mat
+    left = a.left
+    right = a.right
     l_rows, l_cols = B.shape(left)
     r_rows, r_cols = B.shape(right)
 
@@ -167,11 +204,26 @@ def matmul(a, b, tr_a=False, tr_b=False):
     cost_first_right = r_rows * r_cols * l_cols + l_rows * l_cols * r_rows
 
     if cost_first_left <= cost_first_right:
-        return Dense(_kron_id_a_x(right, _kron_a_id_x(left, b.mat)))
+        return Dense(_kron_id_a_b(right, _kron_a_id_b(left, b)))
     else:
-        return Dense(_kron_a_id_x(left, _kron_id_a_x(right, b.mat)))
+        return Dense(_kron_a_id_b(left, _kron_id_a_b(right, b)))
 
 
-@B.dispatch(Dense, Kronecker)
+@B.dispatch(AbstractMatrix, Kronecker)
 def matmul(a, b, tr_a=False, tr_b=False):
     return B.transpose(B.matmul(b, a, tr_a=not tr_b, tr_b=not tr_a))
+
+
+@B.dispatch(Kronecker, Diagonal)
+def matmul(a, b, tr_a=False, tr_b=False):
+    return B.matmul(B.dense(a), b, tr_a=tr_a, tr_b=tr_b)
+
+
+@B.dispatch(Diagonal, Kronecker)
+def matmul(a, b, tr_a=False, tr_b=False):
+    return B.matmul(a, B.dense(b), tr_a=tr_a, tr_b=tr_b)
+
+
+_redirect((Kronecker, Constant), (AbstractMatrix, Constant))
+_redirect((Kronecker, LowRank), (AbstractMatrix, LowRank))
+_redirect((Kronecker, Woodbury), (AbstractMatrix, Woodbury))

@@ -40,7 +40,7 @@ def dense(a):
 
 @B.dispatch(LowRank)
 def dense(a):
-    return B.outer(a.left, a.right)
+    return B.dense(B.matmul(a.left, a.right, tr_b=True))
 
 
 @B.dispatch(Woodbury)

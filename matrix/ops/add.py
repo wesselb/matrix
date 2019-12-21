@@ -11,6 +11,8 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
+# Zero
+
 @B.dispatch(AbstractMatrix, Zero, precedence=proven())
 def add(a, b):
     assert_compatible(a, b)
@@ -23,15 +25,21 @@ def add(a, b):
     return b
 
 
+# Dense
+
 @B.dispatch(Dense, Dense)
 def add(a, b):
     return Dense(B.add(a.mat, b.mat))
 
 
+# Diagonal
+
 @B.dispatch(Diagonal, Diagonal)
 def add(a, b):
     return Diagonal(B.add(a.diag, b.diag))
 
+
+# Constant
 
 @B.dispatch(Constant, Constant)
 def add(a, b):
@@ -50,27 +58,34 @@ def add(a, b):
     return add(b, a)
 
 
+# LowRank
+
 @B.dispatch(LowRank, LowRank)
 def add(a, b):
     assert_compatible(a, b)
-    return LowRank(B.concat(a.left, b.left, axis=1),
-                   B.concat(a.right, b.right, axis=1))
-
-
-@B.dispatch(Constant, LowRank)
-def add(a, b):
-    assert_compatible(a, b)
-    dtype = B.dtype(b)
-    rows, cols = B.shape(b)
-    ones_left = B.ones(dtype, rows, 1)
-    ones_right = B.ones(dtype, cols, 1)
-    return LowRank(B.concat(ones_left, b.left, axis=1),
-                   B.concat(a.const * ones_right, b.right, axis=1))
+    return LowRank(B.concat(B.dense(a.left), B.dense(b.left), axis=1),
+                   B.concat(B.dense(a.right), B.dense(b.right), axis=1))
 
 
 @B.dispatch(LowRank, Constant)
 def add(a, b):
+    assert_compatible(a, b)
+    dtype = B.dtype(a)
+    rows, cols = B.shape(a)
+    ones_left = B.ones(dtype, rows, 1)
+    ones_right = B.ones(dtype, cols, 1)
+    return LowRank(B.concat(ones_left, B.dense(a.left), axis=1),
+                   B.concat(b.const * ones_right, B.dense(a.right), axis=1))
+
+
+@B.dispatch(Constant, LowRank)
+def add(a, b):
     return add(b, a)
+
+
+@B.dispatch(LowRank, Diagonal)
+def add(a, b):
+    return Woodbury(b, a)
 
 
 @B.dispatch(Diagonal, LowRank)
@@ -78,10 +93,7 @@ def add(a, b):
     return Woodbury(a, b)
 
 
-@B.dispatch(LowRank, Diagonal)
-def add(a, b):
-    return Woodbury(b, a)
-
+# Woodbury
 
 @B.dispatch(Woodbury, Woodbury)
 def add(a, b):

@@ -50,7 +50,7 @@ pip install backends-matrix
       [-0.09   2.371  0.572]
       [ 0.064  1.721  2.14 ]]>
 
->>> lr = LowRank(left=B.ones(3, 1), right=2 * B.ones(3, 1))
+>>> lr = LowRank(B.ones(3, 1), 2 * B.ones(3, 1))
 
 >>> lr
 <low-rank matrix: shape=3x3, dtype=float64, rank=1,
@@ -83,13 +83,13 @@ The following base types are provided:
 ```
 Zero
 Dense
-Constant
 Diagonal
-LowRank
+Constant
 ```
 
 The following composite types are provided:
 ```
+LowRank
 Woodbury
 Kronecker
 ```

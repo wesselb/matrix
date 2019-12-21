@@ -64,7 +64,7 @@ def test_matmul_diag_dense(diag1, dense2):
     _check_matmul(dense2, diag1, asserted_type=Dense)
 
 
-def test_matmul_const_(const1, const2):
+def test_matmul_const(const1, const2):
     _check_matmul(const1, const2, asserted_type=Constant)
 
 
@@ -83,28 +83,43 @@ def test_matmul_lr(lr1, lr2):
     assert B.matmul(lr1, lr2).rank == min(lr1.rank, lr2.rank)
 
 
-def test_matmul_diag_lr(diag1, lr2):
-    _check_matmul(diag1, lr2, asserted_type=LowRank)
-    _check_matmul(lr2, diag1, asserted_type=LowRank)
+def test_matmul_lr_dense(lr1, dense2):
+    _check_matmul(lr1, dense2, asserted_type=LowRank)
+    _check_matmul(dense2, lr1, asserted_type=LowRank)
 
 
-def test_matmul_const_lr(const1, lr2):
-    _check_matmul(const1, lr2, asserted_type=LowRank)
-    _check_matmul(lr2, const1, asserted_type=LowRank)
+def test_matmul_lr_diag(lr1, diag2):
+    _check_matmul(lr1, diag2, asserted_type=LowRank)
+    _check_matmul(diag2, lr1, asserted_type=LowRank)
+
+
+def test_matmul_lr_const(lr1, const2):
+    _check_matmul(lr1, const2, asserted_type=LowRank)
+    _check_matmul(const2, lr1, asserted_type=LowRank)
 
 
 def test_matmul_wb(wb1, wb2):
     _check_matmul(wb1, wb2, asserted_type=Woodbury)
 
 
-def test_matmul_lr_wb(lr1, wb2):
-    _check_matmul(lr1, wb2, asserted_type=LowRank)
-    _check_matmul(wb2, lr1, asserted_type=LowRank)
+def test_matmul_wb_dense(wb1, dense2):
+    _check_matmul(wb1, dense2, asserted_type=Dense)
+    _check_matmul(dense2, wb1, asserted_type=Dense)
 
 
-def test_matmul_dense_wb(dense1, wb2):
-    _check_matmul(dense1, wb2, asserted_type=Dense)
-    _check_matmul(wb2, dense1, asserted_type=Dense)
+def test_matmul_wb_diag(wb1, diag2):
+    _check_matmul(wb1, diag2, asserted_type=Woodbury)
+    _check_matmul(diag2, wb1, asserted_type=Woodbury)
+
+
+def test_matmul_wb_const(wb1, const2):
+    _check_matmul(wb1, const2, asserted_type=LowRank)
+    _check_matmul(const2, wb1, asserted_type=LowRank)
+
+
+def test_matmul_wb_lr(wb1, lr2):
+    _check_matmul(wb1, lr2, asserted_type=LowRank)
+    _check_matmul(lr2, wb1, asserted_type=LowRank)
 
 
 def test_matmul_kron(kron1, kron2):
@@ -121,3 +136,20 @@ def test_matmul_kron(kron1, kron2):
 def test_matmul_kron_dense(kron_mixed, dense2):
     _check_matmul(kron_mixed, dense2, asserted_type=Dense)
     _check_matmul(dense2, kron_mixed, asserted_type=Dense)
+
+
+def test_matmul_kron_const(kron1, const2):
+    _check_matmul(kron1, const2, asserted_type=LowRank)
+    _check_matmul(const2, kron1, asserted_type=LowRank)
+
+
+def test_matmul_kron_lr(kron1, const2):
+    _check_matmul(kron1, const2, asserted_type=LowRank)
+    _check_matmul(const2, kron1, asserted_type=LowRank)
+
+
+def test_matmul_kron_diag(kron1, diag2):
+    # The output type here is dense because the product of Kronecker products
+    # and diagonal matrices is dense.
+    _check_matmul(kron1, diag2, asserted_type=Dense)
+    _check_matmul(diag2, kron1, asserted_type=Dense)

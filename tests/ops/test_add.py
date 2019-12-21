@@ -32,12 +32,12 @@ def test_add_dense(dense1, dense2):
     check_bin_op(B.add, dense1, dense2, asserted_type=Dense)
 
 
-def test_add_diag_dense(diag1, dense2):
-    check_bin_op(B.add, diag1, dense2, asserted_type=Dense)
-
-
 def test_add_diag(diag1, diag2):
     check_bin_op(B.add, diag1, diag2, asserted_type=Diagonal)
+
+
+def test_add_diag_dense(diag1, dense2):
+    check_bin_op(B.add, diag1, dense2, asserted_type=Dense)
 
 
 def test_add_const_dense(const_or_scalar1, dense2):
