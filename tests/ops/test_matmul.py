@@ -61,3 +61,17 @@ def test_matmul_diag(diag1, diag2):
 def test_matmul_diag_dense(diag1, dense2):
     _check_matmul(diag1, dense2, asserted_type=Dense)
     _check_matmul(dense2, diag1, asserted_type=Dense)
+
+
+def test_matmul_const_(const1, const2):
+    _check_matmul(const1, const2, asserted_type=Constant)
+
+
+def test_matmul_const_dense(const1, dense2):
+    _check_matmul(const1, dense2, asserted_type=LowRank)
+    _check_matmul(dense2, const1, asserted_type=LowRank)
+
+
+def test_matmul_const_diag(const1, diag2):
+    _check_matmul(const1, diag2, asserted_type=LowRank)
+    _check_matmul(diag2, const1, asserted_type=LowRank)

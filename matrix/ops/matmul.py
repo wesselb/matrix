@@ -56,3 +56,31 @@ def matmul(a, b, tr_a=False, tr_b=False):
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     return Dense(_tr(a.mat, tr_a) * b.diag[None, :])
+
+
+@B.dispatch(Constant, Constant)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    a = _tr(a, tr_a)
+    b = _tr(b, tr_b)
+    return Constant(a.const * b.const * a.cols, a.rows, b.cols)
+
+
+@B.dispatch(Constant, AbstractMatrix)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    a = _tr(a, tr_a)
+    b = _tr(b, tr_b)
+    ones = B.ones(B.dtype(a), a.rows, 1)
+    return LowRank(left=a.const * ones,
+                   right=B.expand_dims(B.sum(b, axis=0), axis=1))
+
+
+@B.dispatch(AbstractMatrix, Constant)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
+    a = _tr(a, tr_a)
+    b = _tr(b, tr_b)
+    ones = B.ones(B.dtype(b), b.cols, 1)
+    return LowRank(left=B.expand_dims(B.sum(a, axis=1), axis=1),
+                   right=b.const * ones)
