@@ -31,10 +31,12 @@ from ..util import (
 def _check_matmul(a, b, asserted_type=object):
     for tr_a in [False, True]:
         for tr_b in [False, True]:
-            def matmul(a, b):
-                return B.matmul(a, b, tr_a=tr_a, tr_b=tr_b)
+            check_bin_op(lambda a_, b_: B.matmul(a_, b_, tr_a=tr_a, tr_b=tr_b),
+                         a, b, asserted_type=asserted_type)
 
-            check_bin_op(matmul, a, b, asserted_type=asserted_type)
+
+def test_shorthand(dense1, dense2):
+    allclose(dense1 @ dense2, B.matmul(dense1.mat, dense2.mat))
 
 
 def test_matmul_assertion(zero_r, dense2):

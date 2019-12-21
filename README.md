@@ -98,7 +98,7 @@ Kronecker
 ## Functions
 
 The following functions are added to LAB.
-They can be accessed with `B.function` where `import lab as B`.
+They can be accessed with `B.<function>` where `import lab as B`.
 
 ```
 dense(a)

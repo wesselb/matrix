@@ -44,6 +44,13 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
         assert modulo is None  # TODO: Implement this.
         return B.power(self, power)
 
+    def __matmul__(self, other):
+        return B.matmul(self, other)
+
+    @property
+    def T(self):
+        return B.transpose(self)
+
     def __repr__(self):
         return str(self)
 
