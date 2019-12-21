@@ -1,5 +1,5 @@
-import pytest
 import lab as B
+import pytest
 
 from matrix import Dense, Diagonal, Zero, Constant, LowRank, Woodbury, Kronecker
 # noinspection PyUnresolvedReferences
@@ -90,3 +90,28 @@ def test_matmul_diag_lr(diag1, lr2):
 def test_matmul_const_lr(const1, lr2):
     _check_matmul(const1, lr2, asserted_type=LowRank)
     _check_matmul(lr2, const1, asserted_type=LowRank)
+
+
+def test_matmul_wb(wb1, wb2):
+    _check_matmul(wb1, wb2, asserted_type=Woodbury)
+
+
+def test_matmul_lr_wb(lr1, wb2):
+    _check_matmul(lr1, wb2, asserted_type=LowRank)
+    _check_matmul(wb2, lr1, asserted_type=LowRank)
+
+
+def test_matmul_dense_wb(dense1, wb2):
+    _check_matmul(dense1, wb2, asserted_type=Dense)
+    _check_matmul(wb2, dense1, asserted_type=Dense)
+
+
+def test_matmul_kron(kron1, kron2):
+    if (
+            B.shape(kron1.left)[1] == B.shape(kron2.left)[0] and
+            B.shape(kron1.right)[1] == B.shape(kron2.right)[0]
+    ):
+        _check_matmul(kron1, kron2, asserted_type=Kronecker)
+    else:
+        with pytest.raises(AssertionError):
+            B.matmul(kron1, kron2)

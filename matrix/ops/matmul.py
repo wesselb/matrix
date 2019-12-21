@@ -111,3 +111,26 @@ def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     a = _tr(a, tr_a)
     return LowRank(a.left, a.right * b.diag[:, None])
+
+
+@B.dispatch.multi((Woodbury, Woodbury),
+                  (Woodbury, AbstractMatrix))
+def matmul(a, b, tr_a=False, tr_b=False):
+    # Expand out Woodbury matrices.
+    return B.add(B.matmul(a.diag, b, tr_a=tr_a, tr_b=tr_b),
+                 B.matmul(a.lr, b, tr_a=tr_a, tr_b=tr_b))
+
+
+@B.dispatch(AbstractMatrix, Woodbury)
+def matmul(a, b, tr_a=False, tr_b=False):
+    # Expand out Woodbury matrices.
+    return B.add(B.matmul(a, b.diag, tr_a=tr_a, tr_b=tr_b),
+                 B.matmul(a, b.lr, tr_a=tr_a, tr_b=tr_b))
+
+
+@B.dispatch(Kronecker, Kronecker)
+def matmul(a, b, tr_a=False, tr_b=False):
+    _assert_composable(a.left, b.left, tr_a=tr_a, tr_b=tr_b)
+    _assert_composable(a.right, b.right, tr_a=tr_a, tr_b=tr_b)
+    return Kronecker(B.matmul(a.left, b.left, tr_a=tr_a, tr_b=tr_b),
+                     B.matmul(a.right, b.right, tr_a=tr_a, tr_b=tr_b))
