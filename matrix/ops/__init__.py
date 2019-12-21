@@ -11,7 +11,10 @@ from .matmul import *
 from .multiply import *
 from .negative import *
 from .power import *
+from .rank import *
+from .reshape import *
 from .shape import *
 from .subtract import *
+from .sum import *
 from .trace import *
 from .transpose import *

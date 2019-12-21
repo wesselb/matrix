@@ -1,0 +1,28 @@
+import lab as B
+
+# noinspection PyUnresolvedReferences
+from ..util import (
+    allclose,
+    check_un_op,
+
+    zero1,
+    dense1,
+    diag1,
+    const1,
+    lr1,
+    wb1,
+    kron1
+)
+
+
+def _reshape(a):
+    rows, cols = B.shape(a)
+    return B.reshape(a, rows * cols, -1)
+
+
+def test_reshape_dense(dense1):
+    check_un_op(_reshape, dense1)
+
+
+def test_reshape_diag(diag1):
+    check_un_op(_reshape, diag1)
