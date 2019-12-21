@@ -106,13 +106,15 @@ class Shape:
         return 'Shape({})'.format(', '.join(repr(d) for d in self.dims))
 
     def __getitem__(self, item):
-        return int(self.dims[item])
+        return self.dims[item]
 
     def as_tuple(self):
         return tuple(d.size for d in self.dims)
 
-    def __iter__(self):
-        return iter(self.as_tuple())
+
+@B.dispatch(Shape)
+def transpose(a):
+    return Shape(*reversed(a.dims))
 
 
 @dispatch([object])
@@ -159,15 +161,14 @@ def compatible(d1, d2):
 
 
 def assert_compatible(x1, x2):
-    """Assert that two objects have compatible shapes.
+    """Assert that two objects, shapes, or dimensions are compatible.
 
     Args:
         x1 (object): First object.
         x2 (object): Second object.
     """
-    if not compatible(x1, x2):
-        raise AssertionError(f'Shapes {x1} and {x2} are asserted to be '
-                             f'compatible, but they are not.')
+    assert compatible(x1, x2), f'Objects {x1} and {x2} are asserted to be ' \
+                               f'compatible, but they are not.'
 
 
 @dispatch(object, object)

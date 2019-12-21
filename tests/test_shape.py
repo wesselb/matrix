@@ -57,10 +57,9 @@ def test_shape():
     assert s != Shape(Dimension(5), Dimension(3))
     assert str(s) == '(5, 4)'
     assert repr(s) == 'Shape(Dimension(5), Dimension(4))'
-    assert s[0] == 5
-    assert s[1] == 4
+    assert s[0] == Dimension(5)
+    assert s[1] == Dimension(4)
     assert s.as_tuple() == (5, 4)
-    assert tuple(iter(s)) == (5, 4)
 
 
 def test_compatible():
