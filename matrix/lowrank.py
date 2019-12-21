@@ -1,3 +1,4 @@
+from plum import Dispatcher, Self
 import lab as B
 import wbml.out
 
@@ -28,7 +29,9 @@ class LowRank(AbstractMatrix):
         left (matrix): Left factor.
         right (matrix, optional): Right factor. Defaults to the left factor.
     """
+    _dispatch = Dispatcher(in_class=Self)
 
+    @_dispatch(B.Numeric, [B.Numeric])
     def __init__(self, left, right=None):
         if right is None:
             check_factors = [left]
