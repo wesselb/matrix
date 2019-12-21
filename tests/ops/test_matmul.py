@@ -23,7 +23,8 @@ from ..util import (
     wb1,
     wb2,
     kron1,
-    kron2
+    kron2,
+    kron_mixed
 )
 
 
@@ -115,3 +116,8 @@ def test_matmul_kron(kron1, kron2):
     else:
         with pytest.raises(AssertionError):
             B.matmul(kron1, kron2)
+
+
+def test_matmul_kron_dense(kron_mixed, dense2):
+    _check_matmul(kron_mixed, dense2, asserted_type=Dense)
+    _check_matmul(dense2, kron_mixed, asserted_type=Dense)
