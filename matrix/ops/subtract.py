@@ -36,7 +36,7 @@ def subtract(a, b):
 @B.dispatch(Constant, Constant)
 def subtract(a, b):
     assert_compatible(a, b)
-    return Constant(B.subtract(a.const, b.const), *broadcast(a, b))
+    return Constant(B.subtract(a.const, b.const), *broadcast(a, b).as_tuple())
 
 
 @B.dispatch(Constant, AbstractMatrix)

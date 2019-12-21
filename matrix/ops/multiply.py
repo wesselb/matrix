@@ -48,7 +48,7 @@ def multiply(a, b):
 @B.dispatch(Constant, Constant)
 def multiply(a, b):
     assert_compatible(a, b)
-    return Constant(a.const * b.const, *broadcast(a, b))
+    return Constant(a.const * b.const, *broadcast(a, b).as_tuple())
 
 
 @B.dispatch(Constant, AbstractMatrix)
