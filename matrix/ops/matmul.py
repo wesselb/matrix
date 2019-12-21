@@ -131,8 +131,6 @@ def matmul(a, b, tr_a=False, tr_b=False):
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a.left, b.left, tr_a=tr_a, tr_b=tr_b)
     _assert_composable(a.right, b.right, tr_a=tr_a, tr_b=tr_b)
-    print(a)
-    print(b)
     return Kronecker(B.matmul(a.left, b.left, tr_a=tr_a, tr_b=tr_b),
                      B.matmul(a.right, b.right, tr_a=tr_a, tr_b=tr_b))
 
