@@ -49,6 +49,7 @@ __all__ = ['allclose',
            'lr_pd',
            'wb1',
            'wb2',
+           'wb_pd',
            'kron1',
            'kron2',
            'kron_r',
@@ -271,6 +272,13 @@ def wb1(request):
 def wb2(request):
     d = Diagonal(B.randn(6))
     lr = LowRank(B.randn(6, request.param), B.randn(6, request.param))
+    return Woodbury(d, lr)
+
+
+@pytest.fixture(params=[1, 2, 3])
+def wb_pd(request):
+    d = Diagonal(B.randn(6) ** 2)
+    lr = LowRank(B.randn(6, request.param))
     return Woodbury(d, lr)
 
 
