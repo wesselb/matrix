@@ -8,16 +8,9 @@ from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense
 from ..shape import assert_compatible, broadcast
 from ..woodbury import Woodbury
+from ..util import redirect
 
 __all__ = []
-
-
-def _redirect(types_from, types_to):
-    target_method = B.multiply.invoke(*types_to)
-    B.multiply.extend(*types_from)(target_method)
-
-    target_method = B.multiply.invoke(*reversed(types_to))
-    B.multiply.extend(*reversed(types_from))(target_method)
 
 
 # Zero
@@ -123,8 +116,7 @@ def multiply(a, b):
 
 # Woodbury
 
-@B.dispatch.multi((Woodbury, Woodbury),
-                  (Woodbury, AbstractMatrix))
+@B.dispatch(Woodbury, AbstractMatrix)
 def multiply(a, b):
     # Expand out Woodbury matrices.
     return B.add(B.multiply(a.diag, b), B.multiply(a.lr, b))
@@ -135,8 +127,10 @@ def multiply(a, b):
     return multiply(b, a)
 
 
-_redirect((Woodbury, Diagonal), (AbstractMatrix, Diagonal))
-_redirect((Woodbury, Constant), (Woodbury, AbstractMatrix))
+redirect(B.multiply, (Woodbury, Woodbury), (Woodbury, AbstractMatrix),
+         reverse=False)
+redirect(B.multiply, (Woodbury, Diagonal), (AbstractMatrix, Diagonal))
+redirect(B.multiply, (Woodbury, Constant), (Woodbury, AbstractMatrix))
 
 
 # Kronecker

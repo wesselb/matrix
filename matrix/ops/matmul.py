@@ -7,6 +7,7 @@ from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense
 from ..shape import get_shape
+from ..util import redirect
 from ..woodbury import Woodbury
 
 __all__ = []
@@ -22,14 +23,6 @@ def _assert_composable(a, b, tr_a=False, tr_b=False):
     s2 = _tr(s2, tr_b)
     assert s1[1] == s2[0], f'Objects {a} and {b} are asserted to be ' \
                            f'composable, but they are not.'
-
-
-def _redirect(types_from, types_to):
-    target_method = B.matmul.invoke(*types_to)
-    B.matmul.extend(*types_from)(target_method)
-
-    target_method = B.matmul.invoke(*reversed(types_to))
-    B.matmul.extend(*reversed(types_from))(target_method)
 
 
 # Zero
@@ -101,7 +94,7 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return LowRank(B.expand_dims(B.sum(a, axis=1), axis=1), b.const * ones)
 
 
-_redirect((Constant, Diagonal), (Constant, AbstractMatrix))
+redirect(B.matmul, (Constant, Diagonal), (Constant, AbstractMatrix))
 
 
 # LowRank
@@ -135,14 +128,13 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return LowRank(B.matmul(a, b.left), b.right)
 
 
-_redirect((LowRank, Diagonal), (LowRank, AbstractMatrix))
-_redirect((LowRank, Constant), (AbstractMatrix, Constant))
+redirect(B.matmul, (LowRank, Diagonal), (LowRank, AbstractMatrix))
+redirect(B.matmul, (LowRank, Constant), (AbstractMatrix, Constant))
 
 
 # Woodbury
 
-@B.dispatch.multi((Woodbury, Woodbury),
-                  (Woodbury, AbstractMatrix))
+@B.dispatch(Woodbury, AbstractMatrix)
 def matmul(a, b, tr_a=False, tr_b=False):
     # Expand out Woodbury matrices.
     return B.add(B.matmul(a.diag, b, tr_a=tr_a, tr_b=tr_b),
@@ -156,9 +148,11 @@ def matmul(a, b, tr_a=False, tr_b=False):
                  B.matmul(a, b.lr, tr_a=tr_a, tr_b=tr_b))
 
 
-_redirect((Woodbury, Diagonal), (Woodbury, AbstractMatrix))
-_redirect((Woodbury, Constant), (Woodbury, AbstractMatrix))
-_redirect((Woodbury, LowRank), (Woodbury, AbstractMatrix))
+redirect(B.matmul, (Woodbury, Woodbury), (Woodbury, AbstractMatrix),
+         reverse=False)
+redirect(B.matmul, (Woodbury, Diagonal), (Woodbury, AbstractMatrix))
+redirect(B.matmul, (Woodbury, Constant), (Woodbury, AbstractMatrix))
+redirect(B.matmul, (Woodbury, LowRank), (Woodbury, AbstractMatrix))
 
 
 # Kronecker
@@ -224,6 +218,6 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return B.matmul(a, B.dense(b), tr_a=tr_a, tr_b=tr_b)
 
 
-_redirect((Kronecker, Constant), (AbstractMatrix, Constant))
-_redirect((Kronecker, LowRank), (AbstractMatrix, LowRank))
-_redirect((Kronecker, Woodbury), (AbstractMatrix, Woodbury))
+redirect(B.matmul, (Kronecker, Constant), (AbstractMatrix, Constant))
+redirect(B.matmul, (Kronecker, LowRank), (AbstractMatrix, LowRank))
+redirect(B.matmul, (Kronecker, Woodbury), (AbstractMatrix, Woodbury))
