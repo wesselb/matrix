@@ -1,6 +1,6 @@
 import re
-
 import warnings
+
 import lab as B
 import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
@@ -59,7 +59,7 @@ __all__ = ['allclose',
            'kron1',
            'kron2',
            'kron_r',
-           'kron_pd'
+           'kron_pd',
            'kron_mixed']
 
 _dispatch = Dispatcher()
@@ -81,7 +81,8 @@ def allclose(x, y):
     allclose(B.to_numpy(x), B.to_numpy(y))
 
 
-@_dispatch({B.Number, B.NPNumeric}, {B.Number, B.NPNumeric})
+@_dispatch({tuple, B.Number, B.NPNumeric},
+           {tuple, B.Number, B.NPNumeric})
 def allclose(x, y):
     assert_allclose(x, y, rtol=1e-7, atol=1e-14)
 
@@ -196,7 +197,7 @@ def generate(code):
             return B.matmul(mat, mat, tr_b=True)
 
     elif mat_code == 'zero':
-        return Zero(float, *shape)
+        return Zero(B.default_dtype, *shape)
 
     elif mat_code == 'const':
         return Constant(B.randn(), *shape)
