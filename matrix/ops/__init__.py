@@ -18,3 +18,4 @@ from .subtract import *
 from .sum import *
 from .trace import *
 from .transpose import *
+from .kron import *
