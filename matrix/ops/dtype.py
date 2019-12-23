@@ -1,6 +1,6 @@
 import lab as B
 
-from ..constant import Constant
+from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
@@ -9,6 +9,11 @@ from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
 
 __all__ = []
+
+
+@B.dispatch(Zero)
+def dtype(a):
+    return a.dtype
 
 
 @B.dispatch({Dense, LowerTriangular, UpperTriangular})

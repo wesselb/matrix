@@ -1,4 +1,5 @@
 import lab as B
+import warnings
 from algebra import proven
 
 from ..constant import Zero, Constant
@@ -7,7 +8,7 @@ from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense
 from ..shape import get_shape
-from ..util import redirect
+from ..util import redirect, ToDenseWarning
 from ..woodbury import Woodbury
 
 __all__ = []
@@ -210,11 +211,17 @@ def matmul(a, b, tr_a=False, tr_b=False):
 
 @B.dispatch(Kronecker, Diagonal)
 def matmul(a, b, tr_a=False, tr_b=False):
+    warnings.warn(f'Cannot efficiently matrix-multiply {a} by {b}: '
+                  f'converting the Kronecker product to dense.',
+                  category=ToDenseWarning)
     return B.matmul(B.dense(a), b, tr_a=tr_a, tr_b=tr_b)
 
 
 @B.dispatch(Diagonal, Kronecker)
 def matmul(a, b, tr_a=False, tr_b=False):
+    warnings.warn(f'Cannot efficiently matrix-multiply {a} by {b}: '
+                  f'converting the Kronecker product to dense.',
+                  category=ToDenseWarning)
     return B.matmul(a, B.dense(b), tr_a=tr_a, tr_b=tr_b)
 
 

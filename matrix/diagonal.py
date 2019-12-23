@@ -1,7 +1,6 @@
 import lab as B
-import wbml.out
 
-from .matrix import AbstractMatrix
+from .matrix import AbstractMatrix, repr_format
 from .shape import assert_vector
 from .util import indent, dtype_str
 
@@ -30,7 +29,9 @@ class Diagonal(AbstractMatrix):
         rows, cols = B.shape(self)
         return f'<diagonal matrix:' \
                f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)},\n' + \
-               f' diag=' + \
-               indent(wbml.out.format(self.diag, info=False),
-                      ' ' * 6).strip() + '>'
+               f' dtype={dtype_str(self)}>'
+
+    def __repr__(self):
+        return str(self)[:-1] + '\n' + \
+               f' diag=' + indent(repr_format(self.diag),
+                                  ' ' * 6).strip() + '>'

@@ -5,11 +5,13 @@ from matrix import Dense, Diagonal, Constant, LowRank, Woodbury
 from ..util import (
     allclose,
     check_bin_op,
+    AssertDenseWarning,
 
     zero1,
     zero2,
     dense1,
     dense2,
+    dense_bc,
     diag1,
     diag2,
     const_or_scalar1,
@@ -36,17 +38,22 @@ def test_add_diag(diag1, diag2):
     check_bin_op(B.add, diag1, diag2, asserted_type=Diagonal)
 
 
-def test_add_diag_dense(diag1, dense2):
-    check_bin_op(B.add, diag1, dense2, asserted_type=Dense)
+def test_add_diag_dense(diag1, dense_bc):
+    with AssertDenseWarning('adding <diagonal matrix> and <dense matrix>'):
+        check_bin_op(B.add, diag1, dense_bc, asserted_type=Dense)
 
 
 def test_add_const_dense(const_or_scalar1, dense2):
+    # We don't test for broadcasting behaviour here because the resulting
+    # shapes will be different: the constant matrix will not affect the
+    # resulting shape.
     check_bin_op(B.add, const_or_scalar1, dense2, asserted_type=Dense)
     check_bin_op(B.add, dense2, const_or_scalar1, asserted_type=Dense)
 
 
 def test_add_const_diag(const_or_scalar1, diag2):
-    check_bin_op(B.add, const_or_scalar1, diag2, asserted_type=Dense)
+    with AssertDenseWarning('adding <constant matrix> and <diagonal matrix>'):
+        check_bin_op(B.add, const_or_scalar1, diag2, asserted_type=Dense)
 
 
 def test_add_const(const_or_scalar1, const2):

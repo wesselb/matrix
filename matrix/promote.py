@@ -1,4 +1,5 @@
 import lab as B
+import warnings
 from plum import add_promotion_rule, conversion_method
 
 from .constant import Zero, Constant
@@ -7,7 +8,7 @@ from .matrix import AbstractMatrix, Dense
 __all__ = []
 
 add_promotion_rule(AbstractMatrix, B.Numeric, AbstractMatrix)
-add_promotion_rule(AbstractMatrix, AbstractMatrix, Dense)
+add_promotion_rule(AbstractMatrix, AbstractMatrix, AbstractMatrix)
 
 
 @conversion_method(B.Numeric, AbstractMatrix)
@@ -22,8 +23,3 @@ def convert(x):
     else:
         raise RuntimeError(f'Cannot convert rank {B.rank(x)} input '
                            f'to a matrix.')
-
-
-@conversion_method(AbstractMatrix, Dense)
-def convert(x):
-    return Dense(B.dense(x))

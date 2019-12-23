@@ -1,11 +1,14 @@
+import warnings
+
 import lab as B
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
-from ..lowrank import LowRank
-from ..matrix import Dense
-from ..woodbury import Woodbury
 from ..kronecker import Kronecker
+from ..lowrank import LowRank
+from ..matrix import Dense, structured
+from ..util import ToDenseWarning
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -36,8 +39,13 @@ def diag(a):
 
 @B.dispatch(LowRank)
 def diag(a):
+    if structured(a.left, a.right):
+        warnings.warn(f'Getting the diagonal of {a}: '
+                      f'converting the factors to dense.',
+                      category=ToDenseWarning)
     diag_len = _diag_len(a)
-    return B.sum(a.left[:diag_len, :] * a.right[:diag_len, :], axis=1)
+    return B.sum(B.multiply(B.dense(a.left)[:diag_len, :],
+                            B.dense(a.right)[:diag_len, :]), axis=1)
 
 
 @B.dispatch(Woodbury)

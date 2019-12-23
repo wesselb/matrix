@@ -1,11 +1,16 @@
 from plum import Dispatcher
 import lab as B
 
-__all__ = ['indent',
+__all__ = ['ToDenseWarning',
+           'indent',
            'dtype_str',
            'redirect']
 
 _dispatch = Dispatcher()
+
+
+class ToDenseWarning(UserWarning):
+    """Warnings that are generated when matrices are converted to dense."""
 
 
 def indent(x, indentation='  '):

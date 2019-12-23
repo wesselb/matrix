@@ -6,6 +6,7 @@ from matrix import Dense, Diagonal, Zero, Constant, LowRank, Woodbury, Kronecker
 from ..util import (
     allclose,
     check_bin_op,
+    AssertDenseWarning,
 
     zero1,
     zero2,
@@ -101,8 +102,10 @@ def test_matmul_wb(wb1, wb2):
 
 
 def test_matmul_wb_dense(wb1, dense2):
-    _check_matmul(wb1, dense2, asserted_type=Dense)
-    _check_matmul(dense2, wb1, asserted_type=Dense)
+    with AssertDenseWarning('adding <dense matrix> and <low-rank matrix>'):
+        _check_matmul(wb1, dense2, asserted_type=Dense)
+    with AssertDenseWarning('adding <dense matrix> and <low-rank matrix>'):
+        _check_matmul(dense2, wb1, asserted_type=Dense)
 
 
 def test_matmul_wb_diag(wb1, diag2):
@@ -149,5 +152,9 @@ def test_matmul_kron_lr(kron1, const2):
 def test_matmul_kron_diag(kron1, diag2):
     # The output type here is dense because the product of Kronecker products
     # and diagonal matrices is dense.
-    _check_matmul(kron1, diag2, asserted_type=Dense)
-    _check_matmul(diag2, kron1, asserted_type=Dense)
+    with AssertDenseWarning('cannot efficiently matrix-multiply <Kronecker '
+                            'product> by <diagonal matrix>'):
+        _check_matmul(kron1, diag2, asserted_type=Dense)
+    with AssertDenseWarning('cannot efficiently matrix-multiply <diagonal '
+                            'matrix> by <Kronecker product>'):
+        _check_matmul(diag2, kron1, asserted_type=Dense)

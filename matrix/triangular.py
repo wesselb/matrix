@@ -1,8 +1,7 @@
 import lab as B
-import wbml.out
 from plum import Dispatcher, Self
 
-from .matrix import AbstractMatrix
+from .matrix import AbstractMatrix, repr_format
 from .util import indent, dtype_str
 
 __all__ = ['LowerTriangular', 'UpperTriangular']
@@ -26,9 +25,12 @@ class LowerTriangular(AbstractMatrix):
         rows, cols = B.shape(self)
         return f'<lower-triangular matrix:' \
                f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)},\n' + \
-               f' mat=' + indent(wbml.out.format(self.mat, info=False),
-                                 ' ' * 5).strip() + '>'
+               f' dtype={dtype_str(self)}>'
+
+    def __repr__(self):
+        return str(self)[:-1] + '\n' + \
+               f' mat=' + \
+               indent(repr_format(self.mat), ' ' * 5).strip() + '>'
 
 
 class UpperTriangular(AbstractMatrix):
@@ -47,8 +49,11 @@ class UpperTriangular(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<lower-triangular matrix:' \
+        return f'<upper-triangular matrix:' \
                f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)},\n' + \
-               f' mat=' + indent(wbml.out.format(self.mat, info=False),
-                                 ' ' * 5).strip() + '>'
+               f' dtype={dtype_str(self)}>'
+
+    def __repr__(self):
+        return str(self)[:-1] + '\n' + \
+               f' mat=' + \
+               indent(repr_format(self.mat), ' ' * 5).strip() + '>'

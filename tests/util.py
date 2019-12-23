@@ -1,3 +1,6 @@
+import re
+
+import warnings
 import lab as B
 import pytest
 from numpy.testing import assert_allclose, assert_array_almost_equal
@@ -13,11 +16,13 @@ from matrix import (
     Woodbury,
     Kronecker
 )
+from matrix.util import ToDenseWarning
 
 __all__ = ['allclose',
            'approx',
            'check_un_op',
            'check_bin_op',
+           'AssertDenseWarning',
 
            # Fixtures:
            'mat1',
@@ -32,6 +37,7 @@ __all__ = ['allclose',
            'zero_r',
            'dense1',
            'dense2',
+           'dense_bc',
            'dense_r',
            'dense_pd',
            'diag1',
@@ -115,11 +121,50 @@ def check_bin_op(op, x, y, asserted_type=object):
     res = op(x, y)
 
     allclose(res, op(x_dense, y_dense))
+
+    warnings.filterwarnings(category=ToDenseWarning, action='ignore')
     allclose(op(x_dense, y), op(x_dense, y_dense))
     allclose(op(x, y_dense), op(x_dense, y_dense))
     allclose(op(x_dense, y_dense), op(x_dense, y_dense))
+    warnings.filterwarnings(category=ToDenseWarning, action='default')
 
     _assert_instance(res, asserted_type)
+
+
+def _sanitise(msg):
+    # Filter details from printed objects
+    msg = re.sub(r'<([a-zA-Z\- ]{1,}):[^>]*>', r'<\1>', msg)
+    return msg
+
+
+class AssertDenseWarning:
+    """Assert that a `ToDenseWarning` is raised with a particular content.
+
+    Args:
+        content (str): Content that the arguments of the warning must contain.
+    """
+
+    def __init__(self, content):
+        self.content = content.lower()
+        self.record = None
+
+    def __enter__(self):
+        self.context = pytest.warns(ToDenseWarning)
+        self.record = self.context.__enter__()
+        return self.record
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.context.__exit__(exc_type, exc_val, exc_tb)
+
+        # Perform assertions.
+        for i in range(len(self.record)):
+            message = ''.join(self.record[i].message.args)
+            message = _sanitise(message).lower()
+
+            if self.content not in message:
+                raise AssertionError(f'Warning should contain '
+                                     f'"{self.content}", but it did not: '
+                                     f'"{message}".')
 
 
 # Fixtures:
@@ -136,149 +181,172 @@ def mat2():
 
 @pytest.fixture()
 def vec1():
-    yield B.randn(6)
+    return B.randn(6)
 
 
 @pytest.fixture()
 def vec2():
-    yield B.randn(6)
+    return B.randn(6)
 
 
 @pytest.fixture()
 def scalar1():
-    yield B.randn()
+    return B.randn()
 
 
 @pytest.fixture()
 def scalar2():
-    yield B.randn()
+    return B.randn()
 
 
 @pytest.fixture()
 def zero1():
-    yield Zero(float, 6, 6)
+    return Zero(float, 6, 6)
 
 
 @pytest.fixture()
 def zero2():
-    yield Zero(float, 6, 6)
+    return Zero(float, 6, 6)
 
 
 @pytest.fixture()
 def zero_r():
-    yield Zero(float, 6, 4)
+    return Zero(float, 6, 4)
 
 
 @pytest.fixture()
 def dense1():
-    yield Dense(B.randn(6, 6))
+    return Dense(B.randn(6, 6))
 
 
 @pytest.fixture()
 def dense2():
-    yield Dense(B.randn(6, 6))
+    return Dense(B.randn(6, 6))
+
+
+@pytest.fixture(params=([(6, 1), (1, 6), (6, 6)]))
+def dense_bc(request):
+    shape = request.param
+    return Dense(B.randn(*shape))
 
 
 @pytest.fixture()
 def dense_r():
-    yield Dense(B.randn(6, 4))
+    return Dense(B.randn(6, 4))
 
 
 @pytest.fixture()
 def dense_pd():
     mat = B.randn(6, 6)
-    yield Dense(B.matmul(mat, mat, tr_b=True))
+    return Dense(B.matmul(mat, mat, tr_b=True))
 
 
 @pytest.fixture()
 def diag1():
-    yield Diagonal(B.randn(6))
+    return Diagonal(B.randn(6))
 
 
 @pytest.fixture()
 def diag2():
-    yield Diagonal(B.randn(6))
+    return Diagonal(B.randn(6))
 
 
 @pytest.fixture()
 def diag_pd():
-    yield Diagonal(B.randn(6) ** 2)
+    return Diagonal(B.randn(6) ** 2)
 
 
 @pytest.fixture()
 def const1():
-    yield Constant(B.randn(), 6, 6)
+    return Constant(B.randn(), 6, 6)
 
 
 @pytest.fixture()
 def const2():
-    yield Constant(B.randn(), 6, 6)
+    return Constant(B.randn(), 6, 6)
 
 
 @pytest.fixture()
 def const_r():
-    yield Constant(B.randn(), 6, 6)
+    return Constant(B.randn(), 6, 6)
 
 
 @pytest.fixture()
 def const_pd():
-    yield Constant(B.randn() ** 2, 6, 6)
+    return Constant(B.randn() ** 2, 6, 6)
 
 
 @pytest.fixture(params=[True, False])
 def const_or_scalar1(request):
     if request.param:
-        yield B.randn()
+        return B.randn()
     else:
-        yield Constant(B.randn(), 6, 6)
+        return Constant(B.randn(), 6, 6)
 
 
 @pytest.fixture(params=[True, False])
 def const_or_scalar2(request):
     if request.param:
-        yield B.randn()
+        return B.randn()
     else:
-        yield Constant(B.randn(), 6, 6)
+        return Constant(B.randn(), 6, 6)
 
 
-@pytest.fixture(params=[1, 2, 3])
+@pytest.fixture(params=[1, 2, 3, None])
 def lr1(request):
-    yield LowRank(B.randn(6, request.param), B.randn(6, request.param))
+    if request.param is None:
+        return LowRank(Diagonal(B.randn(6)), Diagonal(B.randn(6)))
+    else:
+        return LowRank(Dense(B.randn(6, request.param)),
+                      Dense(B.randn(6, request.param)))
 
 
-@pytest.fixture(params=[1, 2, 3])
+@pytest.fixture(params=[1, 2, 3, None])
 def lr2(request):
-    yield LowRank(B.randn(6, request.param), B.randn(6, request.param))
+    if request.param is None:
+        return LowRank(Diagonal(B.randn(6)), Diagonal(B.randn(6)))
+    else:
+        return LowRank(Dense(B.randn(6, request.param)),
+                      Dense(B.randn(6, request.param)))
 
 
-@pytest.fixture(params=[1, 2, 3])
+@pytest.fixture(params=[1, 2, 3, None])
 def lr_r(request):
-    yield LowRank(B.randn(6, request.param), B.randn(4, request.param))
+    if request.param is None:
+        return LowRank(Diagonal(B.randn(6)), Dense(B.randn(4, 6)))
+    else:
+        return LowRank(Dense(B.randn(6, request.param)),
+                      Dense(B.randn(4, request.param)))
 
 
-@pytest.fixture(params=[1, 2, 3])
+@pytest.fixture(params=[1, 2, 3, None])
 def lr_pd(request):
-    yield LowRank(B.randn(6, request.param))
+    if request.param is None:
+        return LowRank(Diagonal(B.randn(6)))
+    else:
+        return LowRank(Dense(B.randn(6, request.param)))
 
 
 @pytest.fixture(params=[1, 2, 3])
 def wb1(request):
     d = Diagonal(B.randn(6))
-    lr = LowRank(B.randn(6, request.param), B.randn(6, request.param))
+    lr = LowRank(Dense(B.randn(6, request.param)),
+                 Dense(B.randn(6, request.param)))
     return Woodbury(d, lr)
 
 
 @pytest.fixture(params=[1, 2, 3])
 def wb2(request):
     d = Diagonal(B.randn(6))
-    lr = LowRank(B.randn(6, request.param), B.randn(6, request.param))
+    lr = LowRank(Dense(B.randn(6, request.param)),
+                 Dense(B.randn(6, request.param)))
     return Woodbury(d, lr)
 
 
 @pytest.fixture(params=[1, 2, 3])
 def wb_pd(request):
     d = Diagonal(B.randn(6) ** 2)
-    lr = LowRank(B.randn(6, request.param))
+    lr = LowRank(Dense(B.randn(6, request.param)))
     return Woodbury(d, lr)
 
 

@@ -1,7 +1,7 @@
 import lab as B
 import wbml.out
 
-from .matrix import AbstractMatrix
+from .matrix import AbstractMatrix, repr_format
 from .shape import assert_matrix
 from .util import indent, dtype_str
 
@@ -53,10 +53,12 @@ class LowRank(AbstractMatrix):
         return f'<low-rank matrix:' \
                f' shape={rows}x{cols},' \
                f' dtype={dtype_str(self)},' + \
-               f' rank={self.rank},\n' + \
-               f' left=' + \
-               indent(wbml.out.format(self.left, info=False),
-                      ' ' * 6).strip() + ',\n' + \
-               f' right=' + \
-               indent(wbml.out.format(self.right, info=False),
-                      ' ' * 7).strip() + '>'
+               f' rank={self.rank},' \
+               f' symmetric={self.symmetric}>'
+
+    def __repr__(self):
+        return str(self)[:-1] + '\n' + \
+               f' left=' + indent(repr_format(self.left),
+                                  ' ' * 6).strip() + '\n' + \
+               f' right=' + indent(repr_format(self.right),
+                                   ' ' * 7).strip() + '>'

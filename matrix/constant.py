@@ -1,7 +1,7 @@
 import lab as B
 import wbml.out
 
-from .matrix import AbstractMatrix
+from .matrix import AbstractMatrix, repr_format
 from .shape import assert_scalar
 from .util import dtype_str
 
@@ -23,14 +23,21 @@ class Zero(AbstractMatrix):
     """
 
     def __init__(self, dtype, rows, cols):
-        self.dtype = dtype
+        self._dtype = dtype
         self.rows = rows
         self.cols = cols
+
+    @property
+    def dtype(self):
+        return self._dtype
 
     def __str__(self):
         rows, cols = B.shape(self)
         return f'<zero matrix: shape={rows}x{cols}, ' \
                f'dtype={dtype_str(self.dtype)}>'
+
+    def __repr__(self):
+        return str(self)
 
 
 class Constant(AbstractMatrix):
@@ -62,4 +69,7 @@ class Constant(AbstractMatrix):
         return f'<constant matrix:' \
                f' shape={rows}x{cols},' \
                f' dtype={dtype_str(self)},' + \
-               f' const=' + wbml.out.format(self.const, info=False) + '>'
+               f' const={repr_format(self.const)}>'
+
+    def __repr__(self):
+        return str(self)

@@ -2,12 +2,14 @@ import abc
 
 import lab as B
 import wbml.out
-from plum import Referentiable
+from plum import Dispatcher, Referentiable
 
 from .shape import assert_matrix
 from .util import indent, dtype_str
 
-__all__ = ['AbstractMatrix', 'Dense']
+__all__ = ['AbstractMatrix', 'Dense', 'repr_format', 'structured']
+
+_dispatch = Dispatcher()
 
 
 class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
@@ -51,11 +53,20 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
     def T(self):
         return B.transpose(self)
 
-    def __repr__(self):
-        return str(self)
+    @property
+    def shape(self):
+        return B.shape(self)
+
+    @property
+    def dtype(self):
+        return B.dtype(self)
 
     @abc.abstractmethod
     def __str__(self):  # pragma: no cover
+        pass
+
+    @abc.abstractmethod
+    def __repr__(self):  # pragma: no cover
         pass
 
 
@@ -81,6 +92,55 @@ class Dense(AbstractMatrix):
         rows, cols = B.shape(self)
         return f'<dense matrix:' \
                f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)},\n' + \
-               f' mat=' + indent(wbml.out.format(self.mat, info=False),
-                                 ' ' * 5).strip() + '>'
+               f' dtype={dtype_str(self)}>'
+
+    def __repr__(self):
+        return str(self)[:-1] + '\n' + \
+               f' mat=' + \
+               indent(repr_format(self.mat), ' ' * 5).strip() + '>'
+
+
+@_dispatch(object)
+def repr_format(a):
+    """Format an object for display in `__repr__` methods.
+
+    Args:
+        a (object): Object to format.
+
+    Returns:
+        str: String representation of `a`.
+    """
+    return wbml.out.format(a, info=False)
+
+
+@_dispatch(AbstractMatrix)
+def repr_format(a):
+    return repr(a)
+
+
+@_dispatch(object, [object])
+def structured(*xs):
+    """Check whether there is any structured matrix.
+
+    Args:
+        xs (matrices): Matrices to check.
+
+    Returns:
+        bool: `True` if there is any structure.
+    """
+    return any(structured(x) for x in xs)
+
+
+@_dispatch(AbstractMatrix)
+def structured(x):
+    return True
+
+
+@_dispatch(Dense)
+def structured(x):
+    return False
+
+
+@_dispatch(B.Numeric)
+def structured(x):
+    return False

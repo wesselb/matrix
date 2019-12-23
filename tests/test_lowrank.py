@@ -3,12 +3,16 @@ import pytest
 from matrix import LowRank
 
 
-def test_lowrank_str():
+def test_lowrank_formatting():
     assert str(LowRank(B.ones(3, 1), 2 * B.ones(3, 1))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=1,\n' \
+           '<low-rank matrix: shape=3x3, dtype=float64, rank=1,' \
+           ' symmetric=False>'
+    assert repr(LowRank(B.ones(3, 1), 2 * B.ones(3, 1))) == \
+           '<low-rank matrix: shape=3x3, dtype=float64, rank=1,' \
+           ' symmetric=False\n' \
            ' left=[[1.]\n' \
            '       [1.]\n' \
-           '       [1.]],\n' \
+           '       [1.]]\n' \
            ' right=[[2.]\n' \
            '        [2.]\n' \
            '        [2.]]>'

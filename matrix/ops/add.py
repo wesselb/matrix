@@ -1,12 +1,14 @@
 import lab as B
+import warnings
 from algebra import proven
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
-from ..matrix import AbstractMatrix, Dense
+from ..matrix import AbstractMatrix, Dense, structured
 from ..shape import assert_compatible, broadcast
 from ..woodbury import Woodbury
+from ..util import ToDenseWarning
 
 __all__ = []
 
@@ -26,6 +28,14 @@ def add(a, b):
 
 
 # Dense
+
+@B.dispatch(AbstractMatrix, AbstractMatrix)
+def add(a, b):
+    if structured(a, b):
+        warnings.warn(f'Adding {a} and {b}: converting to dense.',
+                      category=ToDenseWarning)
+    return Dense(B.add(B.dense(a), B.dense(b)))
+
 
 @B.dispatch(Dense, Dense)
 def add(a, b):
@@ -50,6 +60,9 @@ def add(a, b):
 @B.dispatch(Constant, AbstractMatrix)
 def add(a, b):
     assert_compatible(a, b)
+    if structured(b):
+        warnings.warn(f'Adding {a} and {b}: converting to dense.',
+                      category=ToDenseWarning)
     return Dense(a.const + B.dense(b))
 
 
@@ -63,6 +76,9 @@ def add(a, b):
 @B.dispatch(LowRank, LowRank)
 def add(a, b):
     assert_compatible(a, b)
+    if structured(a.left, a.right, b.left, b.right):
+        warnings.warn(f'Adding {a} and {b}: converting factors to dense.',
+                      category=ToDenseWarning)
     return LowRank(B.concat(B.dense(a.left), B.dense(b.left), axis=1),
                    B.concat(B.dense(a.right), B.dense(b.right), axis=1))
 
@@ -70,6 +86,9 @@ def add(a, b):
 @B.dispatch(LowRank, Constant)
 def add(a, b):
     assert_compatible(a, b)
+    if structured(a.left, a.right):
+        warnings.warn(f'Adding a {b} to {a}: converting the factors to dense.',
+                      category=ToDenseWarning)
     dtype = B.dtype(a)
     rows, cols = B.shape(a)
     ones_left = B.ones(dtype, rows, 1)

@@ -3,13 +3,15 @@ import warnings
 import lab as B
 
 from ..matrix import AbstractMatrix, Dense
+from ..util import ToDenseWarning
 
 __all__ = []
 
 
 @B.dispatch(AbstractMatrix, B.Int, B.Int)
 def reshape(a, rows, cols):
-    warnings.warn(f'Converting "{type(a).__name__}" to dense for reshaping.')
+    warnings.warn(f'Converting {a} to dense for reshaping.',
+                  category=ToDenseWarning)
     return Dense(B.reshape(B.dense(a), rows, cols))
 
 

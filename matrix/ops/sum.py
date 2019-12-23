@@ -53,10 +53,12 @@ def sum(a, axis=None):
     if axis is None:
         return B.sum(B.sum(a.left, axis=0) * B.sum(a.right, axis=0))
     elif axis == 0:
-        return B.sum(B.expand_dims(B.sum(a.left, axis=0), axis=0) * a.right,
+        return B.sum(B.multiply(B.expand_dims(B.sum(a.left, axis=0), axis=0),
+                                a.right),
                      axis=1)
     elif axis == 1:
-        return B.sum(a.left * B.expand_dims(B.sum(a.right, axis=0), axis=0),
+        return B.sum(B.multiply(a.left,
+                                B.expand_dims(B.sum(a.right, axis=0), axis=0)),
                      axis=1)
     else:
         _raise(axis)

@@ -36,12 +36,13 @@ def test_dense_const(const1):
 
 
 def test_dense_lr(lr1):
-    allclose(B.dense(lr1), B.outer(lr1.left, lr1.right))
+    allclose(B.dense(lr1), B.outer(B.dense(lr1.left), B.dense(lr1.right)))
 
 
 def test_dense_wb(wb1):
     allclose(B.dense(wb1),
-             B.diag(wb1.diag.diag) + B.outer(wb1.lr.left, wb1.lr.right))
+             B.diag(wb1.diag.diag) + B.outer(B.dense(wb1.lr.left),
+                                             B.dense(wb1.lr.right)))
 
 
 def test_dense_kron(kron1):

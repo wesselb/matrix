@@ -3,17 +3,20 @@ import lab as B
 from matrix import Diagonal, LowRank, Woodbury
 
 
-def test_woodbury_str():
+def test_woodbury_formatting():
     diag = Diagonal(B.ones(3))
     lr = LowRank(B.ones(3, 1), 2 * B.ones(3, 1))
     assert str(Woodbury(diag, lr)) == \
-           '<Woodbury matrix: shape=3x3, dtype=float64,\n' \
-           ' diag=<diagonal matrix: shape=3x3, dtype=float64,\n' \
-           '       diag=[1. 1. 1.]>,\n' \
-           ' lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1,\n' \
+           '<Woodbury matrix: shape=3x3, dtype=float64>'
+    assert repr(Woodbury(diag, lr)) == \
+           '<Woodbury matrix: shape=3x3, dtype=float64\n' \
+           ' diag=<diagonal matrix: shape=3x3, dtype=float64\n' \
+           '       diag=[1. 1. 1.]>\n' \
+           ' lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1,' \
+           ' symmetric=False\n' \
            '     left=[[1.]\n' \
            '           [1.]\n' \
-           '           [1.]],\n' \
+           '           [1.]]\n' \
            '     right=[[2.]\n' \
            '            [2.]\n' \
            '            [2.]]>>'

@@ -1,14 +1,15 @@
 import lab as B
 from algebra import proven
+import warnings
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
-from ..matrix import AbstractMatrix, Dense
+from ..matrix import AbstractMatrix, Dense, structured
 from ..shape import assert_compatible, broadcast
 from ..woodbury import Woodbury
-from ..util import redirect
+from ..util import redirect, ToDenseWarning
 
 __all__ = []
 
@@ -29,6 +30,15 @@ def multiply(a, b):
 
 # Dense
 
+
+@B.dispatch(AbstractMatrix, AbstractMatrix)
+def multiply(a, b):
+    if structured(a, b):
+        warnings.warn(f'Multiplying {a} and {b}: converting to dense.',
+                      category=ToDenseWarning)
+    return Dense(B.multiply(B.dense(a), B.dense(b)))
+
+
 @B.dispatch(Dense, Dense)
 def multiply(a, b):
     return Dense(B.multiply(a.mat, b.mat))
@@ -44,7 +54,14 @@ def multiply(a, b):
 @B.dispatch(Diagonal, AbstractMatrix)
 def multiply(a, b):
     assert_compatible(a, b)
-    return Diagonal(a.diag * B.diag(b))
+    # In the case of broadcasting, `B.diag(b)` will not get the diagonal of the
+    # broadcasted version of `b`, so we exercise extra caution in that case.
+    rows, cols = B.shape(b)
+    if rows == 1 or cols == 1:
+        b_diag = B.squeeze(B.dense(b))
+    else:
+        b_diag = B.diag(b)
+    return Diagonal(a.diag * b_diag)
 
 
 @B.dispatch(AbstractMatrix, Diagonal)
@@ -60,13 +77,13 @@ def multiply(a, b):
     return Constant(a.const * b.const, *broadcast(a, b).as_tuple())
 
 
-@B.dispatch(Constant, AbstractMatrix)
+@B.dispatch(Constant, Dense)
 def multiply(a, b):
     assert_compatible(a, b)
-    return Dense(a.const * B.dense(b))
+    return Dense(a.const * b.mat)
 
 
-@B.dispatch(AbstractMatrix, Constant)
+@B.dispatch(Dense, Constant)
 def multiply(a, b):
     return multiply(b, a)
 
@@ -88,9 +105,15 @@ def multiply(a, b):
 def multiply(a, b):
     assert_compatible(a, b)
 
+    if structured(a.left, a.right, b.left, b.right):
+        warnings.warn(f'Multiplying {a} and {b}: converting factors to dense.',
+                      category=ToDenseWarning)
+    al, ar = B.dense(a.left), B.dense(a.right)
+    bl, br = B.dense(b.left), B.dense(b.right)
+
     # Pick apart the matrices.
-    al, ar = B.unstack(a.left, axis=1), B.unstack(a.right, axis=1)
-    bl, br = B.unstack(b.left, axis=1), B.unstack(b.right, axis=1)
+    al, ar = B.unstack(al, axis=1), B.unstack(ar, axis=1)
+    bl, br = B.unstack(bl, axis=1), B.unstack(br, axis=1)
 
     # Construct the factors.
     left = B.stack(*[B.multiply(ali, blk)

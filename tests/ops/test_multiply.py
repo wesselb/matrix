@@ -1,16 +1,27 @@
 import pytest
 import lab as B
 
-from matrix import Dense, Diagonal, Zero, Constant, LowRank, Woodbury, Kronecker
+from matrix import (
+    AbstractMatrix,
+    Dense,
+    Diagonal,
+    Zero,
+    Constant,
+    LowRank,
+    Woodbury,
+    Kronecker
+)
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_bin_op,
+    AssertDenseWarning,
 
     zero1,
     zero2,
     dense1,
     dense2,
+    dense_bc,
     diag1,
     diag2,
     const_or_scalar1,
@@ -39,8 +50,9 @@ def test_multiply_diag(diag1, diag2):
     check_bin_op(B.multiply, diag1, diag2, asserted_type=Diagonal)
 
 
-def test_multiply_diag_dense(diag1, dense2):
-    check_bin_op(B.multiply, diag1, dense2, asserted_type=Diagonal)
+def test_multiply_diag_dense(diag1, dense_bc):
+    check_bin_op(B.multiply, diag1, dense_bc, asserted_type=Diagonal)
+    check_bin_op(B.multiply, dense_bc, diag1, asserted_type=Diagonal)
 
 
 def test_multiply_const(const_or_scalar1, const2):
