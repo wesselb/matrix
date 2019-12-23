@@ -59,8 +59,8 @@ __all__ = ['allclose',
            'kron1',
            'kron2',
            'kron_r',
-           'kron_mixed',
-           'kron_pd']
+           'kron_pd'
+           'kron_mixed']
 
 _dispatch = Dispatcher()
 
@@ -167,228 +167,276 @@ class AssertDenseWarning:
                                      f'"{message}".')
 
 
+def generate(code):
+    """Generate a random tensor of a particular type, specified with a code.
+
+    Args:
+        code (str): Code of the matrix.
+
+    Returns:
+        tensor: Random tensor.
+    """
+    mat_code, shape_code = code.split(':')
+
+    # Parse shape.
+    if shape_code == '':
+        shape = ()
+    else:
+        shape = tuple(int(d) for d in shape_code.split(','))
+
+    if mat_code == 'randn':
+        return B.randn(*shape)
+    elif mat_code == 'randn_pd':
+        mat = B.randn(*shape)
+
+        # If it is a scalar or vector, just pointwise square it.
+        if len(shape) in {0, 1}:
+            return mat ** 2
+        else:
+            return B.matmul(mat, mat, tr_b=True)
+
+    elif mat_code == 'zero':
+        return Zero(float, *shape)
+
+    elif mat_code == 'const':
+        return Constant(B.randn(), *shape)
+    elif mat_code == 'const_pd':
+        return Constant(B.randn() ** 2, *shape)
+
+    elif mat_code == 'dense':
+        return Dense(generate(f'randn:{shape_code}'))
+    elif mat_code == 'dense_pd':
+        return Dense(generate(f'randn_pd:{shape_code}'))
+
+    elif mat_code == 'diag':
+        return Diagonal(generate(f'randn:{shape_code}'))
+    elif mat_code == 'diag_pd':
+        return Diagonal(generate(f'randn_pd:{shape_code}'))
+
+    else:
+        raise RuntimeError(f'Cannot parse generation code "{code}".')
+
+
 # Fixtures:
 
 @pytest.fixture()
 def mat1():
-    return B.randn(6, 6)
+    return generate('randn:6,6')
 
 
 @pytest.fixture()
-def mat2():
-    return B.randn(6, 6)
+def mat2(mat1):
+    return generate('randn:6,6')
 
 
 @pytest.fixture()
 def vec1():
-    return B.randn(6)
+    return generate('randn:6')
 
 
 @pytest.fixture()
 def vec2():
-    return B.randn(6)
+    return generate('randn:6')
 
 
 @pytest.fixture()
 def scalar1():
-    return B.randn()
+    return generate('randn:')
 
 
 @pytest.fixture()
 def scalar2():
-    return B.randn()
+    return generate('randn:')
 
 
 @pytest.fixture()
 def zero1():
-    return Zero(float, 6, 6)
+    return generate('zero:6,6')
 
 
 @pytest.fixture()
 def zero2():
-    return Zero(float, 6, 6)
+    return generate('zero:6,6')
 
 
 @pytest.fixture()
 def zero_r():
-    return Zero(float, 6, 4)
+    return generate('zero:6,4')
 
 
 @pytest.fixture()
 def dense1():
-    return Dense(B.randn(6, 6))
+    return generate('dense:6,6')
 
 
 @pytest.fixture()
 def dense2():
-    return Dense(B.randn(6, 6))
+    return generate('dense:6,6')
 
 
-@pytest.fixture(params=([(6, 1), (1, 6), (6, 6)]))
+@pytest.fixture(params=(['dense:6,1', 'dense:1,6', 'dense:6,6']))
 def dense_bc(request):
-    shape = request.param
-    return Dense(B.randn(*shape))
+    return generate(request.param)
 
 
 @pytest.fixture()
 def dense_r():
-    return Dense(B.randn(6, 4))
+    return generate('dense:6,4')
 
 
 @pytest.fixture()
 def dense_pd():
-    mat = B.randn(6, 6)
-    return Dense(B.matmul(mat, mat, tr_b=True))
+    return generate('dense_pd:6,6')
 
 
 @pytest.fixture()
 def diag1():
-    return Diagonal(B.randn(6))
+    return generate('diag:6')
 
 
 @pytest.fixture()
 def diag2():
-    return Diagonal(B.randn(6))
+    return generate('diag:6')
 
 
 @pytest.fixture()
 def diag_pd():
-    return Diagonal(B.randn(6) ** 2)
+    return generate('diag_pd:6')
 
 
 @pytest.fixture()
 def const1():
-    return Constant(B.randn(), 6, 6)
+    return generate('const:6,6')
 
 
 @pytest.fixture()
 def const2():
-    return Constant(B.randn(), 6, 6)
+    return generate('const:6,6')
 
 
 @pytest.fixture()
 def const_r():
-    return Constant(B.randn(), 6, 6)
+    return generate('const:6,4')
 
 
 @pytest.fixture()
 def const_pd():
-    return Constant(B.randn() ** 2, 6, 6)
+    return generate('const_pd:6,6')
 
 
-@pytest.fixture(params=[True, False])
+@pytest.fixture(params=['randn:', 'const:6,6'])
 def const_or_scalar1(request):
-    if request.param:
-        return B.randn()
-    else:
-        return Constant(B.randn(), 6, 6)
+    return generate(request.param)
 
 
-@pytest.fixture(params=[True, False])
+@pytest.fixture(params=['randn:', 'const:6,6'])
 def const_or_scalar2(request):
-    if request.param:
-        return B.randn()
-    else:
-        return Constant(B.randn(), 6, 6)
+    return generate(request.param)
 
 
-@pytest.fixture(params=[1, 2, 3, None])
+@pytest.fixture(params=[('dense:6,1', 'dense:6,1'),
+                        ('dense:6,2', 'dense:6,2'),
+                        ('dense:6,3', 'dense:6,3'),
+                        ('diag:6', 'diag:6')])
 def lr1(request):
-    if request.param is None:
-        return LowRank(Diagonal(B.randn(6)), Diagonal(B.randn(6)))
-    else:
-        return LowRank(Dense(B.randn(6, request.param)),
-                      Dense(B.randn(6, request.param)))
+    code1, code2 = request.param
+    return LowRank(generate(code1), generate(code2))
 
 
-@pytest.fixture(params=[1, 2, 3, None])
+@pytest.fixture(params=[('dense:6,1', 'dense:6,1'),
+                        ('dense:6,2', 'dense:6,2'),
+                        ('dense:6,3', 'dense:6,3'),
+                        ('diag:6', 'diag:6')])
 def lr2(request):
-    if request.param is None:
-        return LowRank(Diagonal(B.randn(6)), Diagonal(B.randn(6)))
-    else:
-        return LowRank(Dense(B.randn(6, request.param)),
-                      Dense(B.randn(6, request.param)))
+    code1, code2 = request.param
+    return LowRank(generate(code1), generate(code2))
 
 
-@pytest.fixture(params=[1, 2, 3, None])
+@pytest.fixture(params=[('dense:6,1', 'dense:4,1'),
+                        ('dense:6,2', 'dense:4,2'),
+                        ('dense:6,3', 'dense:4,3'),
+                        ('diag:6', 'dense:4,6')])
 def lr_r(request):
-    if request.param is None:
-        return LowRank(Diagonal(B.randn(6)), Dense(B.randn(4, 6)))
-    else:
-        return LowRank(Dense(B.randn(6, request.param)),
-                      Dense(B.randn(4, request.param)))
+    code1, code2 = request.param
+    return LowRank(generate(code1), generate(code2))
 
 
-@pytest.fixture(params=[1, 2, 3, None])
+@pytest.fixture(params=['dense:6,1', 'dense:6,2', 'dense:6,3', 'diag:6'])
 def lr_pd(request):
-    if request.param is None:
-        return LowRank(Diagonal(B.randn(6)))
-    else:
-        return LowRank(Dense(B.randn(6, request.param)))
+    return LowRank(generate(request.param))
 
 
-@pytest.fixture(params=[1, 2, 3])
-def wb1(request):
-    d = Diagonal(B.randn(6))
-    lr = LowRank(Dense(B.randn(6, request.param)),
-                 Dense(B.randn(6, request.param)))
-    return Woodbury(d, lr)
+@pytest.fixture()
+def wb1(diag1, lr1):
+    return Woodbury(diag1, lr1)
 
 
-@pytest.fixture(params=[1, 2, 3])
-def wb2(request):
-    d = Diagonal(B.randn(6))
-    lr = LowRank(Dense(B.randn(6, request.param)),
-                 Dense(B.randn(6, request.param)))
-    return Woodbury(d, lr)
+@pytest.fixture()
+def wb2(diag2, lr2):
+    return Woodbury(diag2, lr2)
 
 
-@pytest.fixture(params=[1, 2, 3])
-def wb_pd(request):
-    d = Diagonal(B.randn(6) ** 2)
-    lr = LowRank(Dense(B.randn(6, request.param)))
-    return Woodbury(d, lr)
+@pytest.fixture()
+def wb_pd(diag_pd, lr_pd):
+    return Woodbury(diag_pd, lr_pd)
 
 
-@pytest.fixture(params=[(1, 6), (2, 3), (3, 2), (6, 1)])
+@pytest.fixture(params=[('diag:1', 'diag:6'),
+                        ('diag:2', 'diag:3'),
+                        ('diag:3', 'diag:2'),
+                        ('diag:6', 'diag:1'),
+                        ('dense:1,1', 'dense:6,6'),
+                        ('dense:2,2', 'dense:3,3'),
+                        ('dense:3,3', 'dense:2,2'),
+                        ('dense:6,6', 'dense:1,1')])
 def kron1(request):
-    size_left, size_right = request.param
-    left = B.randn(size_left, size_left)
-    right = B.randn(size_right, size_right)
-    return Kronecker(Dense(left), Dense(right))
+    code1, code2 = request.param
+    return Kronecker(generate(code1), generate(code2))
 
 
-@pytest.fixture(params=[(1, 6), (2, 3), (3, 2), (6, 1)])
+@pytest.fixture(params=[('diag:1', 'diag:6'),
+                        ('diag:2', 'diag:3'),
+                        ('diag:3', 'diag:2'),
+                        ('diag:6', 'diag:1'),
+                        ('dense:1,1', 'dense:1,1'),
+                        ('dense:2,2', 'dense:3,3'),
+                        ('dense:3,3', 'dense:2,2'),
+                        ('dense:6,6', 'dense:1,1')])
 def kron2(request):
-    size_left, size_right = request.param
-    left = B.randn(size_left, size_left)
-    right = B.randn(size_right, size_right)
-    return Kronecker(Dense(left), Dense(right))
+    code1, code2 = request.param
+    return Kronecker(generate(code1), generate(code2))
 
 
-@pytest.fixture(params=[(1, 6), (2, 3), (3, 2), (6, 1)])
+@pytest.fixture(params=[('diag:2', 'dense:3,2'),
+                        ('dense:3,2', 'diag:2'),
+                        ('dense:1,4', 'dense:6,1'),
+                        ('dense:6,1', 'dense:1,4')])
 def kron_r(request):
-    size_left, size_right = request.param
-    left = B.randn(size_left, 2)
-    right = B.randn(size_right, 2)
-    return Kronecker(Dense(left), Dense(right))
+    code1, code2 = request.param
+    return Kronecker(generate(code1), generate(code2))
 
 
-@pytest.fixture(params=[((1, 6), (6, 1)),
-                        ((2, 3), (3, 2)),
-                        ((3, 2), (2, 3)),
-                        ((6, 1), (1, 6))])
-def kron_mixed(request):
-    sizes_left, sizes_right = request.param
-    left = B.randn(*sizes_left)
-    right = B.randn(*sizes_right)
-    return Kronecker(Dense(left), Dense(right))
-
-
-@pytest.fixture(params=[(1, 6), (2, 3), (3, 2), (6, 1)])
+@pytest.fixture(params=[('diag_pd:1', 'diag_pd:6'),
+                        ('diag_pd:2', 'diag_pd:3'),
+                        ('diag_pd:3', 'diag_pd:2'),
+                        ('diag_pd:6', 'diag_pd:1'),
+                        ('dense_pd:1,1', 'dense_pd:6,6'),
+                        ('dense_pd:2,2', 'dense_pd:3,3'),
+                        ('dense_pd:3,3', 'dense_pd:2,2'),
+                        ('dense_pd:6,6', 'dense_pd:1,1')])
 def kron_pd(request):
-    size_left, size_right = request.param
-    left = B.randn(size_left, size_left)
-    right = B.randn(size_right, size_right)
-    return Kronecker(Dense(B.matmul(left, left, tr_b=True)),
-                     Dense(B.matmul(right, right, tr_b=True)))
+    code1, code2 = request.param
+    return Kronecker(generate(code1), generate(code2))
+
+
+@pytest.fixture(params=[('diag:1', 'diag:6'),
+                        ('diag:2', 'diag:3'),
+                        ('diag:3', 'diag:2'),
+                        ('diag:6', 'diag:1'),
+                        ('dense:1,6', 'dense:6,1'),
+                        ('dense:2,3', 'dense:3,2'),
+                        ('dense:3,2', 'dense:2,3'),
+                        ('dense:6,1', 'dense:1,6')])
+def kron_mixed(request):
+    code1, code2 = request.param
+    return Kronecker(generate(code1), generate(code2))

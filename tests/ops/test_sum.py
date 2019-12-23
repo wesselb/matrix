@@ -11,6 +11,7 @@ from ..util import (
     dense_r,
     diag1,
     const_r,
+    lr1,
     lr_r,
     wb1,
     kron_r
