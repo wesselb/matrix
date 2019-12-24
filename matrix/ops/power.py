@@ -1,8 +1,14 @@
+import warnings
 import lab as B
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
-from ..matrix import Dense
+from ..matrix import AbstractMatrix, Dense, structured
+from ..triangular import LowerTriangular, UpperTriangular
+from ..lowrank import LowRank
+from ..woodbury import Woodbury
+from ..kronecker import Kronecker
+from ..util import ToDenseWarning
 
 __all__ = []
 
@@ -12,9 +18,12 @@ def power(a, b):
     return a
 
 
-@B.dispatch(Dense, B.Numeric)
+@B.dispatch(AbstractMatrix, B.Numeric)
 def power(a, b):
-    return Dense(B.power(a.mat, b))
+    if structured(a):
+        warnings.warn(f'Taking a power of {a}: converting to dense.',
+                      category=ToDenseWarning)
+    return Dense(B.power(B.dense(a), b))
 
 
 @B.dispatch(Diagonal, B.Numeric)
@@ -25,3 +34,18 @@ def power(a, b):
 @B.dispatch(Constant, B.Numeric)
 def power(a, b):
     return Constant(B.power(a.const, b), a.rows, a.cols)
+
+
+@B.dispatch(LowerTriangular, B.Numeric)
+def power(a, b):
+    return LowerTriangular(B.power(a.mat, b))
+
+
+@B.dispatch(UpperTriangular, B.Numeric)
+def power(a, b):
+    return UpperTriangular(B.power(a.mat, b))
+
+
+@B.dispatch(Kronecker, B.Numeric)
+def power(a, b):
+    return Kronecker(B.power(a.left, b), B.power(a.right, b))
