@@ -102,10 +102,8 @@ def test_matmul_wb(wb1, wb2):
 
 
 def test_matmul_wb_dense(wb1, dense2):
-    with AssertDenseWarning('adding <dense matrix> and <low-rank matrix>'):
-        _check_matmul(wb1, dense2, asserted_type=Dense)
-    with AssertDenseWarning('adding <dense matrix> and <low-rank matrix>'):
-        _check_matmul(dense2, wb1, asserted_type=Dense)
+    _check_matmul(wb1, dense2, asserted_type=Dense)
+    _check_matmul(dense2, wb1, asserted_type=Dense)
 
 
 def test_matmul_wb_diag(wb1, diag2):

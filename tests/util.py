@@ -12,6 +12,8 @@ from matrix import (
     Diagonal,
     Zero,
     Constant,
+    LowerTriangular,
+    UpperTriangular,
     LowRank,
     Woodbury,
     Kronecker
@@ -49,6 +51,10 @@ __all__ = ['allclose',
            'const_pd',
            'const_or_scalar1',
            'const_or_scalar2',
+           'lt1',
+           'lt2',
+           'ut1',
+           'ut2',
            'lr1',
            'lr2',
            'lr_r',
@@ -204,6 +210,14 @@ def generate(code):
     elif mat_code == 'const_pd':
         return Constant(B.randn() ** 2, *shape)
 
+    elif mat_code == 'lt':
+        mat = B.vec_to_tril(B.randn(int(0.5 * shape[0] * (shape[0] + 1))))
+        return LowerTriangular(mat)
+
+    elif mat_code == 'ut':
+        mat = B.vec_to_tril(B.randn(int(0.5 * shape[0] * (shape[0] + 1))))
+        return UpperTriangular(B.transpose(mat))
+
     elif mat_code == 'dense':
         return Dense(generate(f'randn:{shape_code}'))
     elif mat_code == 'dense_pd':
@@ -333,6 +347,26 @@ def const_or_scalar1(request):
 @pytest.fixture(params=['randn:', 'const:6,6'])
 def const_or_scalar2(request):
     return generate(request.param)
+
+
+@pytest.fixture()
+def lt1():
+    return generate('lt:6')
+
+
+@pytest.fixture()
+def lt2():
+    return generate('lt:6')
+
+
+@pytest.fixture()
+def ut1():
+    return generate('ut:6')
+
+
+@pytest.fixture()
+def ut2():
+    return generate('ut:6')
 
 
 @pytest.fixture(params=[('dense:6,1', 'dense:6,1'),

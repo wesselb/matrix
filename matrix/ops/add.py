@@ -9,8 +9,15 @@ from ..matrix import AbstractMatrix, Dense, structured
 from ..shape import assert_compatible, broadcast
 from ..woodbury import Woodbury
 from ..util import ToDenseWarning
+from ..triangular import LowerTriangular, UpperTriangular
 
 __all__ = []
+
+
+def _reverse_call(*types):
+    @B.add.extend(*reversed(types))
+    def add(a, b):
+        return add(b, a)
 
 
 # Zero
@@ -31,7 +38,7 @@ def add(a, b):
 
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def add(a, b):
-    if structured(a, b):
+    if structured(a) and structured(b):
         warnings.warn(f'Adding {a} and {b}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(B.add(B.dense(a), B.dense(b)))
@@ -59,16 +66,49 @@ def add(a, b):
 
 @B.dispatch(Constant, AbstractMatrix)
 def add(a, b):
-    assert_compatible(a, b)
     if structured(b):
         warnings.warn(f'Adding {a} and {b}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(a.const + B.dense(b))
 
 
-@B.dispatch(AbstractMatrix, Constant)
+_reverse_call(Constant, AbstractMatrix)
+
+
+# LowerTriangular
+
+@B.dispatch(LowerTriangular, LowerTriangular)
 def add(a, b):
-    return add(b, a)
+    return LowerTriangular(a.mat + b.mat)
+
+
+@B.dispatch(LowerTriangular, Diagonal)
+def add(a, b):
+    return LowerTriangular(a.mat + B.dense(b))
+
+
+_reverse_call(LowerTriangular, Diagonal)
+
+
+# UpperTriangular
+
+@B.dispatch(UpperTriangular, UpperTriangular)
+def add(a, b):
+    return UpperTriangular(a.mat + b.mat)
+
+
+@B.dispatch(UpperTriangular, LowerTriangular)
+def add(a, b):
+    return Dense(a.mat + b.mat)
+
+
+@B.dispatch(UpperTriangular, Diagonal)
+def add(a, b):
+    return UpperTriangular(a.mat + B.dense(b))
+
+
+_reverse_call(UpperTriangular, Diagonal)
+_reverse_call(UpperTriangular, LowerTriangular)
 
 
 # LowRank
