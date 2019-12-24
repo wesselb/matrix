@@ -6,10 +6,11 @@ from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
-from ..matrix import AbstractMatrix, Dense
+from ..matrix import AbstractMatrix, Dense, structured
 from ..shape import get_shape
 from ..util import redirect, ToDenseWarning
 from ..woodbury import Woodbury
+from ..triangular import LowerTriangular, UpperTriangular
 
 __all__ = []
 
@@ -98,6 +99,84 @@ def matmul(a, b, tr_a=False, tr_b=False):
 redirect(B.matmul, (Constant, Diagonal), (Constant, AbstractMatrix))
 
 
+# LowerTriangular
+
+@B.dispatch(LowerTriangular, LowerTriangular)
+def matmul(a, b, tr_a=False, tr_b=False):
+    if not tr_a and not tr_b:
+        return LowerTriangular(B.matmul(a.mat, b.mat))
+    else:
+        return matmul(_tr(a, tr_a), _tr(b, tr_b))
+
+
+@B.dispatch(LowerTriangular, AbstractMatrix)
+def matmul(a, b, tr_a=False, tr_b=False):
+    if structured(b):
+        warnings.warn(f'Matrix-multiplying {a} and {b}: converting to dense.',
+                      category=ToDenseWarning)
+    return B.matmul(B.dense(a), b, tr_a=tr_a, tr_b=tr_b)
+
+
+@B.dispatch(AbstractMatrix, LowerTriangular)
+def matmul(a, b, tr_a=False, tr_b=False):
+    if structured(a):
+        warnings.warn(f'Matrix-multiplying {a} and {b}: converting to dense.',
+                      category=ToDenseWarning)
+    return B.matmul(a, B.dense(b), tr_a=tr_a, tr_b=tr_b)
+
+
+@B.dispatch(LowerTriangular, Diagonal)
+def matmul(a, b, tr_a=False, tr_b=False):
+    if not tr_a:
+        return LowerTriangular(B.matmul(a.mat, b))
+    else:
+        return matmul(_tr(a, tr_a), b)
+
+
+@B.dispatch(Diagonal, LowerTriangular)
+def matmul(a, b, tr_a=False, tr_b=False):
+    if not tr_b:
+        return LowerTriangular(B.matmul(a, b.mat))
+    else:
+        return matmul(a, _tr(b, tr_b))
+
+
+redirect(B.matmul, (LowerTriangular, Constant), (AbstractMatrix, Constant))
+
+
+# UpperTriangular
+
+@B.dispatch(UpperTriangular, UpperTriangular)
+def matmul(a, b, tr_a=False, tr_b=False):
+    if not tr_a and not tr_b:
+        return UpperTriangular(B.matmul(a.mat, b.mat))
+    else:
+        return matmul(_tr(a, tr_a), _tr(b, tr_b))
+
+
+@B.dispatch(UpperTriangular, Diagonal)
+def matmul(a, b, tr_a=False, tr_b=False):
+    if not tr_a:
+        return UpperTriangular(B.matmul(a.mat, b))
+    else:
+        return matmul(_tr(a, tr_a), b)
+
+
+@B.dispatch(Diagonal, UpperTriangular)
+def matmul(a, b, tr_a=False, tr_b=False):
+    if not tr_b:
+        return UpperTriangular(B.matmul(a, b.mat))
+    else:
+        return matmul(a, _tr(b, tr_b))
+
+
+redirect(B.matmul,
+         (UpperTriangular, AbstractMatrix), (LowerTriangular, AbstractMatrix))
+redirect(B.matmul, (UpperTriangular, Constant), (AbstractMatrix, Constant))
+redirect(B.matmul,
+         (UpperTriangular, LowerTriangular), (AbstractMatrix, LowerTriangular))
+
+
 # LowRank
 
 @B.dispatch(LowRank, LowRank)
@@ -131,6 +210,8 @@ def matmul(a, b, tr_a=False, tr_b=False):
 
 redirect(B.matmul, (LowRank, Diagonal), (LowRank, AbstractMatrix))
 redirect(B.matmul, (LowRank, Constant), (AbstractMatrix, Constant))
+redirect(B.matmul, (LowRank, LowerTriangular), (LowRank, AbstractMatrix))
+redirect(B.matmul, (LowRank, UpperTriangular), (LowRank, AbstractMatrix))
 
 
 # Woodbury
@@ -154,6 +235,8 @@ redirect(B.matmul, (Woodbury, Woodbury), (Woodbury, AbstractMatrix),
 redirect(B.matmul, (Woodbury, Diagonal), (Woodbury, AbstractMatrix))
 redirect(B.matmul, (Woodbury, Constant), (Woodbury, AbstractMatrix))
 redirect(B.matmul, (Woodbury, LowRank), (Woodbury, AbstractMatrix))
+redirect(B.matmul, (Woodbury, LowerTriangular), (Woodbury, AbstractMatrix))
+redirect(B.matmul, (Woodbury, UpperTriangular), (Woodbury, AbstractMatrix))
 
 
 # Kronecker
@@ -228,3 +311,7 @@ def matmul(a, b, tr_a=False, tr_b=False):
 redirect(B.matmul, (Kronecker, Constant), (AbstractMatrix, Constant))
 redirect(B.matmul, (Kronecker, LowRank), (AbstractMatrix, LowRank))
 redirect(B.matmul, (Kronecker, Woodbury), (AbstractMatrix, Woodbury))
+redirect(B.matmul,
+         (Kronecker, LowerTriangular), (AbstractMatrix, LowerTriangular))
+redirect(B.matmul,
+         (Kronecker, UpperTriangular), (AbstractMatrix, UpperTriangular))
