@@ -7,11 +7,18 @@ from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
+from ..triangular import LowerTriangular, UpperTriangular
 from ..shape import assert_compatible, broadcast
 from ..woodbury import Woodbury
 from ..util import redirect, ToDenseWarning
 
 __all__ = []
+
+
+def _reverse_call(*types):
+    @B.multiply.extend(*reversed(types))
+    def multiply(a, b):
+        return multiply(b, a)
 
 
 # Zero
@@ -29,7 +36,6 @@ def multiply(a, b):
 
 
 # Dense
-
 
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def multiply(a, b):
@@ -64,9 +70,7 @@ def multiply(a, b):
     return Diagonal(a.diag * b_diag)
 
 
-@B.dispatch(AbstractMatrix, Diagonal)
-def multiply(a, b):
-    return multiply(b, a)
+_reverse_call(Diagonal, AbstractMatrix)
 
 
 # Constant
@@ -77,15 +81,13 @@ def multiply(a, b):
     return Constant(a.const * b.const, *broadcast(a, b).as_tuple())
 
 
-@B.dispatch(Constant, Dense)
+@B.dispatch(Constant, AbstractMatrix)
 def multiply(a, b):
     assert_compatible(a, b)
-    return Dense(a.const * b.mat)
-
-
-@B.dispatch(Dense, Constant)
-def multiply(a, b):
-    return multiply(b, a)
+    if structured(b):
+        warnings.warn(f'Multiplying {a} and {b}: converting to dense.',
+                      category=ToDenseWarning)
+    return Dense(a.const * B.dense(b))
 
 
 @B.dispatch(Constant, Diagonal)
@@ -94,9 +96,62 @@ def multiply(a, b):
     return Diagonal(a.const * b.diag)
 
 
-@B.dispatch(Diagonal, Constant)
+_reverse_call(Constant, AbstractMatrix)
+_reverse_call(Constant, Diagonal)
+
+
+# LowerTriangular
+
+@B.dispatch(LowerTriangular, LowerTriangular)
 def multiply(a, b):
-    return multiply(b, a)
+    return LowerTriangular(B.multiply(a.mat, b.mat))
+
+
+@B.dispatch(LowerTriangular, AbstractMatrix)
+def multiply(a, b):
+    # TODO: Optimise away `B.dense` call.
+    return LowerTriangular(a.mat * B.dense(b))
+
+
+@B.dispatch(LowerTriangular, Constant)
+def multiply(a, b):
+    return LowerTriangular(B.multiply(a.mat, b.const))
+
+
+_reverse_call(LowerTriangular, AbstractMatrix)
+_reverse_call(LowerTriangular, Constant)
+
+redirect(B.multiply, (LowerTriangular, Diagonal), (AbstractMatrix, Diagonal))
+
+
+# UpperTriangular
+
+@B.dispatch(UpperTriangular, UpperTriangular)
+def multiply(a, b):
+    return UpperTriangular(B.multiply(a.mat, b.mat))
+
+
+@B.dispatch(UpperTriangular, LowerTriangular)
+def multiply(a, b):
+    return Diagonal(B.multiply(B.diag(a), B.diag(b)))
+
+
+@B.dispatch(UpperTriangular, AbstractMatrix)
+def multiply(a, b):
+    # TODO: Optimise away `B.dense` call.
+    return UpperTriangular(a.mat * B.dense(b))
+
+
+@B.dispatch(UpperTriangular, Constant)
+def multiply(a, b):
+    return UpperTriangular(B.multiply(a.mat, b.const))
+
+
+_reverse_call(UpperTriangular, LowerTriangular)
+_reverse_call(UpperTriangular, AbstractMatrix)
+_reverse_call(UpperTriangular, Constant)
+
+redirect(B.multiply, (UpperTriangular, Diagonal), (AbstractMatrix, Diagonal))
 
 
 # LowRank
@@ -154,6 +209,8 @@ redirect(B.multiply, (Woodbury, Woodbury), (Woodbury, AbstractMatrix),
          reverse=False)
 redirect(B.multiply, (Woodbury, Diagonal), (AbstractMatrix, Diagonal))
 redirect(B.multiply, (Woodbury, Constant), (Woodbury, AbstractMatrix))
+redirect(B.multiply, (Woodbury, LowerTriangular), (Woodbury, AbstractMatrix))
+redirect(B.multiply, (Woodbury, UpperTriangular), (Woodbury, AbstractMatrix))
 
 
 # Kronecker

@@ -3,10 +3,13 @@ import lab as B
 
 from matrix import (
     structured,
+    AbstractMatrix,
     Dense,
     Diagonal,
     Zero,
     Constant,
+    LowerTriangular,
+    UpperTriangular,
     LowRank,
     Woodbury,
     Kronecker
@@ -29,6 +32,10 @@ from ..util import (
     const_or_scalar2,
     const1,
     const2,
+    lt1,
+    lt2,
+    ut1,
+    ut2,
     lr1,
     lr2,
     wb1,
@@ -70,9 +77,61 @@ def test_multiply_const_dense(const_or_scalar1, dense2):
     check_bin_op(B.multiply, dense2, const_or_scalar1, asserted_type=Dense)
 
 
+def test_multiply_const_fallback_warning(const1, diag2):
+    with AssertDenseWarning('multiplying <constant> and <diagonal>'):
+        B.multiply.invoke(Constant, AbstractMatrix)(const1, diag2)
+
+
 def test_multiply_const_diag(const_or_scalar1, diag2):
     check_bin_op(B.multiply, const_or_scalar1, diag2, asserted_type=Diagonal)
     check_bin_op(B.multiply, diag2, const_or_scalar1, asserted_type=Diagonal)
+
+
+def test_multiply_lt(lt1, lt2):
+    check_bin_op(B.multiply, lt1, lt2, asserted_type=LowerTriangular)
+
+
+def test_multiply_lt_dense(lt1, dense2):
+    check_bin_op(B.multiply, lt1, dense2, asserted_type=LowerTriangular)
+    check_bin_op(B.multiply, dense2, lt1, asserted_type=LowerTriangular)
+
+
+def test_multiply_lt_diag(lt1, diag2):
+    check_bin_op(B.multiply, lt1, diag2, asserted_type=Diagonal)
+    check_bin_op(B.multiply, diag2, lt1, asserted_type=Diagonal)
+
+
+def test_multiply_lt_const(lt1, const_or_scalar2):
+    check_bin_op(B.multiply, lt1, const_or_scalar2,
+                 asserted_type=LowerTriangular)
+    check_bin_op(B.multiply, const_or_scalar2, lt1,
+                 asserted_type=LowerTriangular)
+
+
+def test_multiply_ut(ut1, ut2):
+    check_bin_op(B.multiply, ut1, ut2, asserted_type=UpperTriangular)
+
+
+def test_multiply_ut_lt(ut1, lt2):
+    check_bin_op(B.multiply, ut1, lt2, asserted_type=Diagonal)
+    check_bin_op(B.multiply, lt2, ut1, asserted_type=Diagonal)
+
+
+def test_multiply_ut_dense(ut1, dense2):
+    check_bin_op(B.multiply, ut1, dense2, asserted_type=UpperTriangular)
+    check_bin_op(B.multiply, dense2, ut1, asserted_type=UpperTriangular)
+
+
+def test_multiply_ut_diag(ut1, diag2):
+    check_bin_op(B.multiply, ut1, diag2, asserted_type=Diagonal)
+    check_bin_op(B.multiply, diag2, ut1, asserted_type=Diagonal)
+
+
+def test_multiply_ut_const(ut1, const_or_scalar2):
+    check_bin_op(B.multiply, ut1, const_or_scalar2,
+                 asserted_type=UpperTriangular)
+    check_bin_op(B.multiply, const_or_scalar2, ut1,
+                 asserted_type=UpperTriangular)
 
 
 lr_warnings = ['getting the diagonal of <low-rank>',
@@ -96,6 +155,16 @@ def test_multiply_lr_diag(lr1, diag2):
         check_bin_op(B.multiply, diag2, lr1, asserted_type=Diagonal)
 
 
+def test_multiply_lr_lt(lr1, lt2):
+    check_bin_op(B.multiply, lr1, lt2, asserted_type=LowerTriangular)
+    check_bin_op(B.multiply, lt2, lr1, asserted_type=LowerTriangular)
+
+
+def test_multiply_lr_ut(lr1, ut2):
+    check_bin_op(B.multiply, lr1, ut2, asserted_type=UpperTriangular)
+    check_bin_op(B.multiply, ut2, lr1, asserted_type=UpperTriangular)
+
+
 def test_multiply_wb(wb1, wb2):
     with _conditional_warning([wb1.lr, wb2.lr], lr_warnings):
         check_bin_op(B.multiply, wb1, wb2, asserted_type=Woodbury)
@@ -111,6 +180,16 @@ def test_multiply_wb_diag(wb1, diag1):
 def test_multiply_wb_const(wb1, const_or_scalar2):
     check_bin_op(B.multiply, wb1, const_or_scalar2, asserted_type=Woodbury)
     check_bin_op(B.multiply, const_or_scalar2, wb1, asserted_type=Woodbury)
+
+
+def test_multiply_wb_lt(wb1, lt2):
+    check_bin_op(B.multiply, wb1, lt2, asserted_type=LowerTriangular)
+    check_bin_op(B.multiply, lt2, wb1, asserted_type=LowerTriangular)
+
+
+def test_multiply_wb_ut(wb1, ut2):
+    check_bin_op(B.multiply, wb1, ut2, asserted_type=UpperTriangular)
+    check_bin_op(B.multiply, ut2, wb1, asserted_type=UpperTriangular)
 
 
 def test_multiply_wb_lr(wb1, lr2):
@@ -131,11 +210,6 @@ def test_multiply_kron(kron1, kron2):
             B.matmul(kron1, kron2)
 
 
-def test_multiply_kron_const(kron1, const_or_scalar2):
-    check_bin_op(B.multiply, kron1, const_or_scalar2, asserted_type=Kronecker)
-    check_bin_op(B.multiply, const_or_scalar2, kron1, asserted_type=Kronecker)
-
-
 def test_multiply_kron_dense(kron1, dense2):
     with AssertDenseWarning('multiplying <kronecker> and <dense>'):
         check_bin_op(B.multiply, kron1, dense2, asserted_type=Dense)
@@ -146,3 +220,32 @@ def test_multiply_kron_dense(kron1, dense2):
 def test_multiply_kron_diag(kron1, diag2):
     check_bin_op(B.multiply, kron1, diag2, asserted_type=Diagonal)
     check_bin_op(B.multiply, diag2, kron1, asserted_type=Diagonal)
+
+
+def test_multiply_kron_const(kron1, const_or_scalar2):
+    check_bin_op(B.multiply, kron1, const_or_scalar2, asserted_type=Kronecker)
+    check_bin_op(B.multiply, const_or_scalar2, kron1, asserted_type=Kronecker)
+
+
+def test_multiply_kron_lt(kron1, lt2):
+    check_bin_op(B.multiply, kron1, lt2, asserted_type=LowerTriangular)
+    check_bin_op(B.multiply, lt2, kron1, asserted_type=LowerTriangular)
+
+
+def test_multiply_kron_ut(kron1, ut2):
+    check_bin_op(B.multiply, kron1, ut2, asserted_type=UpperTriangular)
+    check_bin_op(B.multiply, ut2, kron1, asserted_type=UpperTriangular)
+
+
+def test_multiply_kron_lr(kron1, lr2):
+    with AssertDenseWarning('multiplying <kronecker> and <low-rank>'):
+        check_bin_op(B.multiply, kron1, lr2, asserted_type=Dense)
+    with AssertDenseWarning('multiplying <low-rank> and <kronecker>'):
+        check_bin_op(B.multiply, lr2, kron1, asserted_type=Dense)
+
+
+def test_multiply_kron_wb(kron1, wb2):
+    with AssertDenseWarning('multiplying <low-rank> and <kronecker>'):
+        check_bin_op(B.multiply, kron1, wb2, asserted_type=Dense)
+    with AssertDenseWarning('multiplying <low-rank> and <kronecker>'):
+        check_bin_op(B.multiply, wb2, kron1, asserted_type=Dense)
