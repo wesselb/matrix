@@ -13,6 +13,12 @@ def test_lowertriangular_formatting():
            '      [1. 1. 1.]]>'
 
 
+def test_lowertriangular_attributes():
+    mat = B.ones(3, 3)
+    lt = LowerTriangular(mat)
+    assert lt.mat is mat
+
+
 def test_uppertriangular_formatting():
     assert str(UpperTriangular(B.ones(3, 3))) == \
            '<upper-triangular matrix: shape=3x3, dtype=float64>'
@@ -21,3 +27,9 @@ def test_uppertriangular_formatting():
            ' mat=[[1. 1. 1.]\n' \
            '      [1. 1. 1.]\n' \
            '      [1. 1. 1.]]>'
+
+
+def test_uppertriangular_attributes():
+    mat = B.ones(3, 3)
+    ut = UpperTriangular(mat)
+    assert ut.mat is mat
