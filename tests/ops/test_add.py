@@ -54,6 +54,8 @@ def test_add_const_dense(const_or_scalar1, dense2):
 def test_add_const_diag(const_or_scalar1, diag2):
     with AssertDenseWarning('adding <constant matrix> and <diagonal matrix>'):
         check_bin_op(B.add, const_or_scalar1, diag2, asserted_type=Dense)
+    with AssertDenseWarning('adding <constant matrix> and <diagonal matrix>'):
+        check_bin_op(B.add, diag2, const_or_scalar1, asserted_type=Dense)
 
 
 def test_add_const(const_or_scalar1, const2):
