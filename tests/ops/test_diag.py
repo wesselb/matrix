@@ -1,9 +1,13 @@
 import lab as B
 
+from matrix import structured
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_un_op,
+    AssertDenseWarning,
+    ConditionalContext,
 
     zero1,
     dense1,
@@ -42,11 +46,15 @@ def test_diag_ut1(ut1):
 
 
 def test_diag_lr(lr1):
-    check_un_op(B.diag, lr1)
+    warn = AssertDenseWarning('getting the diagonal of <low-rank>')
+    with ConditionalContext(structured(lr1.left, lr1.right), warn):
+        check_un_op(B.diag, lr1)
 
 
 def test_diag_wb(wb1):
-    check_un_op(B.diag, wb1)
+    warn = AssertDenseWarning('getting the diagonal of <low-rank>')
+    with ConditionalContext(structured(wb1.lr.left, wb1.lr.right), warn):
+        check_un_op(B.diag, wb1)
 
 
 def test_diag_kron(kron1):

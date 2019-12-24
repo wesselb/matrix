@@ -141,7 +141,7 @@ def check_bin_op(op, x, y, asserted_type=object):
 
 def _sanitise(msg):
     # Filter details from printed objects
-    msg = re.sub(r'<([a-zA-Z\- ]{1,}):[^>]*>', r'<\1>', msg)
+    msg = re.sub(r'<([a-zA-Z\- ]{1,})( matrix| product):[^>]*>', r'<\1>', msg)
     return msg
 
 

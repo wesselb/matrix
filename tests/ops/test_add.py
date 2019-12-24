@@ -75,9 +75,9 @@ def test_add_const_dense(const_or_scalar1, dense2):
 
 
 def test_add_const_diag(const_or_scalar1, diag2):
-    with AssertDenseWarning('adding <constant matrix> and <diagonal matrix>'):
+    with AssertDenseWarning('adding <constant> and <diagonal>'):
         check_bin_op(B.add, const_or_scalar1, diag2, asserted_type=Dense)
-    with AssertDenseWarning('adding <constant matrix> and <diagonal matrix>'):
+    with AssertDenseWarning('adding <constant> and <diagonal>'):
         check_bin_op(B.add, diag2, const_or_scalar1, asserted_type=Dense)
 
 
@@ -99,11 +99,9 @@ def test_add_lt_diag(lt1, diag2):
 
 
 def test_add_lt_const(lt1, const_or_scalar2):
-    with AssertDenseWarning('adding <constant matrix> and <lower-triangular '
-                            'matrix>'):
+    with AssertDenseWarning('adding <constant> and <lower-triangular>'):
         check_bin_op(B.add, lt1, const_or_scalar2, asserted_type=Dense)
-    with AssertDenseWarning('adding <constant matrix> and <lower-triangular '
-                            'matrix>'):
+    with AssertDenseWarning('adding <constant> and <lower-triangular>'):
         check_bin_op(B.add, const_or_scalar2, lt1, asserted_type=Dense)
 
 
@@ -126,26 +124,24 @@ def test_add_ut_diag(ut1, diag2):
 
 
 def test_add_ut_const(ut1, const_or_scalar2):
-    with AssertDenseWarning('adding <constant matrix> and <upper-triangular '
-                            'matrix>'):
+    with AssertDenseWarning('adding <constant> and <upper-triangular>'):
         check_bin_op(B.add, ut1, const_or_scalar2, asserted_type=Dense)
-    with AssertDenseWarning('adding <constant matrix> and <upper-triangular '
-                            'matrix>'):
+    with AssertDenseWarning('adding <constant> and <upper-triangular>'):
         check_bin_op(B.add, const_or_scalar2, ut1, asserted_type=Dense)
 
 
 def test_add_lr(lr1, lr2):
     with _conditional_warning([lr1, lr2],
-                              'adding <low-rank matrix> and <low-rank matrix>'):
+                              'adding <low-rank> and <low-rank>'):
         check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
 
 
 def test_add_const_lr(const_or_scalar1, lr2):
     with _conditional_warning([lr2],
-                              'adding <constant matrix> and <low-rank matrix>'):
+                              'adding <constant> and <low-rank>'):
         check_bin_op(B.add, const_or_scalar1, lr2, asserted_type=LowRank)
     with _conditional_warning([lr2],
-                              'adding <constant matrix> and <low-rank matrix>'):
+                              'adding <constant> and <low-rank>'):
         check_bin_op(B.add, lr2, const_or_scalar1, asserted_type=LowRank)
 
 
@@ -156,7 +152,7 @@ def test_add_diag_lr(diag1, lr2):
 
 def test_add_wb(wb1, wb2):
     with _conditional_warning([wb1.lr, wb2.lr],
-                              'adding <low-rank matrix> and <low-rank matrix>'):
+                              'adding <low-rank> and <low-rank>'):
         check_bin_op(B.add, wb1, wb2, asserted_type=Woodbury)
 
 
@@ -167,22 +163,22 @@ def test_add_wb_diag(wb1, diag1):
 
 def test_add_wb_constant(wb1, const_or_scalar2):
     with _conditional_warning([wb1.lr],
-                              'adding <constant matrix> and <low-rank matrix>'):
+                              'adding <constant> and <low-rank>'):
         check_bin_op(B.add, wb1, const_or_scalar2, asserted_type=Woodbury)
     with _conditional_warning([wb1.lr],
-                              'adding <constant matrix> and <low-rank matrix>'):
+                              'adding <constant> and <low-rank>'):
         check_bin_op(B.add, const_or_scalar2, wb1, asserted_type=Woodbury)
 
 
 def test_add_wb_lr(wb1, lr2):
     with _conditional_warning([wb1.lr, lr2],
-                              'adding <low-rank matrix> and <low-rank matrix>'):
+                              'adding <low-rank> and <low-rank>'):
         check_bin_op(B.add, wb1, lr2, asserted_type=Woodbury)
     with _conditional_warning([wb1.lr, lr2],
-                              'adding <low-rank matrix> and <low-rank matrix>'):
+                              'adding <low-rank> and <low-rank>'):
         check_bin_op(B.add, lr2, wb1, asserted_type=Woodbury)
 
 
 def test_kron_diag(kron1, diag1):
-    with AssertDenseWarning('adding <kronecker product> and <diagonal matrix>'):
+    with AssertDenseWarning('adding <kronecker> and <diagonal>'):
         check_bin_op(B.add, kron1, diag1, asserted_type=Dense)

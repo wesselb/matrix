@@ -19,5 +19,5 @@ def test_divide_dense(dense1, dense2):
 
 
 def test_divide_diag_dense(diag1, dense2):
-    with AssertDenseWarning('dividing <diagonal matrix> by <dense matrix>'):
+    with AssertDenseWarning('dividing <diagonal> by <dense>'):
         check_bin_op(B.divide, diag1, dense2, asserted_type=Dense)

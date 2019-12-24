@@ -6,6 +6,7 @@ from ..constant import Zero, Constant
 from ..lowrank import LowRank
 from ..woodbury import Woodbury
 from ..kronecker import Kronecker
+from ..triangular import LowerTriangular, UpperTriangular
 
 __all__ = []
 
@@ -28,6 +29,16 @@ def transpose(a):
 @B.dispatch(Constant)
 def transpose(a):
     return Constant(a.const, a.cols, a.rows)
+
+
+@B.dispatch(LowerTriangular)
+def transpose(a):
+    return UpperTriangular(B.transpose(a.mat))
+
+
+@B.dispatch(UpperTriangular)
+def transpose(a):
+    return LowerTriangular(B.transpose(a.mat))
 
 
 @B.dispatch(LowRank)

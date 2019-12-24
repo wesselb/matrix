@@ -6,6 +6,7 @@ from ..lowrank import LowRank
 from ..matrix import Dense
 from ..woodbury import Woodbury
 from ..kronecker import Kronecker
+from ..triangular import LowerTriangular, UpperTriangular
 
 __all__ = []
 
@@ -21,7 +22,7 @@ def sum(a, axis=None):
     return B.cast(a.dtype, 0)
 
 
-@B.dispatch(Dense)
+@B.dispatch({Dense, LowerTriangular, UpperTriangular})
 def sum(a, axis=None):
     return B.sum(a.mat, axis=axis)
 

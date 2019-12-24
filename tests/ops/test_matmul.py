@@ -2,6 +2,7 @@ import lab as B
 import pytest
 
 from matrix import (
+    structured,
     Dense,
     Diagonal,
     Zero,
@@ -17,6 +18,7 @@ from ..util import (
     allclose,
     check_bin_op,
     AssertDenseWarning,
+    ConditionalContext,
 
     zero1,
     zero2,
@@ -41,6 +43,11 @@ from ..util import (
     kron2,
     kron_mixed
 )
+
+
+def _conditional_warning(mats, message):
+    mats = [mat.left for mat in mats] + [mat.right for mat in mats]
+    return ConditionalContext(structured(*mats), AssertDenseWarning(message))
 
 
 def _check_matmul(a, b, asserted_type=object):
@@ -92,10 +99,8 @@ def test_matmul_const_diag(const1, diag2):
 
 
 triangular_warnings = \
-    ['matrix-multiplying '
-     '<lower-triangular matrix> and <upper-triangular matrix>',
-     'matrix-multiplying '
-     '<upper-triangular matrix> and <lower-triangular matrix>']
+    ['matrix-multiplying <lower-triangular> and <upper-triangular>',
+     'matrix-multiplying <upper-triangular> and <lower-triangular>']
 triangular_res_types = (LowerTriangular, UpperTriangular, Dense)
 
 
@@ -180,7 +185,9 @@ def test_matmul_lr_ut(lr1, ut2):
 
 
 def test_matmul_wb(wb1, wb2):
-    _check_matmul(wb1, wb2, asserted_type=Woodbury)
+    with _conditional_warning([wb1.lr, wb2.lr],
+                              'adding <low-rank> and <low-rank>'):
+        _check_matmul(wb1, wb2, asserted_type=Woodbury)
 
 
 def test_matmul_wb_dense(wb1, dense2):
@@ -199,15 +206,19 @@ def test_matmul_wb_const(wb1, const2):
 
 
 def test_matmul_wb_lr(wb1, lr2):
-    _check_matmul(wb1, lr2, asserted_type=LowRank)
-    _check_matmul(lr2, wb1, asserted_type=LowRank)
+    # Warning does not depend on `wb1`, because multiplication with `lr2`
+    # converts the structured low-rank matrix to one with dense factors.
+    with _conditional_warning([lr2], 'adding <low-rank> and <low-rank>'):
+        _check_matmul(wb1, lr2, asserted_type=LowRank)
+    with _conditional_warning([lr2], 'adding <low-rank> and <low-rank>'):
+        _check_matmul(lr2, wb1, asserted_type=LowRank)
 
 
 wb_triangular_warnings = \
-    ['adding <upper-triangular matrix> and <low-rank matrix>',
-     'adding <low-rank matrix> and <upper-triangular matrix>',
-     'adding <lower-triangular matrix> and <low-rank matrix>',
-     'adding <low-rank matrix> and <lower-triangular matrix>']
+    ['adding <upper-triangular> and <low-rank>',
+     'adding <low-rank> and <upper-triangular>',
+     'adding <lower-triangular> and <low-rank>',
+     'adding <low-rank> and <lower-triangular>']
 
 
 def test_matmul_wb_lt(wb1, lt2):
@@ -245,27 +256,22 @@ def test_matmul_kron_const(kron1, const2):
     _check_matmul(const2, kron1, asserted_type=LowRank)
 
 
-def test_matmul_kron_lr(kron1, const2):
-    _check_matmul(kron1, const2, asserted_type=LowRank)
-    _check_matmul(const2, kron1, asserted_type=LowRank)
-
-
 def test_matmul_kron_diag(kron1, diag2):
     # The output type here is dense because the product of Kronecker products
     # and diagonal matrices is dense.
-    with AssertDenseWarning('cannot efficiently matrix-multiply <Kronecker '
-                            'product> by <diagonal matrix>'):
+    with AssertDenseWarning('cannot efficiently matrix-multiply <kronecker> '
+                            'by <diagonal>'):
         _check_matmul(kron1, diag2, asserted_type=Dense)
-    with AssertDenseWarning('cannot efficiently matrix-multiply <diagonal '
-                            'matrix> by <Kronecker product>'):
+    with AssertDenseWarning('cannot efficiently matrix-multiply <diagonal> '
+                            'by <kronecker>'):
         _check_matmul(diag2, kron1, asserted_type=Dense)
 
 
 kron_triangular_warnings = \
-    ['matrix-multiplying <upper-triangular matrix> and <kronecker product>',
-     'matrix-multiplying <kronecker product> and <upper-triangular matrix>',
-     'matrix-multiplying <lower-triangular matrix> and <kronecker product>',
-     'matrix-multiplying <kronecker product> and <lower-triangular matrix>']
+    ['matrix-multiplying <upper-triangular> and <kronecker>',
+     'matrix-multiplying <kronecker> and <upper-triangular>',
+     'matrix-multiplying <lower-triangular> and <kronecker>',
+     'matrix-multiplying <kronecker> and <lower-triangular>']
 
 
 def test_matmul_kron_lt(kron1, lt1):
@@ -280,3 +286,20 @@ def test_matmul_kron_ut(kron1, ut1):
         _check_matmul(kron1, ut1, asserted_type=Dense)
     with AssertDenseWarning(kron_triangular_warnings):
         _check_matmul(ut1, kron1, asserted_type=Dense)
+
+
+def test_matmul_kron_lr(kron1, const2):
+    _check_matmul(kron1, const2, asserted_type=LowRank)
+    _check_matmul(const2, kron1, asserted_type=LowRank)
+
+
+kron_diag_warnings = \
+    ['cannot efficiently matrix-multiply <kronecker> by <diagonal>',
+     'cannot efficiently matrix-multiply <diagonal> by <kronecker>']
+
+
+def test_matmul_kron_wb(kron1, wb2):
+    with AssertDenseWarning(kron_diag_warnings):
+        _check_matmul(kron1, wb2, asserted_type=Dense)
+    with AssertDenseWarning(kron_diag_warnings):
+        _check_matmul(wb2, kron1, asserted_type=Dense)

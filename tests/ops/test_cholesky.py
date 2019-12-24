@@ -60,7 +60,7 @@ def test_cholesky_lr(lr_pd, lr1):
 
 
 def test_cholesky_wb(wb_pd):
-    with AssertDenseWarning('converting <Woodbury matrix> to dense'):
+    with AssertDenseWarning('converting <woodbury> to dense'):
         check_un_op(B.cholesky, wb_pd, asserted_type=LowerTriangular)
 
 

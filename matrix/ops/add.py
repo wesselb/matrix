@@ -127,7 +127,7 @@ def add(a, b):
 def add(a, b):
     assert_compatible(a, b)
     if structured(a.left, a.right):
-        warnings.warn(f'Adding a {b} to {a}: converting the factors to dense.',
+        warnings.warn(f'Adding {b} and {a}: converting the factors to dense.',
                       category=ToDenseWarning)
     dtype = B.dtype(a)
     rows, cols = B.shape(a)

@@ -26,6 +26,5 @@ def test_reshape_dense(dense1):
 
 
 def test_reshape_diag(diag1):
-    with AssertDenseWarning('converting <diagonal matrix> to dense for '
-                            'reshaping'):
+    with AssertDenseWarning('converting <diagonal> to dense for reshaping'):
         check_un_op(_reshape, diag1)
