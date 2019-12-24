@@ -23,6 +23,8 @@ class LowRank(AbstractMatrix):
             low-rank matrix.
         cholesky (:class:`.matrix.Dense` or None): Cholesky-like
             decomposition of the matrix, once it has been computed.
+        dense (matrix or None): Dense version of the matrix, once it has been
+            computed.
 
     Args:
         left (matrix): Left factor.
@@ -43,6 +45,7 @@ class LowRank(AbstractMatrix):
         self.rank = B.shape(self.left)[1]
         self.symmetric = right is None
         self.cholesky = None
+        self.dense = None
 
         if not B.shape(self.left)[1] == B.shape(self.right)[1]:
             raise ValueError('Left and right factor must have an equal number '

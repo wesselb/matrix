@@ -1,5 +1,4 @@
 import lab as B
-import wbml.out
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_scalar
@@ -15,6 +14,8 @@ class Zero(AbstractMatrix):
         dtype (dtype): Data type.
         rows (int): Number of rows.
         cols (int): Number of columns.
+        dense (matrix or None): Dense version of the matrix, once it has been
+            computed.
 
     Args:
         dtype (dtype): Data type.
@@ -26,6 +27,7 @@ class Zero(AbstractMatrix):
         self._dtype = dtype
         self.rows = rows
         self.cols = cols
+        self.dense = None
 
     @property
     def dtype(self):
@@ -49,6 +51,8 @@ class Constant(AbstractMatrix):
         cols (int): Number of columns.
         cholesky (:class:`.constant.Constant` or None): Cholesky
             decomposition of the matrix, once it has been computed.
+        dense (matrix or None): Dense version of the matrix, once it has been
+            computed.
 
     Args:
         const (scalar): Constant.
@@ -63,6 +67,7 @@ class Constant(AbstractMatrix):
         self.rows = rows
         self.cols = cols
         self.cholesky = None
+        self.dense = None
 
     def __str__(self):
         rows, cols = B.shape(self)

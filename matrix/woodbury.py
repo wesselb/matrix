@@ -16,6 +16,12 @@ class Woodbury(AbstractMatrix):
     The shape and data type of a Woodbury matrix are the shape and data type of
     the low-rank part.
 
+    Attributes:
+        diag (:class:`.diagonal.Diagonal`): Diagonal part.
+        lr (:class:`.diagonal.LowRank`): Low-rank part.
+        dense (matrix or None): Dense version of the matrix, once it has been
+            computed.
+
     Args:
         diag (:class:`.diagonal.Diagonal`): Diagonal part.
         lr (:class:`.diagonal.LowRank`): Low-rank part.
@@ -27,6 +33,7 @@ class Woodbury(AbstractMatrix):
         assert_compatible(diag, lr)
         self.diag = diag
         self.lr = lr
+        self.dense = None
 
     def __str__(self):
         rows, cols = B.shape(self)

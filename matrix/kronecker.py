@@ -15,6 +15,8 @@ class Kronecker(AbstractMatrix):
     Attributes:
         left (matrix): Left matrix in the product.
         right (matrix): Right matrix in the product.
+        dense (matrix or None): Dense version of the matrix, once it has been
+            computed.
 
     Args:
         left (matrix): Left matrix in the product.
@@ -24,6 +26,7 @@ class Kronecker(AbstractMatrix):
     def __init__(self, left, right):
         self.left = left
         self.right = right
+        self.dense = None
 
     def __str__(self):
         rows, cols = B.shape(self)

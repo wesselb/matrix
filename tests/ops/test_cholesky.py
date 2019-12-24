@@ -17,6 +17,10 @@ from ..util import (
 )
 
 
+def _check_cache(a):
+    return B.cholesky(a) is B.cholesky(a)
+
+
 def test_cholesky_square_assertion():
     with pytest.raises(AssertionError):
         B.cholesky(Dense(B.randn(3, 4)))
@@ -28,20 +32,24 @@ def test_cholesky_zero(zero1):
 
 def test_cholesky_dense(dense_pd):
     check_un_op(B.cholesky, dense_pd, asserted_type=Dense)
+    _check_cache(dense_pd)
 
 
 def test_cholesky_diag(diag_pd):
     check_un_op(B.cholesky, diag_pd, asserted_type=Diagonal)
+    _check_cache(diag_pd)
 
 
 def test_cholesky_const(const_pd):
     chol = B.dense(B.cholesky(const_pd))
     allclose(B.matmul(chol, chol, tr_b=True), const_pd)
+    _check_cache(const_pd)
 
 
 def test_cholesky_lr(lr_pd, lr1):
     chol = B.dense(B.cholesky(lr_pd))
     allclose(B.matmul(chol, chol, tr_b=True), lr_pd)
+    _check_cache(lr_pd)
 
     with pytest.raises(AssertionError):
         B.cholesky(lr1)
@@ -49,3 +57,4 @@ def test_cholesky_lr(lr_pd, lr1):
 
 def test_cholesky_kron(kron_pd):
     check_un_op(B.cholesky, kron_pd, asserted_type=Kronecker)
+    _check_cache(kron_pd)

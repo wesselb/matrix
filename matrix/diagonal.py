@@ -14,6 +14,8 @@ class Diagonal(AbstractMatrix):
         diag (vector): Diagonal of the matrix.
         cholesky (:class:`.constant.Diagonal` or none): Cholesky
             decomposition of the matrix, once it has been computed.
+        dense (matrix or None): Dense version of the matrix, once it has been
+            computed.
 
     Args:
         diag (vector): Diagonal of matrix.
@@ -24,6 +26,7 @@ class Diagonal(AbstractMatrix):
                             'diagonal matrices from rank-1 tensors.')
         self.diag = diag
         self.cholesky = None
+        self.dense = None
 
     def __str__(self):
         rows, cols = B.shape(self)
