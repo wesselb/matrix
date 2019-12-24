@@ -20,3 +20,11 @@ def test_woodbury_formatting():
            '     right=[[2.]\n' \
            '            [2.]\n' \
            '            [2.]]>>'
+
+
+def test_woodbury_attributes():
+    diag = Diagonal(B.ones(3))
+    lr = LowRank(B.ones(3, 1), 2 * B.ones(3, 1))
+    wb = Woodbury(diag, lr)
+    assert wb.diag is diag
+    assert wb.lr is lr
