@@ -28,8 +28,8 @@ def logdet(a):
 @B.dispatch(Kronecker)
 def logdet(a):
     assert_square(a.left, f'Left factor of {a} must be square to compute '
-                          f'the log-determinanta.')
-    assert_square(a.right, f'Right factor of {b} must be square to compute '
+                          f'the log-determinant.')
+    assert_square(a.right, f'Right factor of {a} must be square to compute '
                            f'the log-determinant.')
     n = B.shape(a.left)[0]
     m = B.shape(a.right)[0]

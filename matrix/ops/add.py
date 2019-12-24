@@ -84,6 +84,7 @@ def add(a, b):
 
 @B.dispatch(LowerTriangular, Diagonal)
 def add(a, b):
+    # TODO: Optimise away `B.dense` call.
     return LowerTriangular(a.mat + B.dense(b))
 
 
