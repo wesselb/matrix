@@ -1,6 +1,16 @@
 import lab as B
 
-from matrix import Dense, Diagonal, Constant, LowRank, Woodbury, Kronecker, Zero
+from matrix import (
+    Dense,
+    Diagonal,
+    Zero,
+    Constant,
+    LowerTriangular,
+    UpperTriangular,
+    LowRank,
+    Woodbury,
+    Kronecker,
+)
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -10,6 +20,8 @@ from ..util import (
     dense1,
     diag1,
     const1,
+    lt1,
+    ut1,
     lr1,
     wb1,
     kron1
@@ -30,6 +42,14 @@ def test_negative_diag(diag1):
 
 def test_negative_const(const1):
     check_un_op(B.negative, const1, asserted_type=Constant)
+
+
+def test_negative_lt(lt1):
+    check_un_op(B.negative, lt1, asserted_type=LowerTriangular)
+
+
+def test_negative_ut(ut1):
+    check_un_op(B.negative, ut1, asserted_type=UpperTriangular)
 
 
 def test_negative_lr(lr1):
