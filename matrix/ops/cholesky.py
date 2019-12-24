@@ -1,11 +1,14 @@
 import lab as B
+import warnings
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
+from ..woodbury import Woodbury
 from ..matrix import Dense
 from ..shape import assert_square
+from ..util import ToDenseWarning
 
 __all__ = []
 
@@ -52,6 +55,16 @@ def cholesky(a):
     assert a.symmetric, 'Can only take the Cholesky decomposition of ' \
                         'symmetric matrices.'
     return a.left
+
+
+@B.dispatch(Woodbury)
+def cholesky(a):
+    if a.cholesky is None:
+        warnings.warn(f'Converting {a} to dense to compute its Cholesky '
+                      f'decomposition.',
+                      category=ToDenseWarning)
+        a.cholesky = Dense(B.cholesky(B.reg(B.dense(a))))
+    return a.cholesky
 
 
 @B.dispatch(Kronecker)

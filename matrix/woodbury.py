@@ -19,6 +19,8 @@ class Woodbury(AbstractMatrix):
     Attributes:
         diag (:class:`.diagonal.Diagonal`): Diagonal part.
         lr (:class:`.diagonal.LowRank`): Low-rank part.
+        cholesky (:class:`.matrix.Dense` or None): Cholesky decomposition of
+            the matrix, once it has been computed.
         dense (matrix or None): Dense version of the matrix, once it has been
             computed.
 
@@ -33,6 +35,7 @@ class Woodbury(AbstractMatrix):
         assert_compatible(diag, lr)
         self.diag = diag
         self.lr = lr
+        self.cholesky = None
         self.dense = None
 
     def __str__(self):

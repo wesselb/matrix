@@ -6,6 +6,7 @@ from matrix import Dense, Diagonal, Kronecker, Zero
 from ..util import (
     allclose,
     check_un_op,
+    AssertDenseWarning,
 
     zero1,
     dense_pd,
@@ -13,6 +14,7 @@ from ..util import (
     const_pd,
     lr_pd,
     lr1,
+    wb_pd,
     kron_pd
 )
 
@@ -55,6 +57,11 @@ def test_cholesky_lr(lr_pd, lr1):
 
     with pytest.raises(AssertionError):
         B.cholesky(lr1)
+
+
+def test_cholesky_wb(wb_pd):
+    with AssertDenseWarning('converting <Woodbury matrix> to dense'):
+        check_un_op(B.cholesky, wb_pd, asserted_type=Dense)
 
 
 def test_cholesky_kron(kron_pd):
