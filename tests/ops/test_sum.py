@@ -11,6 +11,8 @@ from ..util import (
     dense_r,
     diag1,
     const_r,
+    lt1,
+    ut1,
     lr1,
     lr_r,
     wb1,
@@ -43,6 +45,14 @@ def test_sum_diag(diag1):
 
 def test_sum_const(const_r):
     _check_sum(const_r)
+
+
+def test_sum_lt(lt1):
+    _check_sum(lt1)
+
+
+def test_sum_ut(ut1):
+    _check_sum(ut1)
 
 
 def test_sum_lr(lr_r):
