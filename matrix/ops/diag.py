@@ -7,6 +7,7 @@ from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import Dense, structured
+from ..triangular import LowerTriangular, UpperTriangular
 from ..util import ToDenseWarning
 from ..woodbury import Woodbury
 
@@ -22,7 +23,7 @@ def diag(a):
     return B.zeros(B.dtype(a), _diag_len(a))
 
 
-@B.dispatch(Dense)
+@B.dispatch({Dense, LowerTriangular, UpperTriangular})
 def diag(a):
     return B.diag(a.mat)
 

@@ -9,6 +9,8 @@ from ..util import (
     dense1,
     diag1,
     const1,
+    lt1,
+    ut1,
     lr1,
     wb1,
     kron1
@@ -29,6 +31,14 @@ def test_diag_diag(diag1):
 
 def test_diag_const(const1):
     check_un_op(B.diag, const1)
+
+
+def test_diag_lt1(lt1):
+    check_un_op(B.diag, lt1)
+
+
+def test_diag_ut1(ut1):
+    check_un_op(B.diag, ut1)
 
 
 def test_diag_lr(lr1):
