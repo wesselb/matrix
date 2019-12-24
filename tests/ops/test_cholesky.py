@@ -1,7 +1,7 @@
 import lab as B
 import pytest
 
-from matrix import Dense, Diagonal, Kronecker, Zero
+from matrix import Dense, Diagonal, Kronecker, LowerTriangular
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -35,7 +35,7 @@ def test_cholesky_zero(zero1):
 
 
 def test_cholesky_dense(dense_pd):
-    check_un_op(B.cholesky, dense_pd, asserted_type=Dense)
+    check_un_op(B.cholesky, dense_pd, asserted_type=LowerTriangular)
     _check_cache(dense_pd)
 
 
@@ -61,7 +61,7 @@ def test_cholesky_lr(lr_pd, lr1):
 
 def test_cholesky_wb(wb_pd):
     with AssertDenseWarning('converting <Woodbury matrix> to dense'):
-        check_un_op(B.cholesky, wb_pd, asserted_type=Dense)
+        check_un_op(B.cholesky, wb_pd, asserted_type=LowerTriangular)
 
 
 def test_cholesky_kron(kron_pd):

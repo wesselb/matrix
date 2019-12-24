@@ -1,14 +1,16 @@
-import lab as B
 import warnings
+
+import lab as B
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
-from ..woodbury import Woodbury
 from ..matrix import Dense
 from ..shape import assert_square
+from ..triangular import LowerTriangular
 from ..util import ToDenseWarning
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -28,7 +30,7 @@ def cholesky(a):
 def cholesky(a):
     _assert_square_cholesky(a)
     if a.cholesky is None:
-        a.cholesky = Dense(B.cholesky(B.reg(a.mat)))
+        a.cholesky = LowerTriangular(B.cholesky(B.reg(a.mat)))
     return a.cholesky
 
 
@@ -63,7 +65,7 @@ def cholesky(a):
         warnings.warn(f'Converting {a} to dense to compute its Cholesky '
                       f'decomposition.',
                       category=ToDenseWarning)
-        a.cholesky = Dense(B.cholesky(B.reg(B.dense(a))))
+        a.cholesky = LowerTriangular(B.cholesky(B.reg(B.dense(a))))
     return a.cholesky
 
 
