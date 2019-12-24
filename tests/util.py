@@ -25,6 +25,7 @@ __all__ = ['allclose',
            'check_un_op',
            'check_bin_op',
            'AssertDenseWarning',
+           'ConditionalContext',
 
            # Fixtures:
            'mat1',
@@ -148,11 +149,15 @@ class AssertDenseWarning:
     """Assert that a `ToDenseWarning` is raised with a particular content.
 
     Args:
-        content (str): Content that the arguments of the warning must contain.
+        content (str or list[str]): Content that the arguments of the warning
+            must contain.
     """
 
     def __init__(self, content):
-        self.content = content.lower()
+        if isinstance(content, str):
+            self.content = [content.lower()]
+        else:
+            self.content = [x.lower() for x in content]
         self.record = None
 
     def __enter__(self):
@@ -168,10 +173,35 @@ class AssertDenseWarning:
             message = ''.join(self.record[i].message.args)
             message = _sanitise(message).lower()
 
-            if self.content not in message:
-                raise AssertionError(f'Warning should contain '
-                                     f'"{self.content}", but it did not: '
+            if not any(content in message for content in self.content):
+                pre = 'any of ' if len(self.content) > 1 else ''
+                contents = '", "'.join(self.content)
+                raise AssertionError(f'Warning should contain {pre}'
+                                     f'"{contents}", but it did not: '
                                      f'"{message}".')
+
+
+class ConditionalContext:
+    """A conditional context mananger.
+
+    Args:
+        condition (bool): Boolean indicating whether `context` should be
+            entered.
+        context (object): Context to enter in the case that `condition` is
+            `True`.
+    """
+
+    def __init__(self, condition, context):
+        self.condition = condition
+        self.context = context
+
+    def __enter__(self):
+        if self.condition:
+            self.context.__enter__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.condition:
+            self.context.__exit__(exc_type, exc_val, exc_tb)
 
 
 def generate(code):

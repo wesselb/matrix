@@ -1,4 +1,5 @@
 import lab as B
+from plum import Dispatcher
 
 from matrix import (
     Dense,
@@ -9,11 +10,13 @@ from matrix import (
     LowRank,
     Woodbury
 )
+from matrix import structured
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_bin_op,
     AssertDenseWarning,
+    ConditionalContext,
 
     zero1,
     zero2,
@@ -37,6 +40,13 @@ from ..util import (
     kron1,
     kron2
 )
+
+_dispatch = Dispatcher()
+
+
+def _conditional_warning(mats, message):
+    mats = [mat.left for mat in mats] + [mat.right for mat in mats]
+    return ConditionalContext(structured(*mats), AssertDenseWarning(message))
 
 
 def test_add_zero_diag(zero1, diag2):
@@ -125,12 +135,18 @@ def test_add_ut_const(ut1, const_or_scalar2):
 
 
 def test_add_lr(lr1, lr2):
-    check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
+    with _conditional_warning([lr1, lr2],
+                              'adding <low-rank matrix> and <low-rank matrix>'):
+        check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
 
 
 def test_add_const_lr(const_or_scalar1, lr2):
-    check_bin_op(B.add, const_or_scalar1, lr2, asserted_type=LowRank)
-    check_bin_op(B.add, lr2, const_or_scalar1, asserted_type=LowRank)
+    with _conditional_warning([lr2],
+                              'adding <constant matrix> and <low-rank matrix>'):
+        check_bin_op(B.add, const_or_scalar1, lr2, asserted_type=LowRank)
+    with _conditional_warning([lr2],
+                              'adding <constant matrix> and <low-rank matrix>'):
+        check_bin_op(B.add, lr2, const_or_scalar1, asserted_type=LowRank)
 
 
 def test_add_diag_lr(diag1, lr2):
@@ -139,7 +155,9 @@ def test_add_diag_lr(diag1, lr2):
 
 
 def test_add_wb(wb1, wb2):
-    check_bin_op(B.add, wb1, wb2, asserted_type=Woodbury)
+    with _conditional_warning([wb1.lr, wb2.lr],
+                              'adding <low-rank matrix> and <low-rank matrix>'):
+        check_bin_op(B.add, wb1, wb2, asserted_type=Woodbury)
 
 
 def test_add_wb_diag(wb1, diag1):
@@ -148,13 +166,21 @@ def test_add_wb_diag(wb1, diag1):
 
 
 def test_add_wb_constant(wb1, const_or_scalar2):
-    check_bin_op(B.add, wb1, const_or_scalar2, asserted_type=Woodbury)
-    check_bin_op(B.add, const_or_scalar2, wb1, asserted_type=Woodbury)
+    with _conditional_warning([wb1.lr],
+                              'adding <constant matrix> and <low-rank matrix>'):
+        check_bin_op(B.add, wb1, const_or_scalar2, asserted_type=Woodbury)
+    with _conditional_warning([wb1.lr],
+                              'adding <constant matrix> and <low-rank matrix>'):
+        check_bin_op(B.add, const_or_scalar2, wb1, asserted_type=Woodbury)
 
 
 def test_add_wb_lr(wb1, lr2):
-    check_bin_op(B.add, wb1, lr2, asserted_type=Woodbury)
-    check_bin_op(B.add, lr2, wb1, asserted_type=Woodbury)
+    with _conditional_warning([wb1.lr, lr2],
+                              'adding <low-rank matrix> and <low-rank matrix>'):
+        check_bin_op(B.add, wb1, lr2, asserted_type=Woodbury)
+    with _conditional_warning([wb1.lr, lr2],
+                              'adding <low-rank matrix> and <low-rank matrix>'):
+        check_bin_op(B.add, lr2, wb1, asserted_type=Woodbury)
 
 
 def test_kron_diag(kron1, diag1):
