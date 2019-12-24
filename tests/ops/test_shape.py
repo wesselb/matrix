@@ -9,6 +9,8 @@ from ..util import (
     dense_r,
     diag1,
     const_r,
+    lt1,
+    ut1,
     lr1,
     lr_r,
     wb1,
@@ -30,6 +32,14 @@ def test_shape_diag(diag1):
 
 def test_shape_const(const_r):
     check_un_op(B.shape, const_r, asserted_type=tuple)
+
+
+def test_shape_lt(lt1):
+    check_un_op(B.shape, lt1, asserted_type=tuple)
+
+
+def test_shape_ut(ut1):
+    check_un_op(B.shape, ut1, asserted_type=tuple)
 
 
 def test_shape_lr(lr_r):
