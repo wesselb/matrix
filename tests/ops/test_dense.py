@@ -9,6 +9,8 @@ from ..util import (
     dense1,
     diag1,
     const1,
+    lt1,
+    ut1,
     lr1,
     wb1,
     kron1
@@ -42,6 +44,16 @@ def test_dense_diag(diag1):
 def test_dense_const(const1):
     allclose(B.dense(const1), const1.const * B.ones(const1.rows, const1.cols))
     _check_cache(const1)
+
+
+def test_dense_lt(lt1):
+    allclose(B.dense(lt1), lt1.mat)
+    _check_cache(lt1)
+
+
+def test_dense_ut(ut1):
+    allclose(B.dense(ut1), ut1.mat)
+    _check_cache(ut1)
 
 
 def test_dense_lr(lr1):

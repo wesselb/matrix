@@ -4,6 +4,7 @@ from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..matrix import Dense
 from ..lowrank import LowRank
+from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
 from ..kronecker import Kronecker
 
@@ -25,7 +26,7 @@ def dense(a):
     return a.dense
 
 
-@B.dispatch(Dense)
+@B.dispatch({Dense, LowerTriangular, UpperTriangular})
 def dense(a):
     return a.mat
 
