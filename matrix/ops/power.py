@@ -1,13 +1,12 @@
 import warnings
+
 import lab as B
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
+from ..kronecker import Kronecker
 from ..matrix import AbstractMatrix, Dense, structured
 from ..triangular import LowerTriangular, UpperTriangular
-from ..lowrank import LowRank
-from ..woodbury import Woodbury
-from ..kronecker import Kronecker
 from ..util import ToDenseWarning
 
 __all__ = []
