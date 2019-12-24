@@ -18,6 +18,19 @@ def test_lowrank_formatting():
            '        [2.]]>'
 
 
+def test_lowrank_attributes():
+    left = B.ones(3, 1)
+    right = 2 * B.ones(3, 1)
+    lr = LowRank(left, right)
+    assert lr.left is left
+    assert lr.right is right
+    assert lr.rank == 1
+    assert not lr.symmetric
+
+    lr = LowRank(left)
+    assert lr.symmetric
+
+
 def test_lowrank_col_check():
     with pytest.raises(ValueError):
         LowRank(B.ones(3, 1), B.ones(3, 2))
