@@ -41,8 +41,9 @@ def cholesky(a):
 def cholesky(a):
     _assert_square_cholesky(a)
     if a.cholesky is None:
-        a.cholesky = Constant(B.sqrt(a.const), a.rows, a.cols)
-    return B.sqrt(a.const) * B.ones(B.dtype(a), a.rows, 1)
+        chol_const = B.divide(B.sqrt(a.const), B.sqrt(a.cols))
+        a.cholesky = Constant(chol_const, a.rows, a.cols)
+    return a.cholesky
 
 
 @B.dispatch(LowRank)
@@ -55,4 +56,6 @@ def cholesky(a):
 
 @B.dispatch(Kronecker)
 def cholesky(a):
-    return Kronecker(B.cholesky(a.left), B.cholesky(a.right))
+    if a.cholesky is None:
+        a.cholesky = Kronecker(B.cholesky(a.left), B.cholesky(a.right))
+    return a.cholesky

@@ -15,6 +15,8 @@ class Kronecker(AbstractMatrix):
     Attributes:
         left (matrix): Left matrix in the product.
         right (matrix): Right matrix in the product.
+        cholesky (:class:`.kronecker.Kronecker` or None): Cholesky decomposition
+            of the matrix, once it has been computed.
         dense (matrix or None): Dense version of the matrix, once it has been
             computed.
 
@@ -26,6 +28,7 @@ class Kronecker(AbstractMatrix):
     def __init__(self, left, right):
         self.left = left
         self.right = right
+        self.cholesky = None
         self.dense = None
 
     def __str__(self):

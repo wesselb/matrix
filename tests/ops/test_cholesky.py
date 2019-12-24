@@ -18,7 +18,9 @@ from ..util import (
 
 
 def _check_cache(a):
-    return B.cholesky(a) is B.cholesky(a)
+    chol1 = B.cholesky(a)
+    chol2 = B.cholesky(a)
+    assert chol1 is chol2
 
 
 def test_cholesky_square_assertion():
