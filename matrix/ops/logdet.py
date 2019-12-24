@@ -1,6 +1,7 @@
 import lab as B
 
 from ..matrix import AbstractMatrix
+from ..diagonal import Diagonal
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
 from ..kronecker import Kronecker
@@ -14,15 +15,14 @@ def logdet(a):
     return 2 * B.logdet(B.cholesky(a))
 
 
-@B.dispatch({LowerTriangular, UpperTriangular})
+@B.dispatch({Diagonal, LowerTriangular, UpperTriangular})
 def logdet(a):
     return B.sum(B.log(B.diag(a)))
 
 
 @B.dispatch(Woodbury)
 def logdet(a):
-    # Use the matrix determinant lemma.
-    pass
+    return B.logdet(a.diag) + B.logdet(B.schur(a))
 
 
 @B.dispatch(Kronecker)

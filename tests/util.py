@@ -54,8 +54,10 @@ __all__ = ['allclose',
            'const_or_scalar2',
            'lt1',
            'lt2',
+           'lt_pd',
            'ut1',
            'ut2',
+           'ut_pd',
            'lr1',
            'lr2',
            'lr_r',
@@ -243,10 +245,16 @@ def generate(code):
     elif mat_code == 'lt':
         mat = B.vec_to_tril(B.randn(int(0.5 * shape[0] * (shape[0] + 1))))
         return LowerTriangular(mat)
+    elif mat_code == 'lt_pd':
+        mat = generate(f'randn_pd:{shape[0]},{shape[0]}')
+        return LowerTriangular(B.cholesky(B.reg(mat)))
 
     elif mat_code == 'ut':
         mat = B.vec_to_tril(B.randn(int(0.5 * shape[0] * (shape[0] + 1))))
         return UpperTriangular(B.transpose(mat))
+    elif mat_code == 'ut_pd':
+        mat = generate(f'randn_pd:{shape[0]},{shape[0]}')
+        return UpperTriangular(B.transpose(B.cholesky(B.reg(mat))))
 
     elif mat_code == 'dense':
         return Dense(generate(f'randn:{shape_code}'))
@@ -390,6 +398,11 @@ def lt2():
 
 
 @pytest.fixture()
+def lt_pd():
+    return generate('lt_pd:6')
+
+
+@pytest.fixture()
 def ut1():
     return generate('ut:6')
 
@@ -397,6 +410,11 @@ def ut1():
 @pytest.fixture()
 def ut2():
     return generate('ut:6')
+
+
+@pytest.fixture()
+def ut_pd():
+    return generate('ut_pd:6')
 
 
 @pytest.fixture(params=[('dense:6,1', 'dense:6,1'),

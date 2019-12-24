@@ -21,7 +21,7 @@ class LowRank(AbstractMatrix):
         rank (int): Rank of the low-rank matrix.
         symmetric (bool): Boolean indicating whether this is a symmetric
             low-rank matrix.
-        cholesky (:class:`.matrix.Dense` or None): Cholesky-like
+        cholesky (:class:`.matrix.AbstractMatrix` or None): Cholesky-like
             decomposition of the matrix, once it has been computed.
         dense (matrix or None): Dense version of the matrix, once it has been
             computed.

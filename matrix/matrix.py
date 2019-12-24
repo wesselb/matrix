@@ -75,8 +75,8 @@ class Dense(AbstractMatrix):
 
     Attributes:
         mat (matrix): Matrix.
-        cholesky (:class:`.matrix.Dense` or None): Cholesky decomposition of
-            the matrix, once it has been computed.
+        cholesky (:class:`.triangular.LowerTriangular` or None): Cholesky
+            decomposition of the matrix, once it has been computed.
 
     Args:
         mat (matrix): Matrix.
