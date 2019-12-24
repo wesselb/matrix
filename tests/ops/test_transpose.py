@@ -1,6 +1,16 @@
 import lab as B
 
-from matrix import Dense, Diagonal, Constant, LowRank, Woodbury, Kronecker, Zero
+from matrix import (
+    Dense,
+    Diagonal,
+    Zero,
+    Constant,
+    LowRank,
+    Woodbury,
+    Kronecker,
+    LowerTriangular,
+    UpperTriangular
+)
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -10,6 +20,8 @@ from ..util import (
     dense_r,
     diag1,
     const_r,
+    lt1,
+    ut1,
     lr1,
     lr_r,
     wb1,
@@ -31,6 +43,14 @@ def test_transpose_diag(diag1):
 
 def test_transpose_const(const_r):
     check_un_op(B.transpose, const_r, asserted_type=Constant)
+
+
+def test_transpose_lt(lt1):
+    check_un_op(B.transpose, lt1, asserted_type=UpperTriangular)
+
+
+def test_transpose_ut(ut1):
+    check_un_op(B.transpose, ut1, asserted_type=LowerTriangular)
 
 
 def test_transpose_lr(lr_r):
