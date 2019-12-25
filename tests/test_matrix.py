@@ -1,6 +1,6 @@
 # noinspection PyUnresolvedReferences
 from .util import allclose, dense1, dense2
-from matrix import Dense
+from matrix import Dense, Diagonal, structured
 import lab as B
 
 
@@ -38,3 +38,9 @@ def test_dense_attributes():
     mat = B.ones(3, 3)
     dense = Dense(mat)
     assert dense.mat is mat
+
+
+def test_structured():
+    assert structured(Diagonal(B.ones(3)))
+    assert not structured(Dense(B.ones(3, 3)))
+    assert not structured(B.ones(3, 3))

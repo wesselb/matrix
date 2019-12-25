@@ -1,6 +1,6 @@
 import lab as B
 
-from matrix import structured
+from matrix import Dense, Diagonal, structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
@@ -8,10 +8,13 @@ from ..util import (
     check_un_op,
     AssertDenseWarning,
     ConditionalContext,
+    concat_warnings,
 
     zero1,
     dense1,
+    dense2,
     diag1,
+    diag2,
     const1,
     lt1,
     ut1,
@@ -59,3 +62,19 @@ def test_diag_wb(wb1):
 
 def test_diag_kron(kron1):
     check_un_op(B.diag, kron1)
+
+
+def test_diag_block_dense(dense1, dense2):
+    with AssertDenseWarning(concat_warnings):
+        res = B.diag(dense1, dense2)
+        allclose(res,
+                 B.concat2d([B.dense(dense1), B.zeros(B.dense(dense1))],
+                            [B.zeros(B.dense(dense2)), B.dense(dense2)]))
+        assert isinstance(res, Dense)
+
+
+def test_diag_block_diag(diag1, diag2):
+    allclose(B.diag(diag1, diag2),
+             B.concat2d([B.dense(diag1), B.zeros(B.dense(diag2))],
+                        [B.zeros(B.dense(diag2)), B.dense(diag2)]))
+    assert isinstance(B.diag(diag1, diag2), Diagonal)

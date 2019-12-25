@@ -43,7 +43,7 @@ def transpose(a):
 
 @B.dispatch(LowRank)
 def transpose(a):
-    return LowRank(a.right, a.left)
+    return LowRank(a.right, a.left, B.transpose(a.middle))
 
 
 @B.dispatch(Woodbury)

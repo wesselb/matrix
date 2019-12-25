@@ -13,7 +13,7 @@ def test_woodbury_formatting():
            ' diag=<diagonal matrix: shape=3x3, dtype=float64\n' \
            '       diag=[1. 1. 1.]>\n' \
            ' lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1,' \
-           ' symmetric=False\n' \
+           ' sign=0\n' \
            '     left=[[1.]\n' \
            '           [1.]\n' \
            '           [1.]]\n' \

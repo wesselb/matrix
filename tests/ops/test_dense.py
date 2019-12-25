@@ -57,14 +57,16 @@ def test_dense_ut(ut1):
 
 
 def test_dense_lr(lr1):
-    allclose(B.dense(lr1), B.outer(B.dense(lr1.left), B.dense(lr1.right)))
+    lr_dense = B.mm(B.mm(B.dense(lr1.left), B.dense(lr1.middle)),
+                    B.dense(lr1.right), tr_b=True)
+    allclose(B.dense(lr1), lr_dense)
     _check_cache(lr1)
 
 
 def test_dense_wb(wb1):
-    allclose(B.dense(wb1),
-             B.diag(wb1.diag.diag) + B.outer(B.dense(wb1.lr.left),
-                                             B.dense(wb1.lr.right)))
+    lr_dense = B.mm(B.mm(B.dense(wb1.lr.left), B.dense(wb1.lr.middle)),
+                    B.dense(wb1.lr.right), tr_b=True)
+    allclose(B.dense(wb1), B.diag(wb1.diag.diag) + lr_dense)
     _check_cache(wb1)
 
 

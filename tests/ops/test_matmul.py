@@ -19,6 +19,7 @@ from ..util import (
     check_bin_op,
     AssertDenseWarning,
     ConditionalContext,
+    concat_warnings,
 
     zero1,
     zero2,
@@ -43,11 +44,6 @@ from ..util import (
     kron2,
     kron_mixed
 )
-
-
-def _conditional_warning(mats, message):
-    mats = [mat.left for mat in mats] + [mat.right for mat in mats]
-    return ConditionalContext(structured(*mats), AssertDenseWarning(message))
 
 
 def _check_matmul(a, b, asserted_type=object):
@@ -185,8 +181,9 @@ def test_matmul_lr_ut(lr1, ut2):
 
 
 def test_matmul_wb(wb1, wb2):
-    with _conditional_warning([wb1.lr, wb2.lr],
-                              'adding <low-rank> and <low-rank>'):
+    with AssertDenseWarning(concat_warnings):
+        print(repr(wb1))
+        print(repr(wb2))
         _check_matmul(wb1, wb2, asserted_type=Woodbury)
 
 
@@ -206,11 +203,9 @@ def test_matmul_wb_const(wb1, const2):
 
 
 def test_matmul_wb_lr(wb1, lr2):
-    # Warning does not depend on `wb1`, because multiplication with `lr2`
-    # converts the structured low-rank matrix to one with dense factors.
-    with _conditional_warning([lr2], 'adding <low-rank> and <low-rank>'):
+    with AssertDenseWarning(concat_warnings):
         _check_matmul(wb1, lr2, asserted_type=LowRank)
-    with _conditional_warning([lr2], 'adding <low-rank> and <low-rank>'):
+    with AssertDenseWarning(concat_warnings):
         _check_matmul(lr2, wb1, asserted_type=LowRank)
 
 

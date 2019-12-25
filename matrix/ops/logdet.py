@@ -22,7 +22,7 @@ def logdet(a):
 
 @B.dispatch(Woodbury)
 def logdet(a):
-    return B.logdet(a.diag) + B.logdet(B.schur(a))
+    return B.logdet(a.diag) + B.logdet(a.lr.middle) + B.logdet(B.schur(a))
 
 
 @B.dispatch(Kronecker)

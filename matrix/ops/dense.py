@@ -48,7 +48,7 @@ def dense(a):
 @B.dispatch(LowRank)
 def dense(a):
     if a.dense is None:
-        a.dense = B.dense(B.matmul(a.left, a.right, tr_b=True))
+        a.dense = B.dense(B.mm(B.mm(a.left, a.middle), a.right, tr_b=True))
     return a.dense
 
 

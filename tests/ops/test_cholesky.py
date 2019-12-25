@@ -50,13 +50,10 @@ def test_cholesky_const(const_pd):
     _check_cache(const_pd)
 
 
-def test_cholesky_lr(lr_pd, lr1):
+def test_cholesky_lr(lr_pd):
     chol = B.dense(B.cholesky(lr_pd))
     allclose(B.matmul(chol, chol, tr_b=True), lr_pd)
     _check_cache(lr_pd)
-
-    with pytest.raises(AssertionError):
-        B.cholesky(lr1)
 
 
 def test_cholesky_wb(wb_pd):

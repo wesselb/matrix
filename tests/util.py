@@ -26,6 +26,7 @@ __all__ = ['allclose',
            'check_bin_op',
            'AssertDenseWarning',
            'ConditionalContext',
+           'concat_warnings',
 
            # Fixtures:
            'mat1',
@@ -232,7 +233,7 @@ def generate(code):
         if len(shape) in {0, 1}:
             return mat ** 2
         else:
-            return B.matmul(mat, mat, tr_b=True)
+            return B.matmul(mat, mat, tr_b=True) + B.eye(shape[0])
 
     elif mat_code == 'zero':
         return Zero(B.default_dtype, *shape)
@@ -240,7 +241,7 @@ def generate(code):
     elif mat_code == 'const':
         return Constant(B.randn(), *shape)
     elif mat_code == 'const_pd':
-        return Constant(B.randn() ** 2, *shape)
+        return Constant(B.randn() ** 2 + 1, *shape)
 
     elif mat_code == 'lt':
         mat = B.vec_to_tril(B.randn(int(0.5 * shape[0] * (shape[0] + 1))))
@@ -268,6 +269,18 @@ def generate(code):
 
     else:
         raise RuntimeError(f'Cannot parse generation code "{code}".')
+
+
+#: Warnings for concatenations.
+concat_warnings = ['concatenating <dense>, <diagonal>',
+                   'concatenating <diagonal>, <dense>',
+                   'concatenating <diagonal>, <diagonal>',
+                   'constructing a dense block-diagonal matrix from '
+                   '<dense> and <diagonal>',
+                   'constructing a dense block-diagonal matrix from '
+                   '<diagonal> and <dense>',
+                   'constructing a dense block-diagonal matrix from '
+                   '<dense> and <dense>']
 
 
 # Fixtures:
@@ -417,36 +430,45 @@ def ut_pd():
     return generate('ut_pd:6')
 
 
-@pytest.fixture(params=[('dense:6,1', 'dense:6,1'),
-                        ('dense:6,2', 'dense:6,2'),
-                        ('dense:6,3', 'dense:6,3'),
-                        ('diag:6', 'diag:6')])
+@pytest.fixture(params=[('dense:6,1', 'dense:1,1'),
+                        ('dense:6,2', 'dense:2,2'),
+                        ('dense:6,3', 'dense:3,3'),
+                        ('diag:6', 'dense:6,6')])
 def lr1(request):
-    code1, code2 = request.param
-    return LowRank(generate(code1), generate(code2))
+    code_lr, code_m = request.param
+    return LowRank(generate(code_lr), generate(code_lr),
+                   middle=generate(code_m))
 
 
-@pytest.fixture(params=[('dense:6,1', 'dense:6,1'),
-                        ('dense:6,2', 'dense:6,2'),
-                        ('dense:6,3', 'dense:6,3'),
-                        ('diag:6', 'diag:6')])
+@pytest.fixture(params=[('dense:6,1', 'dense:1,1'),
+                        ('dense:6,2', 'dense:2,2'),
+                        ('dense:6,3', 'dense:3,3'),
+                        ('diag:6', 'dense:6,6')])
 def lr2(request):
-    code1, code2 = request.param
-    return LowRank(generate(code1), generate(code2))
+    code_lr, code_m = request.param
+    return LowRank(generate(code_lr),
+                   generate(code_lr),
+                   middle=generate(code_m))
 
 
-@pytest.fixture(params=[('dense:6,1', 'dense:4,1'),
-                        ('dense:6,2', 'dense:4,2'),
-                        ('dense:6,3', 'dense:4,3'),
-                        ('diag:6', 'dense:4,6')])
+@pytest.fixture(params=[('dense:6,1', 'dense:4,1', 'dense:1,1'),
+                        ('dense:6,2', 'dense:4,2', 'dense:2,2'),
+                        ('dense:6,3', 'dense:4,3', 'dense:3,3'),
+                        ('diag:6', 'dense:4,6', 'dense:6,6')])
 def lr_r(request):
-    code1, code2 = request.param
-    return LowRank(generate(code1), generate(code2))
+    code_l, code_r, code_m = request.param
+    return LowRank(generate(code_l),
+                   generate(code_r),
+                   middle=generate(code_m))
 
 
-@pytest.fixture(params=['dense:6,1', 'dense:6,2', 'dense:6,3', 'diag:6'])
+@pytest.fixture(params=[('dense:6,1', 'dense_pd:1,2'),
+                        ('dense:6,2', 'dense_pd:2,2'),
+                        ('dense:6,3', 'dense_pd:3,3'),
+                        ('diag:6', 'diag_pd:6')])
 def lr_pd(request):
-    return LowRank(generate(request.param))
+    code_l, code_m = request.param
+    return LowRank(generate(code_l), middle=generate(code_m))
 
 
 @pytest.fixture()

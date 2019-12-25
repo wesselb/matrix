@@ -163,12 +163,14 @@ def multiply(a, b):
     if structured(a.left, a.right, b.left, b.right):
         warnings.warn(f'Multiplying {a} and {b}: converting factors to dense.',
                       category=ToDenseWarning)
-    al, ar = B.dense(a.left), B.dense(a.right)
-    bl, br = B.dense(b.left), B.dense(b.right)
+    al, am, ar = B.dense(a.left), B.dense(a.middle), B.dense(a.right)
+    bl, bm, br = B.dense(b.left), B.dense(b.middle), B.dense(b.right)
 
     # Pick apart the matrices.
     al, ar = B.unstack(al, axis=1), B.unstack(ar, axis=1)
     bl, br = B.unstack(bl, axis=1), B.unstack(br, axis=1)
+    am = [B.unstack(x, axis=0) for x in B.unstack(am, axis=0)]
+    bm = [B.unstack(x, axis=0) for x in B.unstack(bm, axis=0)]
 
     # Construct the factors.
     left = B.stack(*[B.multiply(ali, blk)
@@ -177,14 +179,19 @@ def multiply(a, b):
     right = B.stack(*[B.multiply(arj, brl)
                       for arj in ar
                       for brl in br], axis=1)
+    middle = B.stack(*[B.stack(*[amij * bmkl
+                                 for amij in ami
+                                 for bmkl in bmk], axis=0)
+                       for ami in am
+                       for bmk in bm], axis=0)
 
-    return LowRank(left, right)
+    return LowRank(left, right, middle)
 
 
 @B.dispatch(Constant, LowRank)
 def multiply(a, b):
     assert_compatible(a, b)
-    return LowRank(B.multiply(a.const, b.left), b.right)
+    return LowRank(b.left, b.right, B.multiply(a.const, b.middle))
 
 
 @B.dispatch(LowRank, Constant)

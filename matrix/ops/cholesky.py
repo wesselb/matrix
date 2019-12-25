@@ -54,9 +54,9 @@ def cholesky(a):
 @B.dispatch(LowRank)
 def cholesky(a):
     _assert_square_cholesky(a)
-    assert a.symmetric, 'Can only take the Cholesky decomposition of ' \
-                        'symmetric matrices.'
-    return a.left
+    if a.cholesky is None:
+        a.cholesky = B.matmul(a.left, B.cholesky(a.middle))
+    return a.cholesky
 
 
 @B.dispatch(Woodbury)

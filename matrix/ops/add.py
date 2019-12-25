@@ -117,25 +117,26 @@ _reverse_call(UpperTriangular, LowerTriangular)
 @B.dispatch(LowRank, LowRank)
 def add(a, b):
     assert_compatible(a, b)
-    if structured(a.left, a.right, b.left, b.right):
-        warnings.warn(f'Adding {a} and {b}: converting factors to dense.',
-                      category=ToDenseWarning)
-    return LowRank(B.concat(B.dense(a.left), B.dense(b.left), axis=1),
-                   B.concat(B.dense(a.right), B.dense(b.right), axis=1))
+    return LowRank(B.concat(a.left, b.left, axis=1),
+                   B.concat(a.right, b.right, axis=1),
+                   B.diag(a.middle, b.middle))
 
 
 @B.dispatch(LowRank, Constant)
 def add(a, b):
     assert_compatible(a, b)
-    if structured(a.left, a.right):
-        warnings.warn(f'Adding {b} and {a}: converting the factors to dense.',
-                      category=ToDenseWarning)
-    dtype = B.dtype(a)
+
+    # Convert the constant to a low-rank matrix for addition.
+    dtype = B.dtype(b)
+    # Use the shape of the low-rank matrix to ensure that broadcasting goes
+    # through.
     rows, cols = B.shape(a)
-    ones_left = B.ones(dtype, rows, 1)
-    ones_right = B.ones(dtype, cols, 1)
-    return LowRank(B.concat(ones_left, B.dense(a.left), axis=1),
-                   B.concat(b.const * ones_right, B.dense(a.right), axis=1))
+    left = B.ones(dtype, rows, 1)
+    right = B.ones(dtype, cols, 1)
+    middle = B.fill_diag(b.const, 1)
+    b_lr = LowRank(left, right, middle)
+
+    return a + b_lr
 
 
 @B.dispatch(Constant, LowRank)
