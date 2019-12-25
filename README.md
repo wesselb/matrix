@@ -55,7 +55,7 @@ ToDenseWarning: Adding <diagonal matrix: shape=3x3, dtype=float64> and <dense ma
 >>> lr = LowRank(B.ones(3, 1), 2 * B.ones(3, 1))
 
 >>> lr
-<low-rank matrix: shape=3x3, dtype=float64, rank=1, symmetric=False
+<low-rank matrix: shape=3x3, dtype=float64, rank=1, sign=0
  left=[[1.]
        [1.]
        [1.]]
@@ -67,7 +67,7 @@ ToDenseWarning: Adding <diagonal matrix: shape=3x3, dtype=float64> and <dense ma
 <Woodbury matrix: shape=3x3, dtype=float64
  diag=<diagonal matrix: shape=3x3, dtype=float64
        diag=[1. 1. 1.]>
- lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1, symmetric=False
+ lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1, sign=0
      left=[[1.]
            [1.]
            [1.]]
@@ -93,7 +93,7 @@ UpperTriangular
 
 The following composite types are provided:
 ```
-LowRank
+LowRank (with definiteness: PositiveLowRank, NegativeLowRank)
 Woodbury
 Kronecker
 ```
