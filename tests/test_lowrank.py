@@ -1,47 +1,50 @@
 import lab as B
 import pytest
-from matrix import LowRank
+from matrix import LowRank, PositiveLowRank, NegativeLowRank
 
 from .util import allclose
 
 
 def test_lowrank_formatting():
     assert str(LowRank(B.ones(3, 1), 2 * B.ones(3, 1))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=1,' \
-           ' symmetric=False>'
+           '<low-rank matrix: shape=3x3, dtype=float64, rank=1, sign=0>'
     assert repr(LowRank(B.ones(3, 2), 2 * B.ones(3, 2))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=2,' \
-           ' symmetric=False\n' \
+           '<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=0\n' \
            ' left=[[1. 1.]\n' \
            '       [1. 1.]\n' \
            '       [1. 1.]]\n' \
-           ' middle=<diagonal matrix: shape=2x2, dtype=float64\n' \
-           '         diag=[1. 1.]>\n' \
            ' right=[[2. 2.]\n' \
            '        [2. 2.]\n' \
            '        [2. 2.]]>'
 
 
 def test_lowrank_attributes():
-    # Check the case where the left and right factor are given.
-    left = B.ones(3, 1)
-    right = 2 * B.ones(3, 1)
-    lr = LowRank(left, right)
+    # Check default right and middle factor.
+    left = B.ones(3, 2)
+    lr = LowRank(left)
     assert lr.left is left
-    allclose(B.dense(lr.middle), B.ones(1, 1))
-    assert lr.right is right
-    assert lr.rank == 1
-    assert not lr.symmetric
+    assert lr.right is left
+    allclose(lr.middle, B.eye(2))
+    assert lr.rank == 2
+    assert lr.sign == 0
 
-    # Check the case where the left and middle factor are given.
+    # Check given right and middle factor.
+    right = 2 * B.ones(3, 2)
     middle = B.ones(2, 2)
-    lr = LowRank(B.ones(3, 2), middle=middle)
-    assert lr.symmetric
+    lr = LowRank(left, right, middle=middle)
+    assert lr.left is left
+    assert lr.right is right
     assert lr.middle is middle
+
+    # Check signs.
+    lr = PositiveLowRank(left)
+    assert lr.sign > 0
+    lr = NegativeLowRank(left)
+    assert lr.sign < 0
 
 
 def test_lowrank_shape_checks():
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         LowRank(B.ones(3, 1), B.ones(3, 2))
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         LowRank(B.ones(3, 1), B.ones(3, 1), B.eye(2))
