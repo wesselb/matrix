@@ -3,6 +3,7 @@ import lab as B
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..matrix import Dense
+from ..lowrank import LowRank
 from ..woodbury import Woodbury
 
 __all__ = []
@@ -20,7 +21,10 @@ def inv(a):
 
 @B.dispatch(Woodbury)
 def inv(a):
-    pass  # TODO: Use MIL here.
+    diag_inv = B.inv(a.diag)
+    return diag_inv - LowRank(B.matmul(diag_inv, a.lr.left),
+                              B.matmul(diag_inv, a.lr.right),
+                              B.inv(B.dense(B.schur(a))))
 
 
 @B.dispatch(Kronecker)

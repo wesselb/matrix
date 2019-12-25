@@ -24,7 +24,6 @@ def test_inv_diag(diag1):
     check_un_op(B.inv, diag1, asserted_type=Diagonal)
 
 
-@pytest.mark.xfail
 def test_inv_wb(wb1):
     check_un_op(B.inv, wb1, asserted_type=Woodbury)
 
