@@ -43,7 +43,8 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
         return B.divide(other, self)
 
     def __pow__(self, power, modulo=None):
-        assert modulo is None  # TODO: Implement this.
+        # TODO: Implement this.
+        assert modulo is None, 'Modulo in powers is not yet supported.'
         return B.power(self, power)
 
     def __matmul__(self, other):
@@ -85,7 +86,7 @@ class Dense(AbstractMatrix):
     def __init__(self, mat):
         assert_matrix(mat, 'Input is not a rank-2 tensor. Can only construct '
                            'dense matrices from rank-2 tensors.')
-        self.mat = mat
+        self.mat = B.dense(mat)
         self.cholesky = None
 
     def __str__(self):

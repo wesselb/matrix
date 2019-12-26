@@ -19,7 +19,7 @@ class LowerTriangular(AbstractMatrix):
     _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
-        self.mat = mat
+        self.mat = B.dense(mat)
 
     def __str__(self):
         rows, cols = B.shape(self)
@@ -45,7 +45,7 @@ class UpperTriangular(AbstractMatrix):
     _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
-        self.mat = mat
+        self.mat = B.dense(mat)
 
     def __str__(self):
         rows, cols = B.shape(self)

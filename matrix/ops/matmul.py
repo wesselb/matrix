@@ -289,9 +289,9 @@ def matmul(a, b, tr_a=False, tr_b=False):
     cost_first_right = r_rows * r_cols * l_cols + l_rows * l_cols * r_rows
 
     if cost_first_left <= cost_first_right:
-        return Dense(_kron_id_a_b(right, _kron_a_id_b(left, b)))
+        return _kron_id_a_b(right, _kron_a_id_b(left, b))
     else:
-        return Dense(_kron_a_id_b(left, _kron_id_a_b(right, b)))
+        return _kron_a_id_b(left, _kron_id_a_b(right, b))
 
 
 @B.dispatch(AbstractMatrix, Kronecker)

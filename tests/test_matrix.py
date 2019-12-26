@@ -1,7 +1,8 @@
-# noinspection PyUnresolvedReferences
-from .util import allclose, dense1, dense2
-from matrix import Dense, Diagonal, structured
 import lab as B
+
+from matrix import Dense, Diagonal, structured
+# noinspection PyUnresolvedReferences
+from .util import allclose, dense1, dense2, diag1
 
 
 def test_dispatch(dense1, dense2):
@@ -44,3 +45,8 @@ def test_structured():
     assert structured(Diagonal(B.ones(3)))
     assert not structured(Dense(B.ones(3, 3)))
     assert not structured(B.ones(3, 3))
+
+
+def test_conversion_to_dense(diag1):
+    allclose(Dense(diag1), diag1)
+    assert isinstance(Dense(diag1).mat, B.Numeric)

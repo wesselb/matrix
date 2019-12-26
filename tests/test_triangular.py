@@ -1,6 +1,8 @@
 import lab as B
 
 from matrix import LowerTriangular, UpperTriangular
+# noinspection PyUnresolvedReferences
+from .util import allclose, dense1, dense2, diag1
 
 
 def test_lowertriangular_formatting():
@@ -19,6 +21,11 @@ def test_lowertriangular_attributes():
     assert lt.mat is mat
 
 
+def test_conversion_to_lowertriangular(diag1):
+    allclose(LowerTriangular(diag1), diag1)
+    assert isinstance(LowerTriangular(diag1).mat, B.Numeric)
+
+
 def test_uppertriangular_formatting():
     assert str(UpperTriangular(B.ones(3, 3))) == \
            '<upper-triangular matrix: shape=3x3, dtype=float64>'
@@ -33,3 +40,8 @@ def test_uppertriangular_attributes():
     mat = B.ones(3, 3)
     ut = UpperTriangular(mat)
     assert ut.mat is mat
+
+
+def test_conversion_to_uppertriangular(diag1):
+    allclose(UpperTriangular(diag1), diag1)
+    assert isinstance(UpperTriangular(diag1).mat, B.Numeric)
