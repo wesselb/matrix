@@ -107,4 +107,10 @@ They can be accessed with `B.<function>` where `import lab as B`.
 ```
 dense(a)
 fill_diag(a, diag_len)
+
+iqf(a, b, c)
+iqf_diag(a, b, c)
+ratio(a, c)
+root(a)
+sample(a, num=1)
 ```
