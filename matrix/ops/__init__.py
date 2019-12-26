@@ -1,4 +1,5 @@
 from .add import *
+from .block import *
 from .cholesky import *
 from .concat import *
 from .dense import *

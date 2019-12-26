@@ -107,6 +107,7 @@ They can be accessed with `B.<function>` where `import lab as B`.
 ```
 dense(a)
 fill_diag(a, diag_len)
+block(*rows)
 
 iqf(a, b, c)
 iqf_diag(a, b, c)
