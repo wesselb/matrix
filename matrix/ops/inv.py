@@ -22,9 +22,10 @@ def inv(a):
 @B.dispatch(Woodbury)
 def inv(a):
     diag_inv = B.inv(a.diag)
-    return diag_inv - LowRank(B.matmul(diag_inv, a.lr.left),
+    return B.subtract(diag_inv,
+                      LowRank(B.matmul(diag_inv, a.lr.left),
                               B.matmul(diag_inv, a.lr.right),
-                              B.inv(B.dense(B.schur(a))))
+                              B.inv(B.dense(B.schur(a)))))
 
 
 @B.dispatch(Kronecker)
