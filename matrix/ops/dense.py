@@ -13,6 +13,14 @@ __all__ = []
 
 @B.dispatch(B.Numeric)
 def dense(a):
+    """Convert a (structured) matrix to a dense, numeric matrix.
+
+    Args:
+        a (matrix): Matrix to convert to dense.
+
+    Returns:
+        matrix: Dense version of `a`.
+    """
     return a
 
 
