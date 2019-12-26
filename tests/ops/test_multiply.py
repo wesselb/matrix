@@ -87,6 +87,14 @@ def test_multiply_const_diag(const_or_scalar1, diag2):
     check_bin_op(B.multiply, diag2, const_or_scalar1, asserted_type=Diagonal)
 
 
+def test_multiply_const_broadcasting():
+    assert B.shape(B.multiply(Constant(1, 3, 4), Constant(1, 1, 4))) == (3, 4)
+    assert B.shape(B.multiply(Constant(1, 3, 4), Constant(1, 3, 1))) == (3, 4)
+    with pytest.raises(AssertionError):
+        B.multiply(Constant(1, 3, 4), Constant(1, 4, 4))
+        B.multiply(Constant(1, 3, 4), Constant(1, 3, 3))
+
+
 def test_multiply_lt(lt1, lt2):
     check_bin_op(B.multiply, lt1, lt2, asserted_type=LowerTriangular)
 

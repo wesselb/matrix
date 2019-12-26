@@ -1,3 +1,4 @@
+import pytest
 import lab as B
 from plum import Dispatcher
 
@@ -62,6 +63,10 @@ def test_add_diag_dense(diag1, dense_bc):
     check_bin_op(B.add, diag1, dense_bc, asserted_type=Dense)
 
 
+def test_add_const(const_or_scalar1, const2):
+    check_bin_op(B.add, const_or_scalar1, const2, asserted_type=Constant)
+
+
 def test_add_const_dense(const_or_scalar1, dense2):
     # We don't test for broadcasting behaviour here because the resulting
     # shapes will be different: the constant matrix will not affect the
@@ -77,8 +82,12 @@ def test_add_const_diag(const_or_scalar1, diag2):
         check_bin_op(B.add, diag2, const_or_scalar1, asserted_type=Dense)
 
 
-def test_add_const(const_or_scalar1, const2):
-    check_bin_op(B.add, const_or_scalar1, const2, asserted_type=Constant)
+def test_add_const_broadcasting():
+    assert B.shape(B.add(Constant(1, 3, 4), Constant(1, 1, 4))) == (3, 4)
+    assert B.shape(B.add(Constant(1, 3, 4), Constant(1, 3, 1))) == (3, 4)
+    with pytest.raises(AssertionError):
+        B.add(Constant(1, 3, 4), Constant(1, 4, 4))
+        B.add(Constant(1, 3, 4), Constant(1, 3, 3))
 
 
 def test_add_lt(lt1, lt2):
