@@ -1,15 +1,17 @@
-import lab as B
 import warnings
+
+import lab as B
 from algebra import proven
+from plum import convert
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
 from ..shape import assert_compatible, broadcast
-from ..woodbury import Woodbury
-from ..util import ToDenseWarning
 from ..triangular import LowerTriangular, UpperTriangular
+from ..util import ToDenseWarning
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -72,7 +74,15 @@ def add(a, b):
     return Dense(a.const + B.dense(b))
 
 
+@B.dispatch(Constant, Diagonal)
+def add(a, b):
+    assert_compatible(a, b)
+    a = Constant(a.const, *broadcast(a, b).as_tuple())
+    return add(convert(a, LowRank), b)
+
+
 _reverse_call(Constant, AbstractMatrix)
+_reverse_call(Constant, Diagonal)
 
 
 # LowerTriangular
@@ -125,18 +135,8 @@ def add(a, b):
 @B.dispatch(LowRank, Constant)
 def add(a, b):
     assert_compatible(a, b)
-
-    # Convert the constant to a low-rank matrix for addition.
-    dtype = B.dtype(b)
-    # Use the shape of the low-rank matrix to ensure that broadcasting goes
-    # through.
-    rows, cols = B.shape(a)
-    left = B.ones(dtype, rows, 1)
-    right = B.ones(dtype, cols, 1)
-    middle = B.fill_diag(b.const, 1)
-    b_lr = LowRank(left, right, middle)
-
-    return a + b_lr
+    b = Constant(b.const, *broadcast(a, b).as_tuple())
+    return add(a, convert(b, LowRank))
 
 
 @B.dispatch(Constant, LowRank)

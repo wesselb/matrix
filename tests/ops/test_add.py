@@ -76,10 +76,8 @@ def test_add_const_dense(const_or_scalar1, dense2):
 
 
 def test_add_const_diag(const_or_scalar1, diag2):
-    with AssertDenseWarning('adding <constant> and <diagonal>'):
-        check_bin_op(B.add, const_or_scalar1, diag2, asserted_type=Dense)
-    with AssertDenseWarning('adding <constant> and <diagonal>'):
-        check_bin_op(B.add, diag2, const_or_scalar1, asserted_type=Dense)
+    check_bin_op(B.add, const_or_scalar1, diag2, asserted_type=Woodbury)
+    check_bin_op(B.add, diag2, const_or_scalar1, asserted_type=Woodbury)
 
 
 def test_add_const_broadcasting():
