@@ -1,8 +1,8 @@
 import lab as B
-import warnings
 from plum import add_promotion_rule, conversion_method
 
 from .constant import Zero, Constant
+from .lowrank import LowRank
 from .matrix import AbstractMatrix, Dense
 
 __all__ = []
@@ -23,3 +23,12 @@ def convert(x):
     else:
         raise RuntimeError(f'Cannot convert rank {B.rank(x)} input '
                            f'to a matrix.')
+
+
+@conversion_method(Constant, LowRank)
+def constant_to_lowrank(a):
+    dtype = B.dtype(a)
+    rows, cols = B.shape(a)
+    return LowRank(B.ones(dtype, rows, 1),
+                   B.ones(dtype, cols, 1),
+                   B.fill_diag(a.const, 1))
