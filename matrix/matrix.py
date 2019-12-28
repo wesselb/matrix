@@ -1,3 +1,4 @@
+import warnings
 import abc
 
 import lab as B
@@ -5,7 +6,7 @@ import wbml.out
 from plum import Dispatcher, Referentiable
 
 from .shape import assert_matrix
-from .util import indent, dtype_str
+from .util import indent, dtype_str, ToDenseWarning
 
 __all__ = ['AbstractMatrix', 'Dense', 'repr_format', 'structured']
 
@@ -49,6 +50,12 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
 
     def __matmul__(self, other):
         return B.matmul(self, other)
+
+    def __getitem__(self, item):
+        if structured(self):
+            warnings.warn(f'Indexing into {self}: converting to dense.',
+                          category=ToDenseWarning)
+        return B.dense(self)[item]
 
     @property
     def T(self):
