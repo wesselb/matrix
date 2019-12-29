@@ -54,7 +54,7 @@ def test_cholesky_lr(lr_pd):
     chol = B.dense(B.cholesky(lr_pd))
     allclose(B.matmul(chol, chol, tr_b=True), lr_pd)
 
-    with AssertDenseWarning('left and right factors'):
+    with AssertDenseWarning('cannot ensure positivity of <low-rank>'):
         lr_pd2 = LowRank(lr_pd.left, 1 * lr_pd.right, lr_pd.middle)
         chol = B.dense(B.cholesky(lr_pd2))
         allclose(B.matmul(chol, chol, tr_b=True), lr_pd)

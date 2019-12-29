@@ -55,10 +55,10 @@ def cholesky(a):
 def cholesky(a):
     _assert_square_cholesky(a)
     if a.cholesky is None:
-        if a.left is a.right:
+        if a.sign == 1:
             a.cholesky = B.matmul(a.left, B.cholesky(a.middle))
         else:
-            warnings.warn(f'Left and right factors of {a} are not identical: '
+            warnings.warn(f'Cannot ensure positivity of {a}: '
                           f'converting to dense to compute the Cholesky '
                           f'decomposition.',
                           category=ToDenseWarning)

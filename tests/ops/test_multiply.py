@@ -38,6 +38,7 @@ from ..util import (
     ut2,
     lr1,
     lr2,
+    lr_pd,
     wb1,
     wb2,
     kron1,
@@ -149,6 +150,10 @@ lr_warnings = ['getting the diagonal of <low-rank>',
 def test_multiply_lr(lr1, lr2):
     with _conditional_warning([lr1, lr2], lr_warnings):
         check_bin_op(B.multiply, lr1, lr2, asserted_type=LowRank)
+
+
+def test_multiply_lr_sign(lr_pd):
+    assert B.multiply(lr_pd, lr_pd).sign == 1
 
 
 def test_multiply_lr_const(lr1, const_or_scalar2):

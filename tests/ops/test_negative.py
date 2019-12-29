@@ -23,6 +23,7 @@ from ..util import (
     lt1,
     ut1,
     lr1,
+    lr_pd,
     wb1,
     kron1
 )
@@ -54,6 +55,10 @@ def test_negative_ut(ut1):
 
 def test_negative_lr(lr1):
     check_un_op(B.negative, lr1, asserted_type=LowRank)
+
+
+def test_negative_lr_sign(lr_pd):
+    assert B.negative(lr_pd).sign == -1
 
 
 def test_negative_wb(wb1):

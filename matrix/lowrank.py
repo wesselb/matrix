@@ -4,11 +4,11 @@ from .matrix import AbstractMatrix, repr_format
 from .shape import assert_matrix, assert_square
 from .util import indent, dtype_str
 
-__all__ = ['LowRank', 'PositiveLowRank', 'NegativeLowRank']
+__all__ = ['LowRank']
 
 
 class LowRank(AbstractMatrix):
-    """Low-rank matrix.
+    """Abstract low-rank matrix.
 
     The data type of a low-rank matrix is the data type of the left factor.
     The Cholesky decomposition is not exactly the Cholesky decomposition,
@@ -19,7 +19,8 @@ class LowRank(AbstractMatrix):
         middle (matrix): Middle factor.
         right (matrix): Right factor.
         rank (int): Rank of the low-rank matrix.
-        sign (int): Definiteness of the matrix.
+        sign (int): Definiteness of the matrix, which is `1` if the
+            matrix is PD, `0` if it is indefinite, and `-1` if it is ND.
         cholesky (:class:`.matrix.AbstractMatrix` or None): Cholesky-like
             decomposition of the matrix, once it has been computed.
         dense (matrix or None): Dense version of the matrix, once it has been
@@ -30,15 +31,27 @@ class LowRank(AbstractMatrix):
         right (matrix, optional): Right factor. Defaults to the left factor.
         middle (matrix, optional): Middle factor. Defaults to the identity
             matrix.
+        sign (int, optional): Definiteness of the matrix. Defaults to `1` if
+            `left` is identical to `right` and `0` otherwise.
     """
 
-    def __init__(self, left, right=None, middle=None):
+    def __init__(self, left, right=None, middle=None, sign=None):
         self.left = left
         self._right = right
         self._middle = middle
         self._middle_default = None
 
+        # Set `sign` and `rank`.
         self.rank = B.shape(self.left)[1]
+        if sign is None:
+            if self.left is self.right:
+                self.sign = 1
+            else:
+                self.sign = 0
+        else:
+            self.sign = sign
+
+        # Caching attributes:
         self.cholesky = None
         self.dense = None
 
@@ -83,12 +96,6 @@ class LowRank(AbstractMatrix):
         else:
             return self._middle
 
-    @property
-    def sign(self):
-        """Definiteness of the matrix. Return `1` is the matrix is PD,
-        `0` if it is indefinite, and `-1` if it is ND."""
-        return 0
-
     def __str__(self):
         rows, cols = B.shape(self)
         return f'<low-rank matrix:' \
@@ -110,19 +117,3 @@ class LowRank(AbstractMatrix):
                    indent(repr_format(self.right), ' ' * 7).strip()
 
         return out + '>'
-
-
-class PositiveLowRank(LowRank):
-    """Positive-definite low-rank matrix."""
-
-    @property
-    def sign(self):
-        return 1
-
-
-class NegativeLowRank(LowRank):
-    """Negative-definite low-rank matrix."""
-
-    @property
-    def sign(self):
-        return -1

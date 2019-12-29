@@ -129,7 +129,8 @@ def add(a, b):
     assert_compatible(a, b)
     return LowRank(B.concat(a.left, b.left, axis=1),
                    B.concat(a.right, b.right, axis=1),
-                   B.diag(a.middle, b.middle))
+                   B.diag(a.middle, b.middle),
+                   sign=a.sign if a.sign == b.sign else 0)
 
 
 @B.dispatch(LowRank, Constant)

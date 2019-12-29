@@ -1,7 +1,7 @@
 import lab as B
 import pytest
-from matrix import LowRank, PositiveLowRank, NegativeLowRank
 
+from matrix import LowRank
 from .util import allclose
 
 
@@ -17,12 +17,12 @@ def test_lowrank_formatting():
            '        [2. 2.]\n' \
            '        [2. 2.]]>'
     assert repr(LowRank(B.ones(3, 2))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=0\n' \
+           '<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=1\n' \
            ' left=[[1. 1.]\n' \
            '       [1. 1.]\n' \
            '       [1. 1.]]>'
     assert repr(LowRank(B.ones(3, 2), middle=B.ones(2, 2))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=0\n' \
+           '<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=1\n' \
            ' left=[[1. 1.]\n' \
            '       [1. 1.]\n' \
            '       [1. 1.]]\n' \
@@ -38,7 +38,7 @@ def test_lowrank_attributes():
     assert lr.right is left
     allclose(lr.middle, B.eye(2))
     assert lr.rank == 2
-    assert lr.sign == 0
+    assert lr.sign == 1
 
     # Check given right and middle factor.
     right = 2 * B.ones(3, 2)
@@ -47,12 +47,11 @@ def test_lowrank_attributes():
     assert lr.left is left
     assert lr.right is right
     assert lr.middle is middle
+    assert lr.sign == 0
 
-    # Check signs.
-    lr = PositiveLowRank(left)
-    assert lr.sign > 0
-    lr = NegativeLowRank(left)
-    assert lr.sign < 0
+    # Check given right factor and sign.
+    lr = LowRank(left, left, sign=1)
+    assert lr.sign == 1
 
 
 def test_lowrank_shape_checks():

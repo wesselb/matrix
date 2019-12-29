@@ -185,7 +185,8 @@ def multiply(a, b):
                        for ami in am
                        for bmk in bm], axis=0)
 
-    return LowRank(left, right, middle)
+    return LowRank(left, right, middle,
+                   sign=a.sign if a.sign == b.sign else 0)
 
 
 @B.dispatch(Constant, LowRank)

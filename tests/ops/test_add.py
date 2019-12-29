@@ -37,6 +37,7 @@ from ..util import (
     ut2,
     lr1,
     lr2,
+    lr_pd,
     wb1,
     wb2,
     kron1,
@@ -136,6 +137,11 @@ def test_add_ut_const(ut1, const_or_scalar2):
 def test_add_lr(lr1, lr2):
     with AssertDenseWarning(concat_warnings):
         check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
+
+
+def test_add_lr_sign(lr_pd):
+    with AssertDenseWarning(concat_warnings):
+        assert B.add(lr_pd, lr_pd).sign == 1
 
 
 def test_add_lr_const(lr1, const_or_scalar2):
