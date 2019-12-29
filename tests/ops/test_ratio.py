@@ -35,8 +35,7 @@ def test_ratio_diag_dense(diag_pd, dense_pd):
 
 
 def test_ratio_dense_wb(dense_pd, wb_pd):
-    warn = AssertDenseWarning('solving <dense> x = <lower-triangular>')
-    with ConditionalContext(structured(wb_pd.lr.left, wb_pd.lr.right), warn):
+    with AssertDenseWarning('adding <lower-triangular> and <low-rank>'):
         _check_ratio(dense_pd, wb_pd)
 
 
