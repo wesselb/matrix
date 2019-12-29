@@ -26,7 +26,7 @@ pip install backends-matrix
 ```python
 >>> import lab as B
 
->>> from matrix import Diagonal, LowRank
+>>> from matrix import Diagonal
 
 >>> d = Diagonal(B.ones(3))
 
@@ -42,7 +42,7 @@ pip install backends-matrix
 <Woodbury matrix: shape=3x3, dtype=int64
  diag=<diagonal matrix: shape=3x3, dtype=float64
        diag=[2. 2. 2.]>
- lr=<low-rank matrix: shape=3x3, dtype=int64, rank=1, sign=0
+ lr=<low-rank matrix: shape=3x3, dtype=int64, rank=1, sign=1
      left=[[1]
            [1]
            [1]]
@@ -97,7 +97,7 @@ UpperTriangular
 
 The following composite types are provided:
 ```
-LowRank (with definiteness: PositiveLowRank, NegativeLowRank)
+LowRank
 Woodbury
 Kronecker
 ```
