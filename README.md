@@ -22,7 +22,7 @@ Then simply
 pip install backends-matrix
 ```
 
-## Basic Usage
+## Example
 ```python
 >>> import lab as B
 
@@ -38,42 +38,46 @@ pip install backends-matrix
 <diagonal matrix: shape=3x3, data type=float64
  diag=[2. 2. 2.]>
 
->>> 2 + d
-ToDenseWarning: Adding <constant matrix: shape=1x1, dtype=int, const=2> and <diagonal matrix: shape=3x3, dtype=float64>: converting to dense.
-<dense matrix: shape=3x3, dtype=float64
- mat=[[3. 2. 2.]
-      [2. 3. 2.]
-      [2. 2. 3.]]>
+>>> 2 * d + 1
+<Woodbury matrix: shape=3x3, dtype=int64
+ diag=<diagonal matrix: shape=3x3, dtype=float64
+       diag=[2. 2. 2.]>
+ lr=<low-rank matrix: shape=3x3, dtype=int64, rank=1, sign=0
+     left=[[1]
+           [1]
+           [1]]
+     middle=<diagonal matrix: shape=1x1, dtype=int64
+             diag=[1]>>>
   
->>> d + B.randn(3, 3)
-ToDenseWarning: Adding <diagonal matrix: shape=3x3, dtype=float64> and <dense matrix: shape=3x3, dtype=float64>: converting to dense.
-<dense matrix: shape=3x3, dtype=float64
- mat=[[ 1.709  0.146  0.541]
-      [ 0.49   1.069 -0.161]
-      [-0.529  0.006  1.815]]>
-
->>> lr = LowRank(B.ones(3, 1), 2 * B.ones(3, 1))
-
->>> lr
-<low-rank matrix: shape=3x3, dtype=float64, rank=1, sign=0
- left=[[1.]
-       [1.]
-       [1.]]
- right=[[2.]
-        [2.]
-        [2.]]>
-
->>> d + lr
+>>> B.inv(2 * d + 1)
 <Woodbury matrix: shape=3x3, dtype=float64
  diag=<diagonal matrix: shape=3x3, dtype=float64
-       diag=[1. 1. 1.]>
+       diag=[0.5 0.5 0.5]>
  lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1, sign=0
-     left=[[1.]
-           [1.]
-           [1.]]
-     right=[[2.]
-            [2.]
-            [2.]]>>
+     left=<dense matrix: shape=3x1, dtype=float64
+           mat=[[0.5]
+                [0.5]
+                [0.5]]>
+     middle=[[-0.4]]
+     right=<dense matrix: shape=3x1, dtype=float64
+            mat=[[0.5]
+                 [0.5]
+                 [0.5]]>>>
+
+>>> B.kron(d, 2 * d)
+<Kronecker product: shape=9x9, dtype=float64
+ left=<diagonal matrix: shape=3x3, dtype=float64
+       diag=[1. 1. 1.]>
+ right=<diagonal matrix: shape=3x3, dtype=float64
+        diag=[2. 2. 2.]>>
+
+
+>>> B.inv(B.kron(d, 2 * d))
+<Kronecker product: shape=9x9, dtype=float64
+ left=<diagonal matrix: shape=3x3, dtype=float64
+       diag=[1. 1. 1.]>
+ right=<diagonal matrix: shape=3x3, dtype=float64
+        diag=[0.5 0.5 0.5]>>
 ```
 
 ## Matrix Types
