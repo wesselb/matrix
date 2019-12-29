@@ -1,12 +1,11 @@
 import lab as B
 
-from ..matrix import AbstractMatrix
 from ..woodbury import Woodbury
 
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix, AbstractMatrix, AbstractMatrix)
+@B.dispatch(object, object, object)
 def iqf_diag(a, b, c):
     """Compute the diagonal of `transpose(b) inv(a) c` where `a` is assumed
     to be positive definite.
@@ -14,7 +13,7 @@ def iqf_diag(a, b, c):
     Args:
         a (matrix): Matrix `a`.
         b (matrix): Matrix `b`.
-        c (matrix): Matrix `c`.
+        c (matrix, optional): Matrix `c`. Defaults to `b`.
 
     Returns:
         vector: Diagonal of resulting quadratic form.
@@ -25,13 +24,17 @@ def iqf_diag(a, b, c):
         chol_c = chol_b
     else:
         chol_c = B.solve(chol, c)
-    return B.sum(chol_b * chol_c, axis=0)
+    return B.matmul_diag(chol_b, chol_c, tr_a=True)
 
 
 B.iqf_diag = iqf_diag
 
 
-@B.dispatch(Woodbury, AbstractMatrix, AbstractMatrix)
+@B.dispatch(object, object)
+def iqf_diag(a, b):
+    return iqf_diag(a, b, b)
+
+
+@B.dispatch(Woodbury, object, object)
 def iqf_diag(a, b, c):
-    a_inv_c = B.solve(a, c)  # Use the matrix inversion lemma.
-    return B.sum(b * a_inv_c, axis=0)
+    return B.matmul_diag(b, B.solve(a, c), tr_a=True)

@@ -21,6 +21,10 @@ def _check_iqf(a, b, c):
     allclose(res, B.diag(B.iqf(a, b, c)))
 
 
+def test_iqf_diag_two_arguments(dense_pd, dense1):
+    allclose(B.iqf_diag(dense_pd, dense1), B.iqf_diag(dense_pd, dense1, dense1))
+
+
 def test_iqf_diag_dense(dense_pd, dense1, dense2):
     _check_iqf(dense_pd, dense1, dense2)
     _check_iqf(dense_pd, dense1, dense1)

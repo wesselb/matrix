@@ -1,12 +1,11 @@
 import lab as B
 
-from ..matrix import AbstractMatrix
 from ..woodbury import Woodbury
 
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix, AbstractMatrix, AbstractMatrix)
+@B.dispatch(object, object, object)
 def iqf(a, b, c):
     """Compute `transpose(b) inv(a) c` where `a` is assumed to be positive
     definite.
@@ -14,7 +13,7 @@ def iqf(a, b, c):
     Args:
         a (matrix): Matrix `a`.
         b (matrix): Matrix `b`.
-        c (matrix): Matrix `c`.
+        c (matrix, optional): Matrix `c`. Defaults to `b`.
 
     Returns:
         matrix: Resulting quadratic form.
@@ -31,7 +30,11 @@ def iqf(a, b, c):
 B.iqf = iqf
 
 
-@B.dispatch(Woodbury, AbstractMatrix, AbstractMatrix)
+@B.dispatch(object, object)
+def iqf(a, b):
+    return iqf(a, b, b)
+
+
+@B.dispatch(Woodbury, object, object)
 def iqf(a, b, c):
-    a_inv = B.inv(a)  # Use the matrix inversion lemma to compute the inverse.
-    return B.mm(B.mm(b, a_inv, tr_a=True), c)
+    return B.mm(b, B.solve(a, c), tr_a=True)

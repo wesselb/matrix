@@ -21,6 +21,10 @@ def _check_iqf(a, b, c):
     allclose(res, B.mm(B.dense(b), B.solve(B.dense(a), B.dense(c)), tr_a=True))
 
 
+def test_iqf_two_arguments(dense_pd, dense1):
+    allclose(B.iqf(dense_pd, dense1), B.iqf(dense_pd, dense1, dense1))
+
+
 def test_iqf_dense(dense_pd, dense1, dense2):
     _check_iqf(dense_pd, dense1, dense2)
     _check_iqf(dense_pd, dense1, dense1)
