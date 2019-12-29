@@ -1,13 +1,12 @@
 import warnings
 
 import lab as B
-import lab.util
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
-from ..matrix import AbstractMatrix, Dense, structured
+from ..matrix import Dense, structured
 from ..triangular import LowerTriangular, UpperTriangular
 from ..util import ToDenseWarning
 from ..woodbury import Woodbury
@@ -64,18 +63,15 @@ def diag(a):
 # Construct block-diagonal matrices.
 
 @B.dispatch(object, object)
-@lab.util.abstract()
-def diag(a, b):  # pragma: no cover
-    pass
-
-
-@B.dispatch(AbstractMatrix, AbstractMatrix)
 def diag(a, b):
+    # We could merge this with `block`, but `block` has a lot of overhead. It
+    # seems advantageous to optimise this common case.
     warnings.warn(f'Constructing a dense block-diagonal matrix from '
-                  f'{a} and {b}.',
+                  f'{a} and {b}: converting to dense.',
                   category=ToDenseWarning)
     a = B.dense(a)
     b = B.dense(b)
+
     dtype = B.dtype(a)
     ar, ac = B.shape(a)
     br, bc = B.shape(b)
