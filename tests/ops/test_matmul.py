@@ -20,6 +20,7 @@ from ..util import (
     AssertDenseWarning,
     ConditionalContext,
     concat_warnings,
+    generate,
 
     zero1,
     zero2,
@@ -65,6 +66,29 @@ def test_matmul_assertion(zero_r, dense2):
 def test_matmul_zero_diag(zero1, diag2):
     _check_matmul(zero1, diag2, asserted_type=Zero)
     _check_matmul(diag2, zero1, asserted_type=Zero)
+
+
+@pytest.mark.parametrize('code_a, code_b, code_c',
+                         [('dense:3,6', 'dense:6,6', 'dense:6,6'),
+                          ('dense:6,6', 'dense:6,6', 'dense:6,3')])
+def test_matmul_multiple(code_a, code_b, code_c):
+    for tr_a in [True, False]:
+        for tr_b in [True, False]:
+            for tr_c in [True, False]:
+                a = generate(code_a)
+                b = generate(code_b)
+                c = generate(code_c)
+
+                if tr_a:
+                    a = B.transpose(a)
+                if tr_b:
+                    b = B.transpose(b)
+                if tr_c:
+                    c = B.transpose(c)
+
+                allclose(B.matmul(a, b, c, tr_a=tr_a, tr_b=tr_b, tr_c=tr_c),
+                         B.matmul(B.matmul(a, b, tr_a=tr_a, tr_b=tr_b),
+                                  c, tr_b=tr_c))
 
 
 def test_matmul_dense(dense1, dense2):
@@ -153,6 +177,10 @@ def test_matmul_ut_lt(ut1, lt1):
 def test_matmul_lr(lr1, lr2):
     _check_matmul(lr1, lr2, asserted_type=LowRank)
     assert B.matmul(lr1, lr2).rank == min(lr1.rank, lr2.rank)
+
+    # Check that middle is `Diagonal` if both are rank 1.
+    if lr1.rank == 1 and lr2.rank == 1:
+        assert isinstance(B.matmul(lr1, lr2).middle, Diagonal)
 
 
 def test_matmul_lr_dense(lr1, dense2):

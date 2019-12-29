@@ -41,6 +41,31 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return _tr(a, tr_a)
 
 
+# Multiple multiplication:
+
+def _shape_tr(a, tr_a):
+    ar, ac = B.shape(a)
+    if tr_a:
+        return ac, ar
+    else:
+        return ar, ac
+
+
+@B.dispatch(object, object, object)
+def matmul(a, b, c, tr_a=False, tr_b=False, tr_c=False):
+    ar, ac = _shape_tr(a, tr_a)
+    br, bc = _shape_tr(b, tr_b)
+    cr, cc = _shape_tr(c, tr_c)
+
+    cost_ab_first = ar * ac * bc + ar * bc * cc
+    cost_bc_first = br * bc * cc + ar * br * cc
+
+    if cost_ab_first <= cost_bc_first:
+        return B.matmul(B.matmul(a, b, tr_a=tr_a, tr_b=tr_b), c, tr_b=tr_c)
+    else:
+        return B.matmul(a, B.matmul(b, c, tr_a=tr_b, tr_b=tr_c), tr_a=tr_a)
+
+
 # Dense
 
 @B.dispatch(Dense, Dense)
@@ -187,10 +212,14 @@ def matmul(a, b, tr_a=False, tr_b=False):
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
     middle = B.matmul(a.right, b.left, tr_a=True)
-    middle = B.matmul(B.matmul(a.middle, middle), b.middle)
+    middle = B.matmul(a.middle, middle, b.middle)
     rows, cols = B.shape(middle)
     if rows == cols:
-        return LowRank(a.left, b.right, middle)
+        # Let `middle` be of type `Diagonal` if possible.
+        if a.rank == 1 and b.rank == 1:
+            return LowRank(a.left, b.right, Diagonal(middle))
+        else:
+            return LowRank(a.left, b.right, middle)
     elif rows > cols:
         return LowRank(B.matmul(a.left, middle), b.right)
     elif rows < cols:
