@@ -29,6 +29,11 @@ def convert(x):
 def constant_to_lowrank(a):
     dtype = B.dtype(a)
     rows, cols = B.shape(a)
-    return LowRank(B.ones(dtype, rows, 1),
-                   B.ones(dtype, cols, 1),
-                   B.fill_diag(a.const, 1))
+    middle = B.fill_diag(a.const, 1)
+    if rows == cols:
+        return LowRank(left=B.ones(dtype, rows, 1),
+                       middle=middle)
+    else:
+        return LowRank(left=B.ones(dtype, rows, 1),
+                       right=B.ones(dtype, cols, 1),
+                       middle=middle)
