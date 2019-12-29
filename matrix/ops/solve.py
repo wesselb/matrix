@@ -1,13 +1,14 @@
-import lab as B
 import warnings
+
+import lab as B
 from algebra import proven
 
-from ..matrix import AbstractMatrix, Dense, structured
-from ..woodbury import Woodbury
-from ..triangular import LowerTriangular, UpperTriangular
-from ..diagonal import Diagonal
 from ..constant import Zero
+from ..diagonal import Diagonal
+from ..matrix import AbstractMatrix, Dense, structured
+from ..triangular import LowerTriangular, UpperTriangular
 from ..util import ToDenseWarning
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -48,9 +49,5 @@ def solve(a, b):
 
 @B.dispatch(Woodbury, AbstractMatrix)
 def solve(a, b):
-    # Use the matrix inversion lemma:
-    inv_diag = B.inv(a.diag)
-    left = B.mm(inv_diag, a.lr.left)
-    right = B.mm(inv_diag, a.lr.right)
-    second = B.mm(left, B.solve(B.dense(B.schur(a)), B.mm(right, b, tr_a=True)))
-    return B.subtract(B.mm(inv_diag, b), second)
+    # `B.inv` is optimised with the matrix inversion lemma.
+    return B.matmul(B.inv(a), b)

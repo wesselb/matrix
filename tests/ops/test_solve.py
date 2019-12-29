@@ -1,13 +1,11 @@
 import lab as B
 
-from matrix import Dense, structured, Diagonal
-
+from matrix import Dense, Diagonal
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_bin_op,
     AssertDenseWarning,
-    ConditionalContext,
 
     zero1,
     zero2,
@@ -68,6 +66,4 @@ def test_solve_wb_dense(wb_pd, dense2):
 
 
 def test_solve_wb_diag(wb_pd, diag2):
-    warn = AssertDenseWarning('solving <dense> x = <diagonal>')
-    with ConditionalContext(structured(wb_pd.lr.right, wb_pd.lr.right), warn):
-        check_bin_op(B.solve, wb_pd, diag2)
+    check_bin_op(B.solve, wb_pd, diag2)
