@@ -1,52 +1,6 @@
-TODO:
-    Unary functions:
-        ☐ transpose
-        ☐ eye
-        ☐ sum
-        ☐ trace
-        ☐ cholesky
-        ☐ logdet
-        ☐ inverse
-        ☐ root
-        ☐ sample
-        ☐ schur
+Efficiency:
+    ☐ Vector representation of triangular matrices
 
-    N-ary functions:
-        ☐ matmul
-        ☐ concat
-        ☐ block_matrix
-        ☐ iqf
-        ☐ iqf_diag
-        ☐ ratio
-
-    Features:
-        ☐ multiply for similar Kronecker products
-
-＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
-Archive:
- ✓ Diagonal matrix @done (20-12-19 17:30) @project(TODO)
- ✓ Kronecker @done (19-12-19 22:07) @project(TODO / Matrix types)
- ✓ multiply between Woodbury and Woodbury @done (19-12-19 21:35) @project(TODO / Unary functions)
- ✓ multiply between Woodbury and LowRank @done (19-12-19 21:35) @project(TODO / Unary functions)
- ✓ multiply @done (19-12-19 21:35) @project(TODO / Matrix types)
- ✓ multiply @done (19-12-19 21:35) @project(TODO / Matrix types)
- ✓ Woodbury @done (19-12-19 21:35) @project(TODO / Matrix types)
- ✓ LowRank @done (19-12-19 21:35) @project(TODO / Matrix types)
- ✓ Implement all existing functions @done (19-12-19 21:35) @project(TODO / Matrix types)
- ✓ Implement all existing functions @done (19-12-19 21:35) @project(TODO / Matrix types)
- ✓ multiply between Diagonal and AbstractMatrix @done (19-12-19 21:29) @project(TODO / Unary functions)
- ✓ diag @done (19-12-19 21:21) @project(TODO / Unary functions)
- ✓ subtract @done (19-12-19 20:57) @project(TODO / Matrix types)
- ✓ subtract @done (19-12-19 20:57) @project(TODO / Matrix types)
- ✓ negative @done (19-12-19 20:49) @project(TODO / Matrix types)
- ✓ negative @done (19-12-19 20:49) @project(TODO / Matrix types)
- ✓ add @started(19-12-19 20:08) @done (19-12-19 20:37) @lasted(0:29) @project(TODO / Matrix types)
- ✓ add @started(19-12-19 20:08) @done (19-12-19 20:37) @lasted(0:29) @project(TODO / Matrix types)
- ✓ Implement type @done (19-12-19 20:08) @project(TODO / Matrix types)
- ✓ Implement type @done (19-12-19 20:07) @project(TODO / Matrix types)
- ✓ dense @done (19-12-19 20:05) @project(TODO / Matrix types)
- ✓ dense @done (19-12-19 20:05) @project(TODO / Matrix types)
- ✓ Zero @done (19-12-19 18:09) @project(TODO / Matrix types)
- ✓ Shape and dtype @done (19-12-19 17:30) @project(TODO)
- ✓ Improve printing of matrices @done (19-12-19 17:30) @project(TODO)
- x Shape? @cancelled (19-12-19 17:30) @project(TODO)
+Positivity of Woodbury matrices:
+    ☐ Preserve sign of `LowRank` in operations.
+    ☐ Use and preserve sign of low-rank matrix in `inv` and `iqf*` for `Woodbury`.
