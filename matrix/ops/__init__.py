@@ -6,6 +6,7 @@ from .dense import *
 from .diag import *
 from .divide import *
 from .dtype import *
+from .eye import *
 from .fill_diag import *
 from .inv import *
 from .iqf import *
@@ -13,9 +14,11 @@ from .iqf_diag import *
 from .kron import *
 from .logdet import *
 from .matmul import *
+from .matmul_diag import *
 from .multiply import *
 from .negative import *
 from .one import *
+from .ones import *
 from .power import *
 from .rank import *
 from .ratio import *
@@ -30,3 +33,4 @@ from .sum import *
 from .trace import *
 from .transpose import *
 from .zero import *
+from .zeros import *

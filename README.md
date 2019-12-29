@@ -109,6 +109,7 @@ dense(a)
 fill_diag(a, diag_len)
 block(*rows)
 
+matmul_diag(a, b, tr_a=False, tr_b=False)
 iqf(a, b, c)
 iqf_diag(a, b, c)
 ratio(a, c)
