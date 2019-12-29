@@ -55,7 +55,15 @@ def cholesky(a):
 def cholesky(a):
     _assert_square_cholesky(a)
     if a.cholesky is None:
-        a.cholesky = B.matmul(a.left, B.cholesky(a.middle))
+        if a.left is a.right:
+            a.cholesky = B.matmul(a.left, B.cholesky(a.middle))
+        else:
+            warnings.warn(f'Left and right factors of {a} are not identical: '
+                          f'converting to dense to compute the Cholesky '
+                          f'decomposition.',
+                          category=ToDenseWarning)
+            a.cholesky = B.cholesky(Dense(a))
+
     return a.cholesky
 
 
