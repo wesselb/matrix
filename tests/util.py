@@ -76,9 +76,6 @@ _dispatch = Dispatcher()
 
 approx = assert_array_almost_equal
 
-# Convert structured matrices to numpy by constructing their dense versions.
-B.to_numpy.extend(AbstractMatrix)(B.dense)
-
 
 @_dispatch(object, object)
 def allclose(x, y):
