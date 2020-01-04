@@ -15,7 +15,7 @@ def ratio(a, b):
         matrix: Ratio.
     """
     chol = B.cholesky(a)
-    return B.sum(B.iqf_diag(b, chol, chol))
+    return B.sum(B.iqf_diag(b, chol))
 
 
 B.ratio = ratio
