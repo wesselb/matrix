@@ -11,6 +11,7 @@ from .fill_diag import *
 from .inv import *
 from .iqf import *
 from .iqf_diag import *
+from .isnan import *
 from .kron import *
 from .logdet import *
 from .matmul import *
@@ -30,7 +31,10 @@ from .shape import *
 from .solve import *
 from .subtract import *
 from .sum import *
+from .take import *
+from .to_numpy import *
 from .trace import *
 from .transpose import *
+from .uprank import *
 from .zero import *
 from .zeros import *
