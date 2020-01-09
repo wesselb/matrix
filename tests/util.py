@@ -114,7 +114,7 @@ def check_un_op(op, x, asserted_type=object):
     _assert_instance(res, asserted_type)
 
 
-def check_bin_op(op, x, y, asserted_type=object):
+def check_bin_op(op, x, y, asserted_type=object, check_broadcasting=True):
     """Assert the correct of a binary operation by checking whether the
     result is the same on the dense versions of the arguments.
 
@@ -123,6 +123,7 @@ def check_bin_op(op, x, y, asserted_type=object):
         x (object): First argument.
         y (object): Second argument.
         asserted_type (type, optional): Type of result.
+        check_broadcasting (bool, optional): Check broadcasting behaviour.
     """
     x_dense = B.dense(x)
     y_dense = B.dense(y)
@@ -131,8 +132,9 @@ def check_bin_op(op, x, y, asserted_type=object):
     allclose(res, op(x_dense, y_dense))
 
     warnings.filterwarnings(category=ToDenseWarning, action='ignore')
-    allclose(op(x_dense, y), op(x_dense, y_dense))
-    allclose(op(x, y_dense), op(x_dense, y_dense))
+    if check_broadcasting:
+        allclose(op(x_dense, y), op(x_dense, y_dense))
+        allclose(op(x, y_dense), op(x_dense, y_dense))
     allclose(op(x_dense, y_dense), op(x_dense, y_dense))
     warnings.filterwarnings(category=ToDenseWarning, action='default')
 
