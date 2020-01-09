@@ -18,7 +18,7 @@ def shape(a):
 
 @B.dispatch(Diagonal)
 def shape(a):
-    diag_len = B.length(a.diag)
+    diag_len = B.shape(a.diag)[0]
     return diag_len, diag_len
 
 
