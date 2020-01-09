@@ -1,6 +1,7 @@
 from .add import *
 from .block import *
 from .cholesky import *
+from .cholesky_solve import *
 from .concat import *
 from .dense import *
 from .diag import *
@@ -35,6 +36,7 @@ from .take import *
 from .to_numpy import *
 from .trace import *
 from .transpose import *
+from .triangular_solve import *
 from .uprank import *
 from .zero import *
 from .zeros import *
