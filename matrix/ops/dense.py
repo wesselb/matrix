@@ -11,7 +11,7 @@ from ..kronecker import Kronecker
 __all__ = []
 
 
-@B.dispatch(B.Numeric)
+@B.dispatch(object)
 def dense(a):
     """Convert a (structured) matrix to a dense, numeric matrix.
 
