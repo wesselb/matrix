@@ -20,7 +20,8 @@ def power(a, b):
 @B.dispatch(AbstractMatrix, B.Numeric)
 def power(a, b):
     if structured(a):
-        warnings.warn(f'Taking a power of {a}: converting to dense.',
+        warnings.warn(f'Taking an element-wise power of {a}: converting to '
+                      f'dense.',
                       category=ToDenseWarning)
     return Dense(B.power(B.dense(a), b))
 
