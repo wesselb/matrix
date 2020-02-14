@@ -24,6 +24,7 @@ __all__ = ['allclose',
            'approx',
            'check_un_op',
            'check_bin_op',
+           'IgnoreDenseWarning',
            'AssertDenseWarning',
            'ConditionalContext',
            'concat_warnings',
@@ -131,12 +132,11 @@ def check_bin_op(op, x, y, asserted_type=object, check_broadcasting=True):
 
     allclose(res, op(x_dense, y_dense))
 
-    warnings.filterwarnings(category=ToDenseWarning, action='ignore')
-    if check_broadcasting:
-        allclose(op(x_dense, y), op(x_dense, y_dense))
-        allclose(op(x, y_dense), op(x_dense, y_dense))
-    allclose(op(x_dense, y_dense), op(x_dense, y_dense))
-    warnings.filterwarnings(category=ToDenseWarning, action='default')
+    with IgnoreDenseWarning():
+        if check_broadcasting:
+            allclose(op(x_dense, y), op(x_dense, y_dense))
+            allclose(op(x, y_dense), op(x_dense, y_dense))
+        allclose(op(x_dense, y_dense), op(x_dense, y_dense))
 
     _assert_instance(res, asserted_type)
 
@@ -145,6 +145,16 @@ def _sanitise(msg):
     # Filter details from printed objects
     msg = re.sub(r'<([a-zA-Z\- ]{1,})( matrix| product):[^>]*>', r'<\1>', msg)
     return msg
+
+
+class IgnoreDenseWarning:
+    """Context for ignoring `ToDenseWarnings`."""
+
+    def __enter__(self):
+        warnings.filterwarnings(category=ToDenseWarning, action='ignore')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        warnings.filterwarnings(category=ToDenseWarning, action='default')
 
 
 class AssertDenseWarning:
