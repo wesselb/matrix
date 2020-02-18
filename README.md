@@ -6,17 +6,11 @@
 
 Structured matrices
 
-*Note:* This package requires Python 3.6 or higher.
+## Requirements and Installation
 
-## Installation
-
-Before installing the package, please ensure that `gcc` and `gfortran` are 
-available.
-On OS X, these are both installed with `brew install gcc`;
-users of Anaconda may want to instead consider `conda install gcc`.
-On Linux, `gcc` is most likely already available, and `gfortran` can be
-installed with `apt-get install gfortran`.
+See [the instructions here](https://gist.github.com/wesselb/4b44bf87f3789425f96e26c4308d0adc).
 Then simply
+
 
 ```bash
 pip install backends-matrix
