@@ -1,5 +1,5 @@
 import lab as B
-from wbml.util import warn_upmodule
+from wbml.warning import warn_upmodule
 
 from ..matrix import AbstractMatrix, structured
 from ..util import ToDenseWarning

@@ -3,7 +3,7 @@ import abc
 import lab as B
 import wbml.out
 from plum import Dispatcher, Referentiable
-from wbml.util import warn_upmodule
+from wbml.warning import warn_upmodule
 
 from .shape import assert_matrix
 from .util import indent, dtype_str, ToDenseWarning

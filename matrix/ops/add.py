@@ -1,7 +1,7 @@
 import lab as B
 from algebra import proven
 from plum import convert
-from wbml.util import warn_upmodule
+from wbml.warning import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal

@@ -1,6 +1,6 @@
 import lab as B
 import numpy as np
-from wbml.util import warn_upmodule
+from wbml.warning import warn_upmodule
 
 from ..woodbury import Woodbury
 
