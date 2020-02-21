@@ -1,6 +1,5 @@
-import warnings
-
 import lab as B
+from wbml.util import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -41,7 +40,7 @@ def diag(a):
 @B.dispatch(LowRank)
 def diag(a):
     if structured(a.left, a.right):
-        warnings.warn(f'Getting the diagonal of {a}: '
+        warn_upmodule(f'Getting the diagonal of {a}: '
                       f'converting the factors to dense.',
                       category=ToDenseWarning)
     diag_len = _diag_len(a)
@@ -66,7 +65,7 @@ def diag(a):
 def diag(a, b):
     # We could merge this with `block`, but `block` has a lot of overhead. It
     # seems advantageous to optimise this common case.
-    warnings.warn(f'Constructing a dense block-diagonal matrix from '
+    warn_upmodule(f'Constructing a dense block-diagonal matrix from '
                   f'{a} and {b}: converting to dense.',
                   category=ToDenseWarning)
     a = B.dense(a)

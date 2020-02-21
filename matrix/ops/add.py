@@ -1,8 +1,7 @@
-import warnings
-
 import lab as B
 from algebra import proven
 from plum import convert
+from wbml.util import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -41,7 +40,7 @@ def add(a, b):
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def add(a, b):
     if structured(a) and structured(b):
-        warnings.warn(f'Adding {a} and {b}: converting to dense.',
+        warn_upmodule(f'Adding {a} and {b}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(B.add(B.dense(a), B.dense(b)))
 
@@ -69,7 +68,7 @@ def add(a, b):
 @B.dispatch(Constant, AbstractMatrix)
 def add(a, b):
     if structured(b):
-        warnings.warn(f'Adding {a} and {b}: converting to dense.',
+        warn_upmodule(f'Adding {a} and {b}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(a.const + B.dense(b))
 

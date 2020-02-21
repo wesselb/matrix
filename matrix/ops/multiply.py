@@ -1,16 +1,16 @@
 import lab as B
 from algebra import proven
-import warnings
+from wbml.util import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
-from ..triangular import LowerTriangular, UpperTriangular
 from ..shape import assert_compatible, broadcast
-from ..woodbury import Woodbury
+from ..triangular import LowerTriangular, UpperTriangular
 from ..util import redirect, ToDenseWarning
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -40,7 +40,7 @@ def multiply(a, b):
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def multiply(a, b):
     if structured(a, b):
-        warnings.warn(f'Multiplying {a} and {b}: converting to dense.',
+        warn_upmodule(f'Multiplying {a} and {b}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(B.multiply(B.dense(a), B.dense(b)))
 
@@ -85,7 +85,7 @@ def multiply(a, b):
 def multiply(a, b):
     assert_compatible(a, b)
     if structured(b):
-        warnings.warn(f'Multiplying {a} and {b}: converting to dense.',
+        warn_upmodule(f'Multiplying {a} and {b}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(a.const * B.dense(b))
 
@@ -161,7 +161,7 @@ def multiply(a, b):
     assert_compatible(a, b)
 
     if structured(a.left, a.right, b.left, b.right):
-        warnings.warn(f'Multiplying {a} and {b}: converting factors to dense.',
+        warn_upmodule(f'Multiplying {a} and {b}: converting factors to dense.',
                       category=ToDenseWarning)
     al, am, ar = B.dense(a.left), B.dense(a.middle), B.dense(a.right)
     bl, bm, br = B.dense(b.left), B.dense(b.middle), B.dense(b.right)

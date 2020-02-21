@@ -1,6 +1,5 @@
-import warnings
-
 import lab as B
+from wbml.util import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -61,7 +60,7 @@ def root(a):
 
 @B.dispatch({LowRank, Woodbury})
 def root(a):
-    warnings.warn(f'Converting {a} to dense to compute its square root.',
+    warn_upmodule(f'Converting {a} to dense to compute its square root.',
                   category=ToDenseWarning)
     return Dense(B.root(B.dense(a)))
 

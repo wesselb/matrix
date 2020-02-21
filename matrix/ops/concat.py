@@ -1,5 +1,5 @@
-import warnings
 import lab as B
+from wbml.util import warn_upmodule
 
 from ..matrix import AbstractMatrix, Dense, structured
 from ..util import ToDenseWarning
@@ -13,6 +13,6 @@ def concat(*elements, axis=0):
         elements_str = ', '.join(map(str, elements[:3]))
         if len(elements) > 3:
             elements_str += '...'
-        warnings.warn(f'Concatenating {elements_str}: converting to dense.',
+        warn_upmodule(f'Concatenating {elements_str}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(B.concat(*(B.dense(el) for el in elements), axis=axis))

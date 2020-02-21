@@ -1,6 +1,5 @@
-import warnings
-
 import lab as B
+from wbml.util import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -20,7 +19,7 @@ def power(a, b):
 @B.dispatch(AbstractMatrix, B.Numeric)
 def power(a, b):
     if structured(a):
-        warnings.warn(f'Taking an element-wise power of {a}: converting to '
+        warn_upmodule(f'Taking an element-wise power of {a}: converting to '
                       f'dense.',
                       category=ToDenseWarning)
     return Dense(B.power(B.dense(a), b))

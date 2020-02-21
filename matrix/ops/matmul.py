@@ -1,6 +1,6 @@
 import lab as B
-import warnings
 from algebra import proven
+from wbml.util import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -8,9 +8,9 @@ from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
 from ..shape import get_shape
+from ..triangular import LowerTriangular, UpperTriangular
 from ..util import redirect, ToDenseWarning
 from ..woodbury import Woodbury
-from ..triangular import LowerTriangular, UpperTriangular
 
 __all__ = []
 
@@ -139,7 +139,7 @@ def matmul(a, b, tr_a=False, tr_b=False):
 @B.dispatch(LowerTriangular, AbstractMatrix)
 def matmul(a, b, tr_a=False, tr_b=False):
     if structured(b):
-        warnings.warn(f'Matrix-multiplying {a} and {b}: converting to dense.',
+        warn_upmodule(f'Matrix-multiplying {a} and {b}: converting to dense.',
                       category=ToDenseWarning)
     return B.matmul(B.dense(a), b, tr_a=tr_a, tr_b=tr_b)
 
@@ -147,7 +147,7 @@ def matmul(a, b, tr_a=False, tr_b=False):
 @B.dispatch(AbstractMatrix, LowerTriangular)
 def matmul(a, b, tr_a=False, tr_b=False):
     if structured(a):
-        warnings.warn(f'Matrix-multiplying {a} and {b}: converting to dense.',
+        warn_upmodule(f'Matrix-multiplying {a} and {b}: converting to dense.',
                       category=ToDenseWarning)
     return B.matmul(a, B.dense(b), tr_a=tr_a, tr_b=tr_b)
 
@@ -330,7 +330,7 @@ def matmul(a, b, tr_a=False, tr_b=False):
 
 @B.dispatch(Kronecker, Diagonal)
 def matmul(a, b, tr_a=False, tr_b=False):
-    warnings.warn(f'Cannot efficiently matrix-multiply {a} by {b}: '
+    warn_upmodule(f'Cannot efficiently matrix-multiply {a} by {b}: '
                   f'converting the Kronecker product to dense.',
                   category=ToDenseWarning)
     return B.matmul(B.dense(a), b, tr_a=tr_a, tr_b=tr_b)
@@ -338,7 +338,7 @@ def matmul(a, b, tr_a=False, tr_b=False):
 
 @B.dispatch(Diagonal, Kronecker)
 def matmul(a, b, tr_a=False, tr_b=False):
-    warnings.warn(f'Cannot efficiently matrix-multiply {a} by {b}: '
+    warn_upmodule(f'Cannot efficiently matrix-multiply {a} by {b}: '
                   f'converting the Kronecker product to dense.',
                   category=ToDenseWarning)
     return B.matmul(a, B.dense(b), tr_a=tr_a, tr_b=tr_b)

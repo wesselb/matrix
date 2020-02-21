@@ -1,9 +1,9 @@
-import warnings
 import abc
 
 import lab as B
 import wbml.out
 from plum import Dispatcher, Referentiable
+from wbml.util import warn_upmodule
 
 from .shape import assert_matrix
 from .util import indent, dtype_str, ToDenseWarning
@@ -53,7 +53,7 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
 
     def __getitem__(self, item):
         if structured(self):
-            warnings.warn(f'Indexing into {self}: converting to dense.',
+            warn_upmodule(f'Indexing into {self}: converting to dense.',
                           category=ToDenseWarning)
         return B.dense(self)[item]
 

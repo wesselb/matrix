@@ -1,7 +1,6 @@
-import warnings
-
 import lab as B
 from algebra import proven
+from wbml.util import warn_upmodule
 
 from ..constant import Zero
 from ..diagonal import Diagonal
@@ -21,7 +20,7 @@ def solve(a, b):
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def solve(a, b):
     if structured(a, b):
-        warnings.warn(f'Solving {a} x = {b}: converting to dense.',
+        warn_upmodule(f'Solving {a} x = {b}: converting to dense.',
                       category=ToDenseWarning)
     return B.solve(B.dense(a), B.dense(b))
 
@@ -34,7 +33,7 @@ def solve(a, b):
 @B.dispatch(LowerTriangular, AbstractMatrix)
 def solve(a, b):
     if structured(b):
-        warnings.warn(f'Solving {a} x = {b}: converting to dense.',
+        warn_upmodule(f'Solving {a} x = {b}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(B.trisolve(a.mat, B.dense(b), lower_a=True))
 
@@ -42,7 +41,7 @@ def solve(a, b):
 @B.dispatch(UpperTriangular, AbstractMatrix)
 def solve(a, b):
     if structured(b):
-        warnings.warn(f'Solving {a} x = {b}: converting to dense.',
+        warn_upmodule(f'Solving {a} x = {b}: converting to dense.',
                       category=ToDenseWarning)
     return Dense(B.trisolve(a.mat, B.dense(b), lower_a=False))
 

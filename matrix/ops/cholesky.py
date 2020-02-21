@@ -1,6 +1,5 @@
-import warnings
-
 import lab as B
+from wbml.util import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -58,7 +57,7 @@ def cholesky(a):
         if a.sign == 1:
             a.cholesky = B.matmul(a.left, B.cholesky(a.middle))
         else:
-            warnings.warn(f'Cannot ensure positivity of {a}: '
+            warn_upmodule(f'Cannot ensure positivity of {a}: '
                           f'converting to dense to compute the Cholesky '
                           f'decomposition.',
                           category=ToDenseWarning)
@@ -70,7 +69,7 @@ def cholesky(a):
 @B.dispatch(Woodbury)
 def cholesky(a):
     if a.cholesky is None:
-        warnings.warn(f'Converting {a} to dense to compute its Cholesky '
+        warn_upmodule(f'Converting {a} to dense to compute its Cholesky '
                       f'decomposition.',
                       category=ToDenseWarning)
         a.cholesky = LowerTriangular(B.cholesky(B.reg(B.dense(a))))

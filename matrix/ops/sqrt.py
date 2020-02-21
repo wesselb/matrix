@@ -1,6 +1,5 @@
-import warnings
-
 import lab as B
+from wbml.util import warn_upmodule
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -20,7 +19,7 @@ def sqrt(a):
 @B.dispatch(AbstractMatrix)
 def sqrt(a):
     if structured(a):
-        warnings.warn(f'Taking an element-wise square root of {a}: converting '
+        warn_upmodule(f'Taking an element-wise square root of {a}: converting '
                       f'to dense.',
                       category=ToDenseWarning)
     return Dense(B.sqrt(B.dense(a)))

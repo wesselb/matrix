@@ -1,6 +1,5 @@
-import warnings
-
 import lab as B
+from wbml.util import warn_upmodule
 
 from ..constant import Zero
 from ..diagonal import Diagonal
@@ -58,7 +57,7 @@ def block(*rows):
         return Diagonal(B.concat(*[B.diag(x) for x in diagonal_blocks]))
 
     # Could not preserve any structure. Simply concatenate them all densely.
-    warnings.warn('Could not preserve structure in block matrix: '
+    warn_upmodule('Could not preserve structure in block matrix: '
                   'converting to dense.',
                   category=ToDenseWarning)
     return Dense(B.concat2d(*[[B.dense(x) for x in row] for row in rows]))
