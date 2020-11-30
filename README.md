@@ -1,8 +1,9 @@
 # [Structured Matrices](http://github.com/wesselb/matrix)
 
-[![Build](https://travis-ci.org/wesselb/matrix.svg?branch=master)](https://travis-ci.org/wesselb/matrix)
+[![CI](https://github.com/wesselb/matrix/workflows/CI/badge.svg?branch=master)](https://github.com/wesselb/matrix/actions?query=workflow%3ACI)
 [![Coverage Status](https://coveralls.io/repos/github/wesselb/matrix/badge.svg?branch=master&service=github)](https://coveralls.io/github/wesselb/matrix?branch=master)
 [![Latest Docs](https://img.shields.io/badge/docs-latest-blue.svg)](https://wesselb.github.io/matrix)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Structured matrices
 
