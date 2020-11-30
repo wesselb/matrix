@@ -27,6 +27,7 @@ from ..util import (
     zero_r,
     dense1,
     dense2,
+    dense_r,
     diag1,
     diag2,
     const_or_scalar1,
@@ -47,7 +48,7 @@ from ..util import (
 )
 
 
-def _check_matmul(a, b, asserted_type=object):
+def _check_matmul(a, b, asserted_type=object, tr_both=False):
     for tr_a in [False, True]:
         for tr_b in [False, True]:
             check_bin_op(lambda a_, b_: B.matmul(a_, b_, tr_a=tr_a, tr_b=tr_b),
@@ -63,9 +64,17 @@ def test_matmul_assertion(zero_r, dense2):
         B.matmul(zero_r, zero_r, tr_a=True, tr_b=True)
 
 
+def test_matmul_zero_dense(zero_r, dense_r):
+    check_bin_op(lambda a, b: B.matmul(a, b, tr_b=True), zero_r, dense_r,
+                 asserted_type=Zero)
+    check_bin_op(lambda a, b: B.matmul(a, b, tr_b=True), dense_r, zero_r,
+                 asserted_type=Zero)
+
+
 def test_matmul_zero_diag(zero1, diag2):
     _check_matmul(zero1, diag2, asserted_type=Zero)
     _check_matmul(diag2, zero1, asserted_type=Zero)
+
 
 
 @pytest.mark.parametrize('code_a, code_b, code_c',

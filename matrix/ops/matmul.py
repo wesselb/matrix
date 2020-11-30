@@ -19,6 +19,14 @@ def _tr(a, do):
     return B.transpose(a) if do else a
 
 
+def _shape_tr(a, tr_a):
+    ar, ac = B.shape(a)
+    if tr_a:
+        return ac, ar
+    else:
+        return ar, ac
+
+
 def _assert_composable(a, b, tr_a=False, tr_b=False):
     s1, s2 = get_shape(a, b)
     s1 = _tr(s1, tr_a)
@@ -32,24 +40,20 @@ def _assert_composable(a, b, tr_a=False, tr_b=False):
 @B.dispatch(AbstractMatrix, Zero, precedence=proven())
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
-    return _tr(b, tr_b)
+    ar, _ = _shape_tr(a, tr_a)
+    _, bc = _shape_tr(b, tr_b)
+    return Zero(b.dtype, ar, bc)
 
 
 @B.dispatch(Zero, AbstractMatrix, precedence=proven())
 def matmul(a, b, tr_a=False, tr_b=False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
-    return _tr(a, tr_a)
+    ar, _ = _shape_tr(a, tr_a)
+    _, bc = _shape_tr(b, tr_b)
+    return Zero(b.dtype, ar, bc)
 
 
 # Multiple multiplication:
-
-def _shape_tr(a, tr_a):
-    ar, ac = B.shape(a)
-    if tr_a:
-        return ac, ar
-    else:
-        return ar, ac
-
 
 @B.dispatch(object, object, object)
 def matmul(a, b, c, tr_a=False, tr_b=False, tr_c=False):
