@@ -14,7 +14,7 @@ __all__ = []
 
 
 def _assert_square_root(a):
-    assert_square(a, 'Can only take a square root of square matrices.')
+    assert_square(a, "Can only take a square root of square matrices.")
 
 
 @B.dispatch(B.Numeric)
@@ -60,8 +60,9 @@ def root(a):
 
 @B.dispatch({LowRank, Woodbury})
 def root(a):
-    warn_upmodule(f'Converting {a} to dense to compute its square root.',
-                  category=ToDenseWarning)
+    warn_upmodule(
+        f"Converting {a} to dense to compute its square root.", category=ToDenseWarning
+    )
     return Dense(B.root(B.dense(a)))
 
 

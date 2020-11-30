@@ -3,7 +3,6 @@ import lab as B
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
-
     mat1,
     zero1,
     dense1,
@@ -13,7 +12,7 @@ from ..util import (
     ut1,
     lr1,
     wb1,
-    kron1
+    kron1,
 )
 
 
@@ -57,17 +56,17 @@ def test_dense_ut(ut1):
 
 
 def test_dense_lr(lr1):
-    lr_dense = B.mm(B.dense(lr1.left),
-                    B.dense(lr1.middle),
-                    B.dense(lr1.right), tr_c=True)
+    lr_dense = B.mm(
+        B.dense(lr1.left), B.dense(lr1.middle), B.dense(lr1.right), tr_c=True
+    )
     allclose(B.dense(lr1), lr_dense)
     _check_cache(lr1)
 
 
 def test_dense_wb(wb1):
-    lr_dense = B.mm(B.dense(wb1.lr.left),
-                    B.dense(wb1.lr.middle),
-                    B.dense(wb1.lr.right), tr_c=True)
+    lr_dense = B.mm(
+        B.dense(wb1.lr.left), B.dense(wb1.lr.middle), B.dense(wb1.lr.right), tr_c=True
+    )
     allclose(B.dense(wb1), B.diag(wb1.diag.diag) + lr_dense)
     _check_cache(wb1)
 

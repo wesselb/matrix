@@ -9,47 +9,55 @@ def _dense(rows):
 
 
 def test_block_zero():
-    rows = [[generate('zero:6,6') for _ in range(3)] for _ in range(3)]
+    rows = [[generate("zero:6,6") for _ in range(3)] for _ in range(3)]
     res = B.block(*rows)
     allclose(res, B.concat2d(*_dense(rows)))
     assert isinstance(res, Zero)
 
 
 def test_block_dense():
-    rows = [[generate('dense:6,6') for _ in range(3)] for _ in range(3)]
-    with AssertDenseWarning('could not preserve structure'):
+    rows = [[generate("dense:6,6") for _ in range(3)] for _ in range(3)]
+    with AssertDenseWarning("could not preserve structure"):
         res = B.block(*rows)
     allclose(res, B.concat2d(*_dense(rows)))
 
 
 def test_block_diag():
-    rows = [[generate('diag:6'), generate('zero:6,6'), generate('zero:6,3')],
-            [generate('zero:6,6'), generate('zero:6,6'), generate('zero:6,3')],
-            [generate('zero:3,6'), generate('zero:3,6'), generate('diag:3')]]
+    rows = [
+        [generate("diag:6"), generate("zero:6,6"), generate("zero:6,3")],
+        [generate("zero:6,6"), generate("zero:6,6"), generate("zero:6,3")],
+        [generate("zero:3,6"), generate("zero:3,6"), generate("diag:3")],
+    ]
     res = B.block(*rows)
     allclose(res, B.concat2d(*_dense(rows)))
     assert isinstance(res, Diagonal)
 
 
 def test_block_diag_offdiagonal_check():
-    rows = [[generate('diag:6'), generate('zero:6,6'), generate('zero:6,3')],
-            [generate('zero:6,6'), generate('zero:6,6'), generate('randn:6,3')],
-            [generate('zero:3,6'), generate('zero:3,6'), generate('diag:3')]]
-    with AssertDenseWarning('could not preserve structure'):
+    rows = [
+        [generate("diag:6"), generate("zero:6,6"), generate("zero:6,3")],
+        [generate("zero:6,6"), generate("zero:6,6"), generate("randn:6,3")],
+        [generate("zero:3,6"), generate("zero:3,6"), generate("diag:3")],
+    ]
+    with AssertDenseWarning("could not preserve structure"):
         assert isinstance(B.block(*rows), Dense)
 
 
 def test_block_diag_diagonal_check():
-    rows = [[generate('diag:6'), generate('zero:6,6'), generate('zero:6,3')],
-            [generate('zero:6,6'), generate('zero:6,6'), generate('zero:6,3')],
-            [generate('zero:3,6'), generate('zero:3,6'), generate('randn:3,3')]]
-    with AssertDenseWarning('could not preserve structure'):
+    rows = [
+        [generate("diag:6"), generate("zero:6,6"), generate("zero:6,3")],
+        [generate("zero:6,6"), generate("zero:6,6"), generate("zero:6,3")],
+        [generate("zero:3,6"), generate("zero:3,6"), generate("randn:3,3")],
+    ]
+    with AssertDenseWarning("could not preserve structure"):
         assert isinstance(B.block(*rows), Dense)
 
 
 def test_block_diag_square_check():
-    rows = [[generate('diag:6'), generate('zero:6,7'), generate('zero:6,3')],
-            [generate('zero:6,6'), generate('zero:6,7'), generate('zero:6,3')],
-            [generate('zero:3,6'), generate('zero:3,7'), generate('diag:3')]]
-    with AssertDenseWarning('could not preserve structure'):
+    rows = [
+        [generate("diag:6"), generate("zero:6,7"), generate("zero:6,3")],
+        [generate("zero:6,6"), generate("zero:6,7"), generate("zero:6,3")],
+        [generate("zero:3,6"), generate("zero:3,7"), generate("diag:3")],
+    ]
+    with AssertDenseWarning("could not preserve structure"):
         assert isinstance(B.block(*rows), Dense)

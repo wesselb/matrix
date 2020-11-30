@@ -2,12 +2,12 @@ import lab as B
 import pytest
 
 from matrix import Dense, Constant, Diagonal, Kronecker, LowerTriangular
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_un_op,
     AssertDenseWarning,
-
     zero1,
     dense_pd,
     diag_pd,
@@ -15,7 +15,7 @@ from ..util import (
     lr_pd,
     lr1,
     wb_pd,
-    kron_pd
+    kron_pd,
 )
 
 
@@ -51,12 +51,12 @@ def test_root_const(const_pd):
 
 
 def test_root_lr(lr_pd):
-    with AssertDenseWarning('converting <low-rank> to dense'):
+    with AssertDenseWarning("converting <low-rank> to dense"):
         _check_root(lr_pd, asserted_type=Dense)
 
 
 def test_root_wb(wb_pd):
-    with AssertDenseWarning('converting <woodbury> to dense'):
+    with AssertDenseWarning("converting <woodbury> to dense"):
         _check_root(wb_pd, asserted_type=Dense)
 
 

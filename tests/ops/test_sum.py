@@ -2,11 +2,11 @@ import pytest
 import lab as B
 
 from matrix import Dense, Diagonal, Constant, LowRank, Woodbury, Kronecker, Zero
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_un_op,
-
     zero_r,
     dense_r,
     diag1,
@@ -16,12 +16,13 @@ from ..util import (
     lr1,
     lr_r,
     wb1,
-    kron_r
+    kron_r,
 )
 
 
 def _check_sum(a):
     for axis in [None, 0, 1]:
+
         def sum(a):
             return B.sum(a, axis=axis)
 

@@ -12,15 +12,15 @@ from matrix import (
     UpperTriangular,
     LowRank,
     Woodbury,
-    Kronecker
+    Kronecker,
 )
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_bin_op,
     AssertDenseWarning,
     ConditionalContext,
-
     zero1,
     zero2,
     dense1,
@@ -42,7 +42,7 @@ from ..util import (
     wb1,
     wb2,
     kron1,
-    kron2
+    kron2,
 )
 
 
@@ -79,7 +79,7 @@ def test_multiply_const_dense(const_or_scalar1, dense2):
 
 
 def test_multiply_const_fallback_warning(const1, diag2):
-    with AssertDenseWarning('multiplying <constant> and <diagonal>'):
+    with AssertDenseWarning("multiplying <constant> and <diagonal>"):
         B.multiply.invoke(Constant, AbstractMatrix)(const1, diag2)
 
 
@@ -111,10 +111,8 @@ def test_multiply_lt_diag(lt1, diag2):
 
 
 def test_multiply_lt_const(lt1, const_or_scalar2):
-    check_bin_op(B.multiply, lt1, const_or_scalar2,
-                 asserted_type=LowerTriangular)
-    check_bin_op(B.multiply, const_or_scalar2, lt1,
-                 asserted_type=LowerTriangular)
+    check_bin_op(B.multiply, lt1, const_or_scalar2, asserted_type=LowerTriangular)
+    check_bin_op(B.multiply, const_or_scalar2, lt1, asserted_type=LowerTriangular)
 
 
 def test_multiply_ut(ut1, ut2):
@@ -137,14 +135,14 @@ def test_multiply_ut_diag(ut1, diag2):
 
 
 def test_multiply_ut_const(ut1, const_or_scalar2):
-    check_bin_op(B.multiply, ut1, const_or_scalar2,
-                 asserted_type=UpperTriangular)
-    check_bin_op(B.multiply, const_or_scalar2, ut1,
-                 asserted_type=UpperTriangular)
+    check_bin_op(B.multiply, ut1, const_or_scalar2, asserted_type=UpperTriangular)
+    check_bin_op(B.multiply, const_or_scalar2, ut1, asserted_type=UpperTriangular)
 
 
-lr_warnings = ['getting the diagonal of <low-rank>',
-               'multiplying <low-rank> and <low-rank>']
+lr_warnings = [
+    "getting the diagonal of <low-rank>",
+    "multiplying <low-rank> and <low-rank>",
+]
 
 
 def test_multiply_lr(lr1, lr2):
@@ -163,9 +161,9 @@ def test_multiply_lr_const(lr1, const_or_scalar2):
 
 
 def test_multiply_lr_diag(lr1, diag2):
-    with _conditional_warning([lr1], 'getting the diagonal of <low-rank>'):
+    with _conditional_warning([lr1], "getting the diagonal of <low-rank>"):
         check_bin_op(B.multiply, lr1, diag2, asserted_type=Diagonal)
-    with _conditional_warning([lr1], 'getting the diagonal of <low-rank>'):
+    with _conditional_warning([lr1], "getting the diagonal of <low-rank>"):
         check_bin_op(B.multiply, diag2, lr1, asserted_type=Diagonal)
 
 
@@ -185,9 +183,9 @@ def test_multiply_wb(wb1, wb2):
 
 
 def test_multiply_wb_diag(wb1, diag1):
-    with _conditional_warning([wb1.lr], 'getting the diagonal of <low-rank>'):
+    with _conditional_warning([wb1.lr], "getting the diagonal of <low-rank>"):
         check_bin_op(B.multiply, wb1, diag1, asserted_type=Diagonal)
-    with _conditional_warning([wb1.lr], 'getting the diagonal of <low-rank>'):
+    with _conditional_warning([wb1.lr], "getting the diagonal of <low-rank>"):
         check_bin_op(B.multiply, diag1, wb1, asserted_type=Diagonal)
 
 
@@ -214,9 +212,8 @@ def test_multiply_wb_lr(wb1, lr2):
 
 
 def test_multiply_kron(kron1, kron2):
-    if (
-            B.shape(kron1.left) == B.shape(kron2.left) and
-            B.shape(kron1.right) == B.shape(kron2.right)
+    if B.shape(kron1.left) == B.shape(kron2.left) and B.shape(kron1.right) == B.shape(
+        kron2.right
     ):
         check_bin_op(B.multiply, kron1, kron2, asserted_type=Kronecker)
     else:
@@ -225,9 +222,9 @@ def test_multiply_kron(kron1, kron2):
 
 
 def test_multiply_kron_dense(kron1, dense2):
-    with AssertDenseWarning('multiplying <kronecker> and <dense>'):
+    with AssertDenseWarning("multiplying <kronecker> and <dense>"):
         check_bin_op(B.multiply, kron1, dense2, asserted_type=Dense)
-    with AssertDenseWarning('multiplying <dense> and <kronecker>'):
+    with AssertDenseWarning("multiplying <dense> and <kronecker>"):
         check_bin_op(B.multiply, dense2, kron1, asserted_type=Dense)
 
 
@@ -252,14 +249,14 @@ def test_multiply_kron_ut(kron1, ut2):
 
 
 def test_multiply_kron_lr(kron1, lr2):
-    with AssertDenseWarning('multiplying <kronecker> and <low-rank>'):
+    with AssertDenseWarning("multiplying <kronecker> and <low-rank>"):
         check_bin_op(B.multiply, kron1, lr2, asserted_type=Dense)
-    with AssertDenseWarning('multiplying <low-rank> and <kronecker>'):
+    with AssertDenseWarning("multiplying <low-rank> and <kronecker>"):
         check_bin_op(B.multiply, lr2, kron1, asserted_type=Dense)
 
 
 def test_multiply_kron_wb(kron1, wb2):
-    with AssertDenseWarning('multiplying <low-rank> and <kronecker>'):
+    with AssertDenseWarning("multiplying <low-rank> and <kronecker>"):
         check_bin_op(B.multiply, kron1, wb2, asserted_type=Dense)
-    with AssertDenseWarning('multiplying <low-rank> and <kronecker>'):
+    with AssertDenseWarning("multiplying <low-rank> and <kronecker>"):
         check_bin_op(B.multiply, wb2, kron1, asserted_type=Dense)

@@ -11,11 +11,11 @@ from matrix import (
     Woodbury,
     Kronecker,
 )
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_un_op,
-
     zero1,
     dense1,
     diag1,
@@ -25,7 +25,7 @@ from ..util import (
     lr1,
     lr_pd,
     wb1,
-    kron1
+    kron1,
 )
 
 

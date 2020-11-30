@@ -23,6 +23,7 @@ def _reverse_call(*types):
 
 # Zero
 
+
 @B.dispatch(AbstractMatrix, Zero, precedence=proven())
 def add(a, b):
     assert_compatible(a, b)
@@ -37,11 +38,13 @@ def add(a, b):
 
 # Dense
 
+
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def add(a, b):
     if structured(a) and structured(b):
-        warn_upmodule(f'Adding {a} and {b}: converting to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Adding {a} and {b}: converting to dense.", category=ToDenseWarning
+        )
     return Dense(B.add(B.dense(a), B.dense(b)))
 
 
@@ -52,12 +55,14 @@ def add(a, b):
 
 # Diagonal
 
+
 @B.dispatch(Diagonal, Diagonal)
 def add(a, b):
     return Diagonal(B.add(a.diag, b.diag))
 
 
 # Constant
+
 
 @B.dispatch(Constant, Constant)
 def add(a, b):
@@ -68,8 +73,9 @@ def add(a, b):
 @B.dispatch(Constant, AbstractMatrix)
 def add(a, b):
     if structured(b):
-        warn_upmodule(f'Adding {a} and {b}: converting to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Adding {a} and {b}: converting to dense.", category=ToDenseWarning
+        )
     return Dense(a.const + B.dense(b))
 
 
@@ -86,6 +92,7 @@ _reverse_call(Constant, Diagonal)
 
 # LowerTriangular
 
+
 @B.dispatch(LowerTriangular, LowerTriangular)
 def add(a, b):
     return LowerTriangular(a.mat + b.mat)
@@ -101,6 +108,7 @@ _reverse_call(LowerTriangular, Diagonal)
 
 
 # UpperTriangular
+
 
 @B.dispatch(UpperTriangular, UpperTriangular)
 def add(a, b):
@@ -123,13 +131,16 @@ _reverse_call(UpperTriangular, LowerTriangular)
 
 # LowRank
 
+
 @B.dispatch(LowRank, LowRank)
 def add(a, b):
     assert_compatible(a, b)
-    return LowRank(B.concat(a.left, b.left, axis=1),
-                   B.concat(a.right, b.right, axis=1),
-                   B.diag(a.middle, b.middle),
-                   sign=a.sign if a.sign == b.sign else 0)
+    return LowRank(
+        B.concat(a.left, b.left, axis=1),
+        B.concat(a.right, b.right, axis=1),
+        B.diag(a.middle, b.middle),
+        sign=a.sign if a.sign == b.sign else 0,
+    )
 
 
 @B.dispatch(LowRank, Constant)
@@ -156,6 +167,7 @@ def add(a, b):
 
 # Woodbury
 
+
 @B.dispatch(Woodbury, Woodbury)
 def add(a, b):
     return Woodbury(a.diag + b.diag, a.lr + b.lr)
@@ -171,13 +183,11 @@ def add(a, b):
     return add(b, a)
 
 
-@B.dispatch.multi((Woodbury, Constant),
-                  (Woodbury, LowRank))
+@B.dispatch.multi((Woodbury, Constant), (Woodbury, LowRank))
 def add(a, b):
     return Woodbury(a.diag, a.lr + b)
 
 
-@B.dispatch.multi((Constant, Woodbury),
-                  (LowRank, Woodbury))
+@B.dispatch.multi((Constant, Woodbury), (LowRank, Woodbury))
 def add(a, b):
     return add(b, a)

@@ -9,9 +9,10 @@ from matrix import (
     LowerTriangular,
     UpperTriangular,
     LowRank,
-    Woodbury
+    Woodbury,
 )
 from matrix import structured
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -19,7 +20,6 @@ from ..util import (
     AssertDenseWarning,
     ConditionalContext,
     concat_warnings,
-
     zero1,
     zero2,
     dense1,
@@ -41,7 +41,7 @@ from ..util import (
     wb1,
     wb2,
     kron1,
-    kron2
+    kron2,
 )
 
 _dispatch = Dispatcher()
@@ -103,9 +103,9 @@ def test_add_lt_diag(lt1, diag2):
 
 
 def test_add_lt_const(lt1, const_or_scalar2):
-    with AssertDenseWarning('adding <constant> and <lower-triangular>'):
+    with AssertDenseWarning("adding <constant> and <lower-triangular>"):
         check_bin_op(B.add, lt1, const_or_scalar2, asserted_type=Dense)
-    with AssertDenseWarning('adding <constant> and <lower-triangular>'):
+    with AssertDenseWarning("adding <constant> and <lower-triangular>"):
         check_bin_op(B.add, const_or_scalar2, lt1, asserted_type=Dense)
 
 
@@ -128,9 +128,9 @@ def test_add_ut_diag(ut1, diag2):
 
 
 def test_add_ut_const(ut1, const_or_scalar2):
-    with AssertDenseWarning('adding <constant> and <upper-triangular>'):
+    with AssertDenseWarning("adding <constant> and <upper-triangular>"):
         check_bin_op(B.add, ut1, const_or_scalar2, asserted_type=Dense)
-    with AssertDenseWarning('adding <constant> and <upper-triangular>'):
+    with AssertDenseWarning("adding <constant> and <upper-triangular>"):
         check_bin_op(B.add, const_or_scalar2, ut1, asserted_type=Dense)
 
 
@@ -181,5 +181,5 @@ def test_add_wb_lr(wb1, lr2):
 
 
 def test_kron_diag(kron1, diag1):
-    with AssertDenseWarning('adding <kronecker> and <diagonal>'):
+    with AssertDenseWarning("adding <kronecker> and <diagonal>"):
         check_bin_op(B.add, kron1, diag1, asserted_type=Dense)

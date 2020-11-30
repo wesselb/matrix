@@ -40,13 +40,16 @@ def diag(a):
 @B.dispatch(LowRank)
 def diag(a):
     if structured(a.left, a.right):
-        warn_upmodule(f'Getting the diagonal of {a}: '
-                      f'converting the factors to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Getting the diagonal of {a}: converting the factors to dense.",
+            category=ToDenseWarning,
+        )
     diag_len = _diag_len(a)
     left_mul = B.matmul(a.left, a.middle)
-    return B.sum(B.multiply(B.dense(left_mul)[:diag_len, :],
-                            B.dense(a.right)[:diag_len, :]), axis=1)
+    return B.sum(
+        B.multiply(B.dense(left_mul)[:diag_len, :], B.dense(a.right)[:diag_len, :]),
+        axis=1,
+    )
 
 
 @B.dispatch(Woodbury)
@@ -61,21 +64,23 @@ def diag(a):
 
 # Construct block-diagonal matrices.
 
+
 @B.dispatch(object, object)
 def diag(a, b):
     # We could merge this with `block`, but `block` has a lot of overhead. It
     # seems advantageous to optimise this common case.
-    warn_upmodule(f'Constructing a dense block-diagonal matrix from '
-                  f'{a} and {b}: converting to dense.',
-                  category=ToDenseWarning)
+    warn_upmodule(
+        f"Constructing a dense block-diagonal matrix from "
+        f"{a} and {b}: converting to dense.",
+        category=ToDenseWarning,
+    )
     a = B.dense(a)
     b = B.dense(b)
 
     dtype = B.dtype(a)
     ar, ac = B.shape(a)
     br, bc = B.shape(b)
-    return Dense(B.concat2d([a, B.zeros(dtype, ar, bc)],
-                            [B.zeros(dtype, br, ac), b]))
+    return Dense(B.concat2d([a, B.zeros(dtype, ar, bc)], [B.zeros(dtype, br, ac), b]))
 
 
 @B.dispatch(Diagonal, Diagonal)

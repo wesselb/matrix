@@ -7,14 +7,14 @@ from matrix import (
     Constant,
     LowerTriangular,
     UpperTriangular,
-    Kronecker
+    Kronecker,
 )
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_un_op,
     AssertDenseWarning,
-
     zero1,
     dense1,
     diag1,
@@ -23,7 +23,7 @@ from ..util import (
     ut1,
     lr1,
     wb1,
-    kron1
+    kron1,
 )
 
 
@@ -56,12 +56,12 @@ def test_power_ut(ut1):
 
 
 def test_power_lr(lr1):
-    with AssertDenseWarning('power of <low-rank>'):
+    with AssertDenseWarning("power of <low-rank>"):
         check_un_op(power2, lr1, asserted_type=Dense)
 
 
 def test_power_wb(wb1):
-    with AssertDenseWarning('power of <woodbury>'):
+    with AssertDenseWarning("power of <woodbury>"):
         check_un_op(power2, wb1, asserted_type=Dense)
 
 

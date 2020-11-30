@@ -9,7 +9,6 @@ from ..util import (
     AssertDenseWarning,
     ConditionalContext,
     concat_warnings,
-
     zero1,
     dense1,
     dense2,
@@ -20,7 +19,7 @@ from ..util import (
     ut1,
     lr1,
     wb1,
-    kron1
+    kron1,
 )
 
 
@@ -49,13 +48,13 @@ def test_diag_ut1(ut1):
 
 
 def test_diag_lr(lr1):
-    warn = AssertDenseWarning('getting the diagonal of <low-rank>')
+    warn = AssertDenseWarning("getting the diagonal of <low-rank>")
     with ConditionalContext(structured(lr1.left, lr1.right), warn):
         check_un_op(B.diag, lr1)
 
 
 def test_diag_wb(wb1):
-    warn = AssertDenseWarning('getting the diagonal of <low-rank>')
+    warn = AssertDenseWarning("getting the diagonal of <low-rank>")
     with ConditionalContext(structured(wb1.lr.left, wb1.lr.right), warn):
         check_un_op(B.diag, wb1)
 
@@ -67,14 +66,22 @@ def test_diag_kron(kron1):
 def test_diag_block_dense(dense1, dense2):
     with AssertDenseWarning(concat_warnings):
         res = B.diag(dense1, dense2)
-        allclose(res,
-                 B.concat2d([B.dense(dense1), B.zeros(B.dense(dense1))],
-                            [B.zeros(B.dense(dense2)), B.dense(dense2)]))
+        allclose(
+            res,
+            B.concat2d(
+                [B.dense(dense1), B.zeros(B.dense(dense1))],
+                [B.zeros(B.dense(dense2)), B.dense(dense2)],
+            ),
+        )
         assert isinstance(res, Dense)
 
 
 def test_diag_block_diag(diag1, diag2):
-    allclose(B.diag(diag1, diag2),
-             B.concat2d([B.dense(diag1), B.zeros(B.dense(diag2))],
-                        [B.zeros(B.dense(diag2)), B.dense(diag2)]))
+    allclose(
+        B.diag(diag1, diag2),
+        B.concat2d(
+            [B.dense(diag1), B.zeros(B.dense(diag2))],
+            [B.zeros(B.dense(diag2)), B.dense(diag2)],
+        ),
+    )
     assert isinstance(B.diag(diag1, diag2), Diagonal)

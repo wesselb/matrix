@@ -12,7 +12,7 @@ __all__ = []
 
 
 def _raise(axis):
-    raise ValueError(f'Cannot sum over axis {axis}.')
+    raise ValueError(f"Cannot sum over axis {axis}.")
 
 
 @B.dispatch(Zero)
@@ -52,16 +52,23 @@ def sum(a, axis=None):
 @B.dispatch(LowRank)
 def sum(a, axis=None):
     if axis is None:
-        return B.sum(B.sum(B.matmul(a.left, a.middle), axis=0) *
-                     B.sum(a.right, axis=0))
+        return B.sum(B.sum(B.matmul(a.left, a.middle), axis=0) * B.sum(a.right, axis=0))
     elif axis == 0:
-        return B.sum(B.multiply(B.expand_dims(B.sum(a.left, axis=0), axis=0),
-                                B.matmul(a.right, a.middle, tr_b=True)),
-                     axis=1)
+        return B.sum(
+            B.multiply(
+                B.expand_dims(B.sum(a.left, axis=0), axis=0),
+                B.matmul(a.right, a.middle, tr_b=True),
+            ),
+            axis=1,
+        )
     elif axis == 1:
-        return B.sum(B.multiply(B.matmul(a.left, a.middle),
-                                B.expand_dims(B.sum(a.right, axis=0), axis=0)),
-                     axis=1)
+        return B.sum(
+            B.multiply(
+                B.matmul(a.left, a.middle),
+                B.expand_dims(B.sum(a.right, axis=0), axis=0),
+            ),
+            axis=1,
+        )
     else:
         _raise(axis)
 

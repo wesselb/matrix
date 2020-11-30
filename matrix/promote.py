@@ -21,8 +21,7 @@ def convert(x):
     elif B.rank(x) == 2:
         return Dense(x)
     else:
-        raise RuntimeError(f'Cannot convert rank {B.rank(x)} input '
-                           f'to a matrix.')
+        raise RuntimeError(f"Cannot convert rank {B.rank(x)} input to a matrix.")
 
 
 @conversion_method(Constant, LowRank)
@@ -31,9 +30,8 @@ def constant_to_lowrank(a):
     rows, cols = B.shape(a)
     middle = B.fill_diag(a.const, 1)
     if rows == cols:
-        return LowRank(left=B.ones(dtype, rows, 1),
-                       middle=middle)
+        return LowRank(left=B.ones(dtype, rows, 1), middle=middle)
     else:
-        return LowRank(left=B.ones(dtype, rows, 1),
-                       right=B.ones(dtype, cols, 1),
-                       middle=middle)
+        return LowRank(
+            left=B.ones(dtype, rows, 1), right=B.ones(dtype, cols, 1), middle=middle
+        )

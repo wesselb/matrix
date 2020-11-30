@@ -10,6 +10,7 @@ __all__ = []
 @B.dispatch(AbstractMatrix)
 def isnan(a):
     if structured(a):
-        warn_upmodule(f'Applying "isnan" to {a}: converting to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f'Applying "isnan" to {a}: converting to dense.', category=ToDenseWarning
+        )
     return B.isnan(B.dense(a))

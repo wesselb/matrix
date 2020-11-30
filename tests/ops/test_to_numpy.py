@@ -1,14 +1,7 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import (
-    allclose,
-    check_un_op,
-    AssertDenseWarning,
-
-    dense1,
-    diag1
-)
+from ..util import allclose, check_un_op, AssertDenseWarning, dense1, diag1
 
 
 def test_to_numpy_dense(dense1):

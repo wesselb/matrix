@@ -1,12 +1,7 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import (
-    allclose,
-    check_un_op,
-
-    dense1
-)
+from ..util import allclose, check_un_op, dense1
 
 
 def test_zero(dense1):

@@ -2,6 +2,7 @@ import lab as B
 import numpy as np
 
 from matrix import Diagonal
+
 # noinspection PyUnresolvedReferences
 from ..util import allclose, dense1
 

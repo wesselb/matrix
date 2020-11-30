@@ -1,16 +1,12 @@
 import lab as B
 
-from matrix import (
-    Zero,
-    Constant,
-    Kronecker
-)
+from matrix import Zero, Constant, Kronecker
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_bin_op,
     AssertDenseWarning,
-
     zero1,
     zero2,
     dense1,
@@ -27,7 +23,7 @@ from ..util import (
     wb1,
     wb2,
     kron1,
-    kron2
+    kron2,
 )
 
 

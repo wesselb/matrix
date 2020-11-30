@@ -19,9 +19,10 @@ def power(a, b):
 @B.dispatch(AbstractMatrix, B.Numeric)
 def power(a, b):
     if structured(a):
-        warn_upmodule(f'Taking an element-wise power of {a}: converting to '
-                      f'dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Taking an element-wise power of {a}: converting to dense.",
+            category=ToDenseWarning,
+        )
     return Dense(B.power(B.dense(a), b))
 
 

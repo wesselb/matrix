@@ -8,7 +8,7 @@ from wbml.warning import warn_upmodule
 from .shape import assert_matrix
 from .util import indent, dtype_str, ToDenseWarning
 
-__all__ = ['AbstractMatrix', 'Dense', 'repr_format', 'structured']
+__all__ = ["AbstractMatrix", "Dense", "repr_format", "structured"]
 
 _dispatch = Dispatcher()
 
@@ -45,7 +45,7 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
 
     def __pow__(self, power, modulo=None):
         # TODO: Implement this.
-        assert modulo is None, 'Modulo in powers is not yet supported.'
+        assert modulo is None, "Modulo in powers is not yet supported."
         return B.power(self, power)
 
     def __matmul__(self, other):
@@ -53,8 +53,9 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
 
     def __getitem__(self, item):
         if structured(self):
-            warn_upmodule(f'Indexing into {self}: converting to dense.',
-                          category=ToDenseWarning)
+            warn_upmodule(
+                f"Indexing into {self}: converting to dense.", category=ToDenseWarning
+            )
         return B.dense(self)[item]
 
     @property
@@ -91,21 +92,26 @@ class Dense(AbstractMatrix):
     """
 
     def __init__(self, mat):
-        assert_matrix(mat, 'Input is not a rank-2 tensor. Can only construct '
-                           'dense matrices from rank-2 tensors.')
+        assert_matrix(
+            mat,
+            "Input is not a rank-2 tensor. Can only construct "
+            "dense matrices from rank-2 tensors.",
+        )
         self.mat = B.dense(mat)
         self.cholesky = None
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<dense matrix:' \
-               f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)}>'
+        return f"<dense matrix: shape={rows}x{cols}, dtype={dtype_str(self)}>"
 
     def __repr__(self):
-        return str(self)[:-1] + '\n' + \
-               f' mat=' + \
-               indent(repr_format(self.mat), ' ' * 5).strip() + '>'
+        return (
+            str(self)[:-1]
+            + "\n"
+            + f" mat="
+            + indent(repr_format(self.mat), " " * 5).strip()
+            + ">"
+        )
 
 
 @_dispatch(object)

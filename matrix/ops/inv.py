@@ -24,10 +24,14 @@ def inv(a):
     # Explicitly computing the inverse is not great numerically, but solving
     # against left or right destroys symmetry.
     diag_inv = B.inv(a.diag)
-    return B.subtract(diag_inv,
-                      LowRank(B.matmul(diag_inv, a.lr.left),
-                              B.matmul(diag_inv, a.lr.right),
-                              B.inv(B.dense(B.schur(a)))))
+    return B.subtract(
+        diag_inv,
+        LowRank(
+            B.matmul(diag_inv, a.lr.left),
+            B.matmul(diag_inv, a.lr.right),
+            B.inv(B.dense(B.schur(a))),
+        ),
+    )
 
 
 @B.dispatch(Kronecker)

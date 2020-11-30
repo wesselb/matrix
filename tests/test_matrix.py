@@ -1,6 +1,7 @@
 import lab as B
 
 from matrix import Dense, Diagonal, structured
+
 # noinspection PyUnresolvedReferences
 from .util import allclose, AssertDenseWarning, dense1, dense2, diag1
 
@@ -26,13 +27,13 @@ def test_properties(dense1):
 
 
 def test_dense_formatting():
-    assert str(Dense(B.ones(3, 3))) == \
-           '<dense matrix: shape=3x3, dtype=float64>'
-    assert repr(Dense(B.ones(3, 3))) == \
-           '<dense matrix: shape=3x3, dtype=float64\n' \
-           ' mat=[[1. 1. 1.]\n' \
-           '      [1. 1. 1.]\n' \
-           '      [1. 1. 1.]]>'
+    assert str(Dense(B.ones(3, 3))) == "<dense matrix: shape=3x3, dtype=float64>"
+    assert (
+        repr(Dense(B.ones(3, 3))) == "<dense matrix: shape=3x3, dtype=float64\n"
+        " mat=[[1. 1. 1.]\n"
+        "      [1. 1. 1.]\n"
+        "      [1. 1. 1.]]>"
+    )
 
 
 def test_dense_attributes():
@@ -57,5 +58,5 @@ def test_indexing_dense(dense1):
 
 
 def test_indexing_diag(diag1):
-    with AssertDenseWarning('indexing into <diagonal>'):
+    with AssertDenseWarning("indexing into <diagonal>"):
         allclose(diag1[2], B.dense(diag1)[2])

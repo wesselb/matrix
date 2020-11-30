@@ -3,6 +3,7 @@ import pytest
 from plum import promote, convert
 
 from matrix import Zero, LowRank
+
 # noinspection PyUnresolvedReferences
 from .util import allclose, dense1, const1, const_r
 

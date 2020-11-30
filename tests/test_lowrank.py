@@ -6,28 +6,36 @@ from .util import allclose
 
 
 def test_lowrank_formatting():
-    assert str(LowRank(B.ones(3, 1), 2 * B.ones(3, 1))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=1, sign=0>'
-    assert repr(LowRank(B.ones(3, 2), 2 * B.ones(3, 2))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=0\n' \
-           ' left=[[1. 1.]\n' \
-           '       [1. 1.]\n' \
-           '       [1. 1.]]\n' \
-           ' right=[[2. 2.]\n' \
-           '        [2. 2.]\n' \
-           '        [2. 2.]]>'
-    assert repr(LowRank(B.ones(3, 2))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=1\n' \
-           ' left=[[1. 1.]\n' \
-           '       [1. 1.]\n' \
-           '       [1. 1.]]>'
-    assert repr(LowRank(B.ones(3, 2), middle=B.ones(2, 2))) == \
-           '<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=1\n' \
-           ' left=[[1. 1.]\n' \
-           '       [1. 1.]\n' \
-           '       [1. 1.]]\n' \
-           ' middle=[[1. 1.]\n' \
-           '         [1. 1.]]>'
+    assert (
+        str(LowRank(B.ones(3, 1), 2 * B.ones(3, 1)))
+        == "<low-rank matrix: shape=3x3, dtype=float64, rank=1, sign=0>"
+    )
+    assert (
+        repr(LowRank(B.ones(3, 2), 2 * B.ones(3, 2)))
+        == "<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=0\n"
+        " left=[[1. 1.]\n"
+        "       [1. 1.]\n"
+        "       [1. 1.]]\n"
+        " right=[[2. 2.]\n"
+        "        [2. 2.]\n"
+        "        [2. 2.]]>"
+    )
+    assert (
+        repr(LowRank(B.ones(3, 2)))
+        == "<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=1\n"
+        " left=[[1. 1.]\n"
+        "       [1. 1.]\n"
+        "       [1. 1.]]>"
+    )
+    assert (
+        repr(LowRank(B.ones(3, 2), middle=B.ones(2, 2)))
+        == "<low-rank matrix: shape=3x3, dtype=float64, rank=2, sign=1\n"
+        " left=[[1. 1.]\n"
+        "       [1. 1.]\n"
+        "       [1. 1.]]\n"
+        " middle=[[1. 1.]\n"
+        "         [1. 1.]]>"
+    )
 
 
 def test_lowrank_attributes():

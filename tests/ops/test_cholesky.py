@@ -2,12 +2,12 @@ import lab as B
 import pytest
 
 from matrix import Dense, Diagonal, Kronecker, LowerTriangular, LowRank
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_un_op,
     AssertDenseWarning,
-
     zero1,
     dense_pd,
     diag_pd,
@@ -15,7 +15,7 @@ from ..util import (
     lr_pd,
     lr1,
     wb_pd,
-    kron_pd
+    kron_pd,
 )
 
 
@@ -54,7 +54,7 @@ def test_cholesky_lr(lr_pd):
     chol = B.dense(B.cholesky(lr_pd))
     allclose(B.matmul(chol, chol, tr_b=True), lr_pd)
 
-    with AssertDenseWarning('cannot ensure positivity of <low-rank>'):
+    with AssertDenseWarning("cannot ensure positivity of <low-rank>"):
         lr_pd2 = LowRank(lr_pd.left, 1 * lr_pd.right, lr_pd.middle)
         chol = B.dense(B.cholesky(lr_pd2))
         allclose(B.matmul(chol, chol, tr_b=True), lr_pd)
@@ -63,7 +63,7 @@ def test_cholesky_lr(lr_pd):
 
 
 def test_cholesky_wb(wb_pd):
-    with AssertDenseWarning('converting <woodbury> to dense'):
+    with AssertDenseWarning("converting <woodbury> to dense"):
         check_un_op(B.cholesky, wb_pd, asserted_type=LowerTriangular)
 
 

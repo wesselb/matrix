@@ -9,31 +9,32 @@ from matrix.shape import (
     Shape,
     compatible,
     assert_compatible,
-    broadcast
+    broadcast,
 )
+
 # noinspection PyUnresolvedReferences
 from .util import dense1
 
 
 def test_assert_scalar():
-    assert_scalar(1, 'test')
+    assert_scalar(1, "test")
 
     with pytest.raises(AssertionError):
-        assert_scalar(B.ones(3), 'test')
+        assert_scalar(B.ones(3), "test")
 
 
 def test_assert_vector():
-    assert_vector(B.ones(3), 'test')
+    assert_vector(B.ones(3), "test")
 
     with pytest.raises(AssertionError):
-        assert_vector(1, 'test')
+        assert_vector(1, "test")
 
 
 def test_assert_matrix():
-    assert_matrix(B.ones(3, 3), 'test')
+    assert_matrix(B.ones(3, 3), "test")
 
     with pytest.raises(AssertionError):
-        assert_matrix(B.ones(3), 'test')
+        assert_matrix(B.ones(3), "test")
 
 
 def test_dimension():
@@ -43,8 +44,8 @@ def test_dimension():
     assert d == d
     assert d != Dimension(1)
     assert d != Dimension(3)
-    assert str(d) == '5'
-    assert repr(d) == 'Dimension(5)'
+    assert str(d) == "5"
+    assert repr(d) == "Dimension(5)"
     assert int(d) is 5
 
 
@@ -55,8 +56,8 @@ def test_shape():
     assert s == s
     assert s != Shape(Dimension(5), Dimension(1))
     assert s != Shape(Dimension(5), Dimension(3))
-    assert str(s) == '(5, 4)'
-    assert repr(s) == 'Shape(Dimension(5), Dimension(4))'
+    assert str(s) == "(5, 4)"
+    assert repr(s) == "Shape(Dimension(5), Dimension(4))"
     assert s[0] == Dimension(5)
     assert s[1] == Dimension(4)
     assert s.as_tuple() == (5, 4)

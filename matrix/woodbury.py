@@ -7,7 +7,7 @@ from .matrix import AbstractMatrix, repr_format
 from .shape import assert_compatible
 from .util import indent, dtype_str
 
-__all__ = ['Woodbury']
+__all__ = ["Woodbury"]
 
 
 class Woodbury(AbstractMatrix):
@@ -30,6 +30,7 @@ class Woodbury(AbstractMatrix):
         diag (:class:`.diagonal.Diagonal`): Diagonal part.
         lr (:class:`.diagonal.LowRank`): Low-rank part.
     """
+
     _dispatch = Dispatcher(in_class=Self)
 
     @_dispatch(Diagonal, LowRank)
@@ -43,13 +44,18 @@ class Woodbury(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<Woodbury matrix:' \
-               f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)}>'
+        return (
+            f"<Woodbury matrix:" f" shape={rows}x{cols}," f" dtype={dtype_str(self)}>"
+        )
 
     def __repr__(self):
-        return str(self)[:-1] + '\n' + \
-               f' diag=' + indent(repr_format(self.diag),
-                                  ' ' * 6).strip() + '\n' + \
-               f' lr=' + indent(repr_format(self.lr),
-                                ' ' * 4).strip() + '>'
+        return (
+            str(self)[:-1]
+            + "\n"
+            + f" diag="
+            + indent(repr_format(self.diag), " " * 6).strip()
+            + "\n"
+            + f" lr="
+            + indent(repr_format(self.lr), " " * 4).strip()
+            + ">"
+        )

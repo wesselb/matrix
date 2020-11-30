@@ -19,9 +19,10 @@ def sqrt(a):
 @B.dispatch(AbstractMatrix)
 def sqrt(a):
     if structured(a):
-        warn_upmodule(f'Taking an element-wise square root of {a}: converting '
-                      f'to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Taking an element-wise square root of {a}: converting to dense.",
+            category=ToDenseWarning,
+        )
     return Dense(B.sqrt(B.dense(a)))
 
 

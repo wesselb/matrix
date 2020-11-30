@@ -4,7 +4,7 @@ from .matrix import AbstractMatrix, repr_format
 from .shape import assert_scalar
 from .util import dtype_str
 
-__all__ = ['Zero', 'Constant']
+__all__ = ["Zero", "Constant"]
 
 
 class Zero(AbstractMatrix):
@@ -35,8 +35,7 @@ class Zero(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<zero matrix: shape={rows}x{cols}, ' \
-               f'dtype={dtype_str(self.dtype)}>'
+        return f"<zero matrix: shape={rows}x{cols}, dtype={dtype_str(self.dtype)}>"
 
     def __repr__(self):
         return str(self)
@@ -61,8 +60,10 @@ class Constant(AbstractMatrix):
     """
 
     def __init__(self, const, rows, cols):
-        assert_scalar(const, 'Input is not a scalar. Can only construct '
-                             'constant matrices from scalars.')
+        assert_scalar(
+            const,
+            "Input is not a scalar. Can only construct constant matrices from scalars.",
+        )
         self.const = const
         self.rows = rows
         self.cols = cols
@@ -71,10 +72,12 @@ class Constant(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<constant matrix:' \
-               f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)},' + \
-               f' const={repr_format(self.const)}>'
+        return (
+            f"<constant matrix:"
+            f" shape={rows}x{cols},"
+            f" dtype={dtype_str(self)},"
+            f" const={repr_format(self.const)}>"
+        )
 
     def __repr__(self):
         return str(self)

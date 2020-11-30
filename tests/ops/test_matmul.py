@@ -11,8 +11,9 @@ from matrix import (
     UpperTriangular,
     LowRank,
     Woodbury,
-    Kronecker
+    Kronecker,
 )
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
@@ -21,7 +22,6 @@ from ..util import (
     ConditionalContext,
     concat_warnings,
     generate,
-
     zero1,
     zero2,
     zero_r,
@@ -44,15 +44,19 @@ from ..util import (
     wb2,
     kron1,
     kron2,
-    kron_mixed
+    kron_mixed,
 )
 
 
 def _check_matmul(a, b, asserted_type=object, tr_both=False):
     for tr_a in [False, True]:
         for tr_b in [False, True]:
-            check_bin_op(lambda a_, b_: B.matmul(a_, b_, tr_a=tr_a, tr_b=tr_b),
-                         a, b, asserted_type=asserted_type)
+            check_bin_op(
+                lambda a_, b_: B.matmul(a_, b_, tr_a=tr_a, tr_b=tr_b),
+                a,
+                b,
+                asserted_type=asserted_type,
+            )
 
 
 def test_matmul_assertion(zero_r, dense2):
@@ -65,10 +69,12 @@ def test_matmul_assertion(zero_r, dense2):
 
 
 def test_matmul_zero_dense(zero_r, dense_r):
-    check_bin_op(lambda a, b: B.matmul(a, b, tr_b=True), zero_r, dense_r,
-                 asserted_type=Zero)
-    check_bin_op(lambda a, b: B.matmul(a, b, tr_b=True), dense_r, zero_r,
-                 asserted_type=Zero)
+    check_bin_op(
+        lambda a, b: B.matmul(a, b, tr_b=True), zero_r, dense_r, asserted_type=Zero
+    )
+    check_bin_op(
+        lambda a, b: B.matmul(a, b, tr_b=True), dense_r, zero_r, asserted_type=Zero
+    )
 
 
 def test_matmul_zero_diag(zero1, diag2):
@@ -76,10 +82,10 @@ def test_matmul_zero_diag(zero1, diag2):
     _check_matmul(diag2, zero1, asserted_type=Zero)
 
 
-
-@pytest.mark.parametrize('code_a, code_b, code_c',
-                         [('dense:3,6', 'dense:6,6', 'dense:6,6'),
-                          ('dense:6,6', 'dense:6,6', 'dense:6,3')])
+@pytest.mark.parametrize(
+    "code_a, code_b, code_c",
+    [("dense:3,6", "dense:6,6", "dense:6,6"), ("dense:6,6", "dense:6,6", "dense:6,3")],
+)
 def test_matmul_multiple(code_a, code_b, code_c):
     for tr_a in [True, False]:
         for tr_b in [True, False]:
@@ -95,9 +101,10 @@ def test_matmul_multiple(code_a, code_b, code_c):
                 if tr_c:
                     c = B.transpose(c)
 
-                allclose(B.matmul(a, b, c, tr_a=tr_a, tr_b=tr_b, tr_c=tr_c),
-                         B.matmul(B.matmul(a, b, tr_a=tr_a, tr_b=tr_b),
-                                  c, tr_b=tr_c))
+                allclose(
+                    B.matmul(a, b, c, tr_a=tr_a, tr_b=tr_b, tr_c=tr_c),
+                    B.matmul(B.matmul(a, b, tr_a=tr_a, tr_b=tr_b), c, tr_b=tr_c),
+                )
 
 
 def test_matmul_dense(dense1, dense2):
@@ -127,9 +134,10 @@ def test_matmul_const_diag(const1, diag2):
     _check_matmul(diag2, const1, asserted_type=LowRank)
 
 
-triangular_warnings = \
-    ['matrix-multiplying <lower-triangular> and <upper-triangular>',
-     'matrix-multiplying <upper-triangular> and <lower-triangular>']
+triangular_warnings = [
+    "matrix-multiplying <lower-triangular> and <upper-triangular>",
+    "matrix-multiplying <upper-triangular> and <lower-triangular>",
+]
 triangular_res_types = (LowerTriangular, UpperTriangular, Dense)
 
 
@@ -246,11 +254,12 @@ def test_matmul_wb_lr(wb1, lr2):
         _check_matmul(lr2, wb1, asserted_type=LowRank)
 
 
-wb_triangular_warnings = \
-    ['adding <upper-triangular> and <low-rank>',
-     'adding <low-rank> and <upper-triangular>',
-     'adding <lower-triangular> and <low-rank>',
-     'adding <low-rank> and <lower-triangular>']
+wb_triangular_warnings = [
+    "adding <upper-triangular> and <low-rank>",
+    "adding <low-rank> and <upper-triangular>",
+    "adding <lower-triangular> and <low-rank>",
+    "adding <low-rank> and <lower-triangular>",
+]
 
 
 def test_matmul_wb_lt(wb1, lt2):
@@ -269,8 +278,8 @@ def test_matmul_wb_ut(wb1, ut2):
 
 def test_matmul_kron(kron1, kron2):
     if (
-            B.shape(kron1.left)[1] == B.shape(kron2.left)[0] and
-            B.shape(kron1.right)[1] == B.shape(kron2.right)[0]
+        B.shape(kron1.left)[1] == B.shape(kron2.left)[0]
+        and B.shape(kron1.right)[1] == B.shape(kron2.right)[0]
     ):
         _check_matmul(kron1, kron2, asserted_type=Kronecker)
     else:
@@ -291,19 +300,22 @@ def test_matmul_kron_const(kron1, const2):
 def test_matmul_kron_diag(kron1, diag2):
     # The output type here is dense because the product of Kronecker products
     # and diagonal matrices is dense.
-    with AssertDenseWarning('cannot efficiently matrix-multiply <kronecker> '
-                            'by <diagonal>'):
+    with AssertDenseWarning(
+        "cannot efficiently matrix-multiply <kronecker> by <diagonal>"
+    ):
         _check_matmul(kron1, diag2, asserted_type=Dense)
-    with AssertDenseWarning('cannot efficiently matrix-multiply <diagonal> '
-                            'by <kronecker>'):
+    with AssertDenseWarning(
+        "cannot efficiently matrix-multiply <diagonal> by <kronecker>"
+    ):
         _check_matmul(diag2, kron1, asserted_type=Dense)
 
 
-kron_triangular_warnings = \
-    ['matrix-multiplying <upper-triangular> and <kronecker>',
-     'matrix-multiplying <kronecker> and <upper-triangular>',
-     'matrix-multiplying <lower-triangular> and <kronecker>',
-     'matrix-multiplying <kronecker> and <lower-triangular>']
+kron_triangular_warnings = [
+    "matrix-multiplying <upper-triangular> and <kronecker>",
+    "matrix-multiplying <kronecker> and <upper-triangular>",
+    "matrix-multiplying <lower-triangular> and <kronecker>",
+    "matrix-multiplying <kronecker> and <lower-triangular>",
+]
 
 
 def test_matmul_kron_lt(kron1, lt1):
@@ -325,9 +337,10 @@ def test_matmul_kron_lr(kron1, const2):
     _check_matmul(const2, kron1, asserted_type=LowRank)
 
 
-kron_diag_warnings = \
-    ['cannot efficiently matrix-multiply <kronecker> by <diagonal>',
-     'cannot efficiently matrix-multiply <diagonal> by <kronecker>']
+kron_diag_warnings = [
+    "cannot efficiently matrix-multiply <kronecker> by <diagonal>",
+    "cannot efficiently matrix-multiply <diagonal> by <kronecker>",
+]
 
 
 def test_matmul_kron_wb(kron1, wb2):

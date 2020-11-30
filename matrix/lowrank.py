@@ -4,7 +4,7 @@ from .matrix import AbstractMatrix, repr_format
 from .shape import assert_matrix, assert_square
 from .util import indent, dtype_str
 
-__all__ = ['LowRank']
+__all__ = ["LowRank"]
 
 
 class LowRank(AbstractMatrix):
@@ -55,28 +55,31 @@ class LowRank(AbstractMatrix):
         self.cholesky = None
         self.dense = None
 
-        msg = 'Can only construct low-rank matrices from matrix factors and ' \
-              'the middle factor must be square.'
+        msg = (
+            "Can only construct low-rank matrices from matrix factors and "
+            "the middle factor must be square."
+        )
 
         # Check left factor.
-        assert_matrix(self.left,
-                      f'Left factor is not a rank-2 tensor. {msg}')
+        assert_matrix(self.left, f"Left factor is not a rank-2 tensor. {msg}")
 
         # Check right factor, if it is given.
         if self._right is not None:
-            assert_matrix(self._right,
-                          f'Right factor is not a rank-2 tensor. {msg}')
+            assert_matrix(self._right, f"Right factor is not a rank-2 tensor. {msg}")
             if B.shape(self._right)[1] != self.rank:
-                raise AssertionError('All factors must have an equal number '
-                                     'of columns.')
+                raise AssertionError(
+                    "All factors must have an equal number of columns."
+                )
 
         # Check middle factor, if it is given.
         if self._middle is not None:
-            assert_square(self._middle,
-                          f'Middle factor is not a square rank-2 tensor. {msg}')
+            assert_square(
+                self._middle, f"Middle factor is not a square rank-2 tensor. {msg}"
+            )
             if B.shape(self._middle)[1] != self.rank:
-                raise AssertionError('All factors must have an equal number '
-                                     'of columns.')
+                raise AssertionError(
+                    "All factors must have an equal number of columns."
+                )
 
     @property
     def right(self):
@@ -98,22 +101,24 @@ class LowRank(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<low-rank matrix:' \
-               f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)},' + \
-               f' rank={self.rank},' \
-               f' sign={self.sign}>'
+        return (
+            f"<low-rank matrix:"
+            f" shape={rows}x{cols},"
+            f" dtype={dtype_str(self)}," + f" rank={self.rank},"
+            f" sign={self.sign}>"
+        )
 
     def __repr__(self):
-        out = str(self)[:-1] + '\n left=' + \
-              indent(repr_format(self.left), ' ' * 6).strip()
+        out = (
+            str(self)[:-1]
+            + "\n left="
+            + indent(repr_format(self.left), " " * 6).strip()
+        )
 
         if self._middle is not None:
-            out += '\n middle=' + \
-                   indent(repr_format(self.middle), ' ' * 8).strip()
+            out += "\n middle=" + indent(repr_format(self.middle), " " * 8).strip()
 
         if self._right is not None:
-            out += '\n right=' + \
-                   indent(repr_format(self.right), ' ' * 7).strip()
+            out += "\n right=" + indent(repr_format(self.right), " " * 7).strip()
 
-        return out + '>'
+        return out + ">"

@@ -20,8 +20,9 @@ def solve(a, b):
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def solve(a, b):
     if structured(a, b):
-        warn_upmodule(f'Solving {a} x = {b}: converting to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
+        )
     return B.solve(B.dense(a), B.dense(b))
 
 
@@ -33,16 +34,18 @@ def solve(a, b):
 @B.dispatch(LowerTriangular, AbstractMatrix)
 def solve(a, b):
     if structured(b):
-        warn_upmodule(f'Solving {a} x = {b}: converting to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
+        )
     return Dense(B.trisolve(a.mat, B.dense(b), lower_a=True))
 
 
 @B.dispatch(UpperTriangular, AbstractMatrix)
 def solve(a, b):
     if structured(b):
-        warn_upmodule(f'Solving {a} x = {b}: converting to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
+        )
     return Dense(B.trisolve(a.mat, B.dense(b), lower_a=False))
 
 

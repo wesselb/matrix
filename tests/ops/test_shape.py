@@ -4,7 +4,6 @@ import lab as B
 from ..util import (
     allclose,
     check_un_op,
-
     zero_r,
     dense_r,
     diag1,
@@ -14,7 +13,7 @@ from ..util import (
     lr1,
     lr_r,
     wb1,
-    kron_r
+    kron_r,
 )
 
 

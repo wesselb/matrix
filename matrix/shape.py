@@ -1,14 +1,16 @@
 import lab as B
 from plum import Dispatcher
 
-__all__ = ['assert_scalar',
-           'assert_vector',
-           'assert_matrix',
-           'assert_square',
-           'get_shape',
-           'compatible',
-           'assert_compatible',
-           'broadcast']
+__all__ = [
+    "assert_scalar",
+    "assert_vector",
+    "assert_matrix",
+    "assert_square",
+    "get_shape",
+    "compatible",
+    "assert_compatible",
+    "broadcast",
+]
 
 dispatch = Dispatcher()
 
@@ -79,7 +81,7 @@ class Dimension:
         return str(self.size)
 
     def __repr__(self):
-        return f'Dimension({self.size})'
+        return f"Dimension({self.size})"
 
     def __int__(self):
         return self.size
@@ -100,10 +102,10 @@ class Shape:
         return self.dims == other.dims
 
     def __str__(self):
-        return '({})'.format(', '.join(str(d) for d in self.dims))
+        return "({})".format(", ".join(str(d) for d in self.dims))
 
     def __repr__(self):
-        return 'Shape({})'.format(', '.join(repr(d) for d in self.dims))
+        return "Shape({})".format(", ".join(repr(d) for d in self.dims))
 
     def __getitem__(self, item):
         return self.dims[item]
@@ -151,8 +153,9 @@ def compatible(x1, x2):
 
 @dispatch(Shape, Shape)
 def compatible(s1, s2):
-    return s1.rank == s2.rank and \
-           all(compatible(d1, d2) for d1, d2 in zip(s1.dims, s2.dims))
+    return s1.rank == s2.rank and all(
+        compatible(d1, d2) for d1, d2 in zip(s1.dims, s2.dims)
+    )
 
 
 @dispatch(Dimension, Dimension)
@@ -167,8 +170,9 @@ def assert_compatible(x1, x2):
         x1 (object): First object.
         x2 (object): Second object.
     """
-    assert compatible(x1, x2), f'Objects {x1} and {x2} are asserted to be ' \
-                               f'compatible, but they are not.'
+    assert compatible(x1, x2), (
+        f"Objects {x1} and {x2} are asserted to be compatible, but they are not."
+    )
 
 
 @dispatch(object, object)
@@ -194,5 +198,5 @@ def broadcast(s1, s2):
 @dispatch(Dimension, Dimension)
 def broadcast(d1, d2):
     if not compatible(d1, d2):
-        raise RuntimeError(f'Cannot broadcast dimensions {d1} and {d2}.')
+        raise RuntimeError(f"Cannot broadcast dimensions {d1} and {d2}.")
     return d2 if int(d1) == 1 else d1

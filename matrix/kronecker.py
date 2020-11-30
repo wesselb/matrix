@@ -3,7 +3,7 @@ import lab as B
 from .matrix import AbstractMatrix, repr_format
 from .util import indent, dtype_str
 
-__all__ = ['Kronecker']
+__all__ = ["Kronecker"]
 
 
 class Kronecker(AbstractMatrix):
@@ -33,13 +33,18 @@ class Kronecker(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<Kronecker product:' \
-               f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)}>'
+        return (
+            f"<Kronecker product: shape={rows}x{cols}, dtype={dtype_str(self)}>"
+        )
 
     def __repr__(self):
-        return str(self)[:-1] + '\n' + \
-               f' left=' + indent(repr_format(self.left),
-                                  ' ' * 6).strip() + '\n' + \
-               f' right=' + indent(repr_format(self.right),
-                                   ' ' * 7).strip() + '>'
+        return (
+            str(self)[:-1]
+            + "\n"
+            + f" left="
+            + indent(repr_format(self.left), " " * 6).strip()
+            + "\n"
+            + f" right="
+            + indent(repr_format(self.right), " " * 7).strip()
+            + ">"
+        )

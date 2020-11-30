@@ -4,7 +4,7 @@ from plum import Dispatcher, Self
 from .matrix import AbstractMatrix, repr_format
 from .util import indent, dtype_str
 
-__all__ = ['LowerTriangular', 'UpperTriangular']
+__all__ = ["LowerTriangular", "UpperTriangular"]
 
 
 class LowerTriangular(AbstractMatrix):
@@ -16,6 +16,7 @@ class LowerTriangular(AbstractMatrix):
     Args:
         mat (matrix): Dense lower-triangular matrix.
     """
+
     _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
@@ -23,14 +24,20 @@ class LowerTriangular(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<lower-triangular matrix:' \
-               f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)}>'
+        return (
+            f"<lower-triangular matrix:"
+            f" shape={rows}x{cols},"
+            f" dtype={dtype_str(self)}>"
+        )
 
     def __repr__(self):
-        return str(self)[:-1] + '\n' + \
-               f' mat=' + \
-               indent(repr_format(self.mat), ' ' * 5).strip() + '>'
+        return (
+            str(self)[:-1]
+            + "\n"
+            + f" mat="
+            + indent(repr_format(self.mat), " " * 5).strip()
+            + ">"
+        )
 
 
 class UpperTriangular(AbstractMatrix):
@@ -42,6 +49,7 @@ class UpperTriangular(AbstractMatrix):
     Args:
         mat (matrix): Dense upper-triangular matrix.
     """
+
     _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
@@ -49,11 +57,17 @@ class UpperTriangular(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<upper-triangular matrix:' \
-               f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)}>'
+        return (
+            f"<upper-triangular matrix:"
+            f" shape={rows}x{cols},"
+            f" dtype={dtype_str(self)}>"
+        )
 
     def __repr__(self):
-        return str(self)[:-1] + '\n' + \
-               f' mat=' + \
-               indent(repr_format(self.mat), ' ' * 5).strip() + '>'
+        return (
+            str(self)[:-1]
+            + "\n"
+            + f" mat="
+            + indent(repr_format(self.mat), " " * 5).strip()
+            + ">"
+        )

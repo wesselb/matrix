@@ -1,12 +1,12 @@
 import lab as B
 
 from matrix import Dense, Diagonal
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_bin_op,
     AssertDenseWarning,
-
     zero1,
     zero2,
     dense1,
@@ -18,7 +18,7 @@ from ..util import (
     lt_pd,
     ut_pd,
     lr_pd,
-    wb_pd
+    wb_pd,
 )
 
 
@@ -31,7 +31,7 @@ def test_solve_dense_dense(dense_pd, dense2):
 
 
 def test_solve_dense_diag(dense_pd, diag2):
-    with AssertDenseWarning('solving <dense> x = <diagonal>'):
+    with AssertDenseWarning("solving <dense> x = <diagonal>"):
         check_bin_op(B.solve, dense_pd, diag2)
 
 
@@ -48,7 +48,7 @@ def test_solve_lt_dense(lt_pd, dense2):
 
 
 def test_solve_lt_diag(lt_pd, diag2):
-    with AssertDenseWarning('solving <lower-triangular> x = <diagonal>'):
+    with AssertDenseWarning("solving <lower-triangular> x = <diagonal>"):
         check_bin_op(B.solve, lt_pd, diag2, asserted_type=Dense)
 
 
@@ -57,7 +57,7 @@ def test_solve_ut_dense(ut_pd, dense2):
 
 
 def test_solve_ut_diag(ut_pd, diag2):
-    with AssertDenseWarning('solving <upper-triangular> x = <diagonal>'):
+    with AssertDenseWarning("solving <upper-triangular> x = <diagonal>"):
         check_bin_op(B.solve, ut_pd, diag2, asserted_type=Dense)
 
 

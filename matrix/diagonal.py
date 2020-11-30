@@ -5,7 +5,7 @@ from .matrix import AbstractMatrix, repr_format
 from .shape import assert_vector
 from .util import indent, dtype_str
 
-__all__ = ['Diagonal']
+__all__ = ["Diagonal"]
 
 
 class Diagonal(AbstractMatrix):
@@ -21,12 +21,16 @@ class Diagonal(AbstractMatrix):
     Args:
         diag (vector): Diagonal of matrix.
     """
+
     _dispatch = Dispatcher(in_class=Self)
 
     @_dispatch(B.Numeric)
     def __init__(self, diag):
-        assert_vector(diag, 'Input is not a rank-1 tensor. Can only construct '
-                            'diagonal matrices from rank-1 tensors.')
+        assert_vector(
+            diag,
+            "Input is not a rank-1 tensor. Can only construct "
+            "diagonal matrices from rank-1 tensors.",
+        )
         self.diag = diag
         self.cholesky = None
         self.dense = None
@@ -37,11 +41,15 @@ class Diagonal(AbstractMatrix):
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return f'<diagonal matrix:' \
-               f' shape={rows}x{cols},' \
-               f' dtype={dtype_str(self)}>'
+        return (
+            f"<diagonal matrix: shape={rows}x{cols}, dtype={dtype_str(self)}>"
+        )
 
     def __repr__(self):
-        return str(self)[:-1] + '\n' + \
-               f' diag=' + indent(repr_format(self.diag),
-                                  ' ' * 6).strip() + '>'
+        return (
+            str(self)[:-1]
+            + "\n"
+            + f" diag="
+            + indent(repr_format(self.diag), " " * 6).strip()
+            + ">"
+        )

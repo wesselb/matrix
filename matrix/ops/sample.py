@@ -21,8 +21,9 @@ def sample(a, num=1):  # pragma: no cover
     # Convert integer data types to floats.
     dtype = B.dtype(a)
     if B.issubdtype(B.dtype(a), np.integer):
-        warn_upmodule('Data type of covariance matrix is integer: '
-                      'sampling floats anyway.')
+        warn_upmodule(
+            "Data type of covariance matrix is integer: sampling floats anyway."
+        )
         dtype = float
 
     # Perform sampling operation.

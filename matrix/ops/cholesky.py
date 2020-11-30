@@ -15,8 +15,7 @@ __all__ = []
 
 
 def _assert_square_cholesky(a):
-    assert_square(a, 'Can only take the Cholesky decomposition of square '
-                     'matrices.')
+    assert_square(a, "Can only take the Cholesky decomposition of square matrices.")
 
 
 @B.dispatch(Zero)
@@ -57,10 +56,12 @@ def cholesky(a):
         if a.sign == 1:
             a.cholesky = B.matmul(a.left, B.cholesky(a.middle))
         else:
-            warn_upmodule(f'Cannot ensure positivity of {a}: '
-                          f'converting to dense to compute the Cholesky '
-                          f'decomposition.',
-                          category=ToDenseWarning)
+            warn_upmodule(
+                f"Cannot ensure positivity of {a}: "
+                f"converting to dense to compute the Cholesky "
+                f"decomposition.",
+                category=ToDenseWarning,
+            )
             a.cholesky = B.cholesky(Dense(a))
 
     return a.cholesky
@@ -69,9 +70,10 @@ def cholesky(a):
 @B.dispatch(Woodbury)
 def cholesky(a):
     if a.cholesky is None:
-        warn_upmodule(f'Converting {a} to dense to compute its Cholesky '
-                      f'decomposition.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Converting {a} to dense to compute its Cholesky " f"decomposition.",
+            category=ToDenseWarning,
+        )
         a.cholesky = LowerTriangular(B.cholesky(B.reg(B.dense(a))))
     return a.cholesky
 

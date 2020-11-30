@@ -10,6 +10,7 @@ __all__ = []
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def divide(a, b):
     if structured(a, b):
-        warn_upmodule(f'Dividing {a} by {b}: converting to dense.',
-                      category=ToDenseWarning)
+        warn_upmodule(
+            f"Dividing {a} by {b}: converting to dense.", category=ToDenseWarning
+        )
     return Dense(B.divide(B.dense(a), B.dense(b)))

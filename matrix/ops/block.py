@@ -57,9 +57,10 @@ def block(*rows):
         return Diagonal(B.concat(*[B.diag(x) for x in diagonal_blocks]))
 
     # Could not preserve any structure. Simply concatenate them all densely.
-    warn_upmodule('Could not preserve structure in block matrix: '
-                  'converting to dense.',
-                  category=ToDenseWarning)
+    warn_upmodule(
+        "Could not preserve structure in block matrix: converting to dense.",
+        category=ToDenseWarning,
+    )
     return Dense(B.concat2d(*[[B.dense(x) for x in row] for row in rows]))
 
 

@@ -7,15 +7,15 @@ from matrix import (
     Constant,
     LowerTriangular,
     UpperTriangular,
-    Kronecker
+    Kronecker,
 )
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     allclose,
     check_un_op,
     IgnoreDenseWarning,
     AssertDenseWarning,
-
     zero1,
     dense1,
     diag1,
@@ -24,7 +24,7 @@ from ..util import (
     ut1,
     lr1,
     wb1,
-    kron1
+    kron1,
 )
 
 
@@ -55,14 +55,14 @@ def test_sqrt_ut(ut1):
 def test_sqrt_lr(lr1):
     with IgnoreDenseWarning():
         lr_pos = lr1 * lr1
-    with AssertDenseWarning('square root of <low-rank>'):
+    with AssertDenseWarning("square root of <low-rank>"):
         check_un_op(B.sqrt, lr_pos, asserted_type=Dense)
 
 
 def test_sqrt_wb(wb1):
     with IgnoreDenseWarning():
         wb_pos = wb1 * wb1
-    with AssertDenseWarning('square root of <woodbury>'):
+    with AssertDenseWarning("square root of <woodbury>"):
         check_un_op(B.sqrt, wb_pos, asserted_type=Dense)
 
 

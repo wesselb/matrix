@@ -5,14 +5,13 @@ import lab as B
 from ..util import (
     allclose,
     check_un_op,
-
     dense_pd,
     diag_pd,
     lt_pd,
     lr_pd,
     ut_pd,
     wb_pd,
-    kron_pd
+    kron_pd,
 )
 
 

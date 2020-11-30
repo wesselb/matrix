@@ -9,8 +9,7 @@ __all__ = []
 
 @B.dispatch(AbstractMatrix, B.Int, B.Int)
 def reshape(a, rows, cols):
-    warn_upmodule(f'Converting {a} to dense for reshaping.',
-                  category=ToDenseWarning)
+    warn_upmodule(f"Converting {a} to dense for reshaping.", category=ToDenseWarning)
     return Dense(B.reshape(B.dense(a), rows, cols))
 
 

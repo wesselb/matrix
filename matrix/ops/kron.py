@@ -16,6 +16,7 @@ def _product_shape(a, b):
 
 # Zero
 
+
 @B.dispatch(AbstractMatrix, Zero, precedence=proven())
 def kron(a, b):
     return Zero(B.dtype(b), *_product_shape(a, b))
@@ -28,12 +29,14 @@ def kron(a, b):
 
 # Dense
 
+
 @B.dispatch(AbstractMatrix, AbstractMatrix)
 def kron(a, b):
     return Kronecker(a, b)
 
 
 # Constant
+
 
 @B.dispatch(Constant, Constant)
 def kron(a, b):
