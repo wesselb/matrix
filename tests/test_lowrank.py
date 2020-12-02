@@ -83,9 +83,24 @@ def test_lowrank_attributes():
     assert lr.rank == 2
     assert lr.sign == 1
 
+    # Check rank in non-square case.
+    assert LowRank(B.ones(3, 2), B.ones(3, 2), B.ones(2, 2)).rank == 2
+    assert LowRank(B.ones(3, 2), B.ones(3, 1), B.ones(2, 1)).rank == 1
+
 
 def test_lowrank_shape_checks():
+    # Check that matrices must be given.
+    with pytest.raises(AssertionError):
+        LowRank(B.ones(3))
+    with pytest.raises(AssertionError):
+        LowRank(B.ones(3, 1), B.ones(3))
+    with pytest.raises(AssertionError):
+        LowRank(B.ones(3, 1), B.ones(3, 1), B.ones(1))
+
+    # Check that needs need to be compatible
     with pytest.raises(AssertionError):
         LowRank(B.ones(3, 1), B.ones(3, 2))
     with pytest.raises(AssertionError):
-        LowRank(B.ones(3, 1), B.ones(3, 1), B.eye(2))
+        LowRank(B.ones(3, 1), B.ones(3, 2), B.ones(1, 1))
+    with pytest.raises(AssertionError):
+        LowRank(B.ones(3, 1), middle=B.ones(2, 1))

@@ -10,29 +10,27 @@ __all__ = ["LowRank"]
 class LowRank(AbstractMatrix):
     """Abstract low-rank matrix.
 
-    The data type of a low-rank matrix is the data type of the left factor.
-    The Cholesky decomposition is not exactly the Cholesky decomposition,
-    but returns a matrix `L` such that `L transpose(L)` is the original matrix.
+    The data type of a low-rank matrix is the data type of the left factor. The
+    Cholesky decomposition is not exactly the Cholesky decomposition, but returns a
+    matrix `L` such that `L transpose(L)` is the original matrix.
 
     Attributes:
         left (matrix): Left factor.
         middle (matrix): Middle factor.
         right (matrix): Right factor.
         rank (int): Rank of the low-rank matrix.
-        sign (int): Definiteness of the matrix, which is `1` if the
-            matrix is PD, `0` if it is indefinite, and `-1` if it is ND.
+        sign (int): Definiteness of the matrix, which is `1` if the matrix is PD,
+            `0` if it is indefinite, and `-1` if it is ND.
         cholesky (:class:`.matrix.AbstractMatrix` or None): Cholesky-like
             decomposition of the matrix, once it has been computed.
-        dense (matrix or None): Dense version of the matrix, once it has been
-            computed.
+        dense (matrix or None): Dense version of the matrix, once it has been computed.
 
     Args:
         left (matrix): Left factor.
         right (matrix, optional): Right factor. Defaults to the left factor.
-        middle (matrix, optional): Middle factor. Defaults to the identity
-            matrix.
-        sign (int, optional): Definiteness of the matrix. Defaults to `1` if
-            `left` is identical to `right` and `0` otherwise.
+        middle (matrix, optional): Middle factor. Defaults to the identity matrix.
+        sign (int, optional): Definiteness of the matrix. Defaults to `1` if `left`
+            is identical to `right` and `0` otherwise.
     """
 
     def __init__(self, left, right=None, middle=None, sign=None):
@@ -41,8 +39,48 @@ class LowRank(AbstractMatrix):
         self._middle = middle
         self._middle_default = None
 
-        # Set `sign` and `rank`.
-        self.rank = B.shape(self.left)[1]
+        msg = "Can only construct low-rank matrices from matrix factors."
+
+        # Check left factor.
+        assert_matrix(self.left, f"Left factor is not a rank-2 tensor. {msg}")
+
+        # Check middle factor, if it is given.
+        if self._middle is not None:
+            assert_matrix(self._middle, f"Middle factor is not a rank-2 tensor. {msg}")
+            if B.shape(self.left)[1] != B.shape(self._middle)[0]:
+                raise AssertionError(
+                    f"Left factor has {B.shape(self.left)[1]} columns "
+                    f"and middle factor has {B.shape(self.middle)[0]} rows."
+                )
+
+        # Check right factor, if it is given.
+        if self._right is not None:
+            assert_matrix(self._right, f"Right factor is not a rank-2 tensor. {msg}")
+
+            if self._middle is not None:
+                if B.shape(self._right)[1] != B.shape(self._middle)[1]:
+                    raise AssertionError(
+                        f"Right factor has {B.shape(self._right)[1]} columns "
+                        f"and middle factor has {B.shape(self.middle)[1]} columns."
+                    )
+            else:
+                if B.shape(self._right)[1] != B.shape(self.left)[1]:
+                    raise AssertionError(
+                        f"Right factor has {B.shape(self._right)[1]} columns and "
+                        f"left factor has {B.shape(self.left)[1]} columns."
+                    )
+
+        # Caching attributes:
+        self.cholesky = None
+        self.dense = None
+
+        # Determine `rank`.
+        if self._middle is None:
+            self.rank = B.shape(self.left)[1]
+        else:
+            self.rank = min(B.shape(self._middle))
+
+        # Set `sign`.
         if sign is None:
             if self.left is self.right:
                 if middle is None:
@@ -55,36 +93,6 @@ class LowRank(AbstractMatrix):
                 self.sign = 0
         else:
             self.sign = sign
-
-        # Caching attributes:
-        self.cholesky = None
-        self.dense = None
-
-        msg = (
-            "Can only construct low-rank matrices from matrix factors and "
-            "the middle factor must be square."
-        )
-
-        # Check left factor.
-        assert_matrix(self.left, f"Left factor is not a rank-2 tensor. {msg}")
-
-        # Check right factor, if it is given.
-        if self._right is not None:
-            assert_matrix(self._right, f"Right factor is not a rank-2 tensor. {msg}")
-            if B.shape(self._right)[1] != self.rank:
-                raise AssertionError(
-                    "All factors must have an equal number of columns."
-                )
-
-        # Check middle factor, if it is given.
-        if self._middle is not None:
-            assert_square(
-                self._middle, f"Middle factor is not a square rank-2 tensor. {msg}"
-            )
-            if B.shape(self._middle)[1] != self.rank:
-                raise AssertionError(
-                    "All factors must have an equal number of columns."
-                )
 
     @property
     def right(self):
