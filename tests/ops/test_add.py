@@ -135,19 +135,23 @@ def test_add_ut_const(ut1, const_or_scalar2):
 
 
 def test_add_lr(lr1, lr2):
-    with AssertDenseWarning(concat_warnings):
+    with ConditionalContext(
+        isinstance(lr1.left, Diagonal) or isinstance(lr2.left, Diagonal),
+        AssertDenseWarning("indexing into <diagonal>"),
+    ):
         check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
 
 
 def test_add_lr_sign(lr_pd):
-    with AssertDenseWarning(concat_warnings):
+    with ConditionalContext(
+        isinstance(lr_pd.left, Diagonal), AssertDenseWarning("indexing into <diagonal>")
+    ):
         assert B.add(lr_pd, lr_pd).sign == 1
 
 
 def test_add_lr_const(lr1, const_or_scalar2):
-    with AssertDenseWarning(concat_warnings):
+    with AssertDenseWarning("indexing into <diagonal>"):
         check_bin_op(B.add, const_or_scalar2, lr1, asserted_type=LowRank)
-    with AssertDenseWarning(concat_warnings):
         check_bin_op(B.add, lr1, const_or_scalar2, asserted_type=LowRank)
 
 
@@ -157,7 +161,10 @@ def test_add_lr_diag(lr1, diag2):
 
 
 def test_add_wb(wb1, wb2):
-    with AssertDenseWarning(concat_warnings):
+    with ConditionalContext(
+        isinstance(wb1.lr.left, Diagonal) or isinstance(wb2.lr.left, Diagonal),
+        AssertDenseWarning("indexing into <diagonal>"),
+    ):
         check_bin_op(B.add, wb1, wb2, asserted_type=Woodbury)
 
 
@@ -167,16 +174,13 @@ def test_add_wb_diag(wb1, diag1):
 
 
 def test_add_wb_constant(wb1, const_or_scalar2):
-    with AssertDenseWarning(concat_warnings):
+    with AssertDenseWarning("indexing into <diagonal>"):
         check_bin_op(B.add, wb1, const_or_scalar2, asserted_type=Woodbury)
-    with AssertDenseWarning(concat_warnings):
         check_bin_op(B.add, const_or_scalar2, wb1, asserted_type=Woodbury)
 
 
 def test_add_wb_lr(wb1, lr2):
-    with AssertDenseWarning(concat_warnings):
         check_bin_op(B.add, wb1, lr2, asserted_type=Woodbury)
-    with AssertDenseWarning(concat_warnings):
         check_bin_op(B.add, lr2, wb1, asserted_type=Woodbury)
 
 

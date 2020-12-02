@@ -30,8 +30,8 @@ def constant_to_lowrank(a):
     rows, cols = B.shape(a)
     middle = B.fill_diag(a.const, 1)
     if rows == cols:
-        return LowRank(left=B.ones(dtype, rows, 1), middle=middle)
+        return LowRank(B.ones(dtype, rows, 1), middle=middle)
     else:
         return LowRank(
-            left=B.ones(dtype, rows, 1), right=B.ones(dtype, cols, 1), middle=middle
+            B.ones(dtype, rows, 1), B.ones(dtype, cols, 1), middle=middle
         )

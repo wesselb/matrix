@@ -1,6 +1,7 @@
 import lab as B
 from algebra import proven
 from wbml.warning import warn_upmodule
+from plum import convert
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -31,9 +32,9 @@ def _assert_composable(a, b, tr_a=False, tr_b=False):
     s1, s2 = get_shape(a, b)
     s1 = _tr(s1, tr_a)
     s2 = _tr(s2, tr_b)
-    assert s1[1] == s2[0], (
-        f"Objects {a} and {b} are asserted to be composable, but they are not."
-    )
+    assert (
+        s1[1] == s2[0]
+    ), f"Objects {a} and {b} are asserted to be composable, but they are not."
 
 
 # Zero
@@ -234,19 +235,11 @@ def matmul(a, b, tr_a=False, tr_b=False):
     b = _tr(b, tr_b)
     middle = B.matmul(a.right, b.left, tr_a=True)
     middle = B.matmul(a.middle, middle, b.middle)
-    rows, cols = B.shape(middle)
-    if rows == cols:
-        # Let `middle` be of type `Diagonal` if possible.
-        if a.rank == 1 and b.rank == 1:
-            return LowRank(a.left, b.right, Diagonal(middle))
-        else:
-            return LowRank(a.left, b.right, middle)
-    elif rows > cols:
-        return LowRank(B.matmul(a.left, middle), b.right)
-    elif rows < cols:
-        return LowRank(a.left, B.matmul(b.right, middle, tr_b=True))
-    else:  # pragma: no cover
-        raise RuntimeError("Logic error.")
+    # Let `middle` be of type `Diagonal` if possible.
+    if B.shape(middle) == (1, 1):
+        return LowRank(a.left, b.right, Diagonal(middle[0]))
+    else:
+        return LowRank(a.left, b.right, middle)
 
 
 @B.dispatch(LowRank, AbstractMatrix)
@@ -265,8 +258,17 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return LowRank(B.matmul(a, b.left), b.right, b.middle)
 
 
+@B.dispatch(LowRank, Constant)
+def matmul(a, b, tr_a=False, tr_b=False):
+    return B.matmul(a, convert(b, LowRank), tr_a=tr_a, tr_b=tr_b)
+
+
+@B.dispatch(Constant, LowRank)
+def matmul(a, b, tr_a=False, tr_b=False):
+    return B.matmul(convert(a, LowRank), b, tr_a=tr_a, tr_b=tr_b)
+
+
 redirect(B.matmul, (LowRank, Diagonal), (LowRank, AbstractMatrix))
-redirect(B.matmul, (LowRank, Constant), (AbstractMatrix, Constant))
 redirect(B.matmul, (LowRank, LowerTriangular), (LowRank, AbstractMatrix))
 redirect(B.matmul, (LowRank, UpperTriangular), (LowRank, AbstractMatrix))
 

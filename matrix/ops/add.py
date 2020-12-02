@@ -3,6 +3,7 @@ from algebra import proven
 from plum import convert
 from wbml.warning import warn_upmodule
 
+from .algorithms.align import align
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
@@ -135,10 +136,16 @@ _reverse_call(UpperTriangular, LowerTriangular)
 @B.dispatch(LowRank, LowRank)
 def add(a, b):
     assert_compatible(a, b)
+    join_left, _, a_middle_t, _, b_middle_t = align(
+        a.left, B.transpose(a.middle), b.left, B.transpose(b.middle)
+    )
+    join_right, _, a_middle, _, b_middle = align(
+        a.right, B.transpose(a_middle_t), b.right, B.transpose(b_middle_t)
+    )
     return LowRank(
-        B.concat(a.left, b.left, axis=1),
-        B.concat(a.right, b.right, axis=1),
-        B.diag(a.middle, b.middle),
+        join_left,
+        join_right,
+        B.add(a_middle, b_middle),
         sign=a.sign if a.sign == b.sign else 0,
     )
 

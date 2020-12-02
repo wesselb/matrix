@@ -27,7 +27,7 @@ jobs:
           COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
           COVERALLS_PARALLEL: true
         run: |
-          pytest -v --cov=matrix --cov-report term-missing
+          pytest -v --cov=matrix --cov-report term-missing -Werror
           coveralls
   coveralls:
     name: Finish coverage
