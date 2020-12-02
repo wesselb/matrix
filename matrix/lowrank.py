@@ -45,7 +45,12 @@ class LowRank(AbstractMatrix):
         self.rank = B.shape(self.left)[1]
         if sign is None:
             if self.left is self.right:
-                self.sign = 1
+                if middle is None:
+                    self.sign = 1
+                else:
+                    # If `middle` is given, but `sign` is not, then we cannot determine
+                    # definiteness.
+                    self.sign = 0
             else:
                 self.sign = 0
         else:

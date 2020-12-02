@@ -490,7 +490,7 @@ def lr_r(request):
 )
 def lr_pd(request):
     code_l, code_m = request.param
-    return LowRank(generate(code_l), middle=generate(code_m))
+    return LowRank(generate(code_l), middle=generate(code_m), sign=1)
 
 
 @pytest.fixture()
