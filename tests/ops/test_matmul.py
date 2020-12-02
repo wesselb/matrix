@@ -227,8 +227,8 @@ def test_matmul_lr_ut(lr1, ut2):
 
 def test_matmul_wb(wb1, wb2):
     with ConditionalContext(
-        isinstance(wb1.lr.left, Diagonal)
-        or isinstance(wb2.lr.left, Diagonal)
+        structured(wb1.lr.left)
+        or structured(wb2.lr.left)
         or wb1.lr.rank == 1 == wb2.lr.rank == 1,
         AssertDenseWarning("indexing into <diagonal>"),
     ):
@@ -253,8 +253,8 @@ def test_matmul_wb_const(wb1, const2):
 
 def test_matmul_wb_lr(wb1, lr2):
     with ConditionalContext(
-        isinstance(wb1.lr.left, Diagonal)
-        or isinstance(lr2.left, Diagonal)
+        structured(wb1.lr.left)
+        or structured(lr2.left)
         or wb1.lr.rank == lr2.rank == 1,
         AssertDenseWarning("indexing into <diagonal>"),
     ):

@@ -28,8 +28,8 @@ def test_matmul_diag_dense(dense1, dense2):
 
 
 def test_matmul_diag_lr(lr1, lr2):
-    warn = AssertDenseWarning("getting the diagonal of <low-rank>")
     with ConditionalContext(
-        structured(lr1.left, lr1.right) and structured(lr2.left, lr2.right), warn
+        structured(lr1.left, lr1.right) or structured(lr2.left, lr2.right),
+        AssertDenseWarning("getting the diagonal of <low-rank>"),
     ):
         _check_matmul_diag(lr1, lr2)
