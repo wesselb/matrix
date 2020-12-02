@@ -189,8 +189,7 @@ class AssertDenseWarning:
                 pre = "any of " if len(self.content) > 1 else ""
                 contents = '", "'.join(self.content)
                 raise AssertionError(
-                    f"Warning should contain {pre}"
-                    f'"{contents}", but it did not: '
+                    f'Warning should contain {pre}"{contents}", but it did not: '
                     f'"{message}".'
                 )
 
