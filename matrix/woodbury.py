@@ -45,7 +45,7 @@ class Woodbury(AbstractMatrix):
     def __str__(self):
         rows, cols = B.shape(self)
         return (
-            f"<Woodbury matrix:" f" shape={rows}x{cols}," f" dtype={dtype_str(self)}>"
+            f"<Woodbury matrix: shape={rows}x{cols}, dtype={dtype_str(self)}>"
         )
 
     def __repr__(self):

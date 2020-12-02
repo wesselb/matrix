@@ -71,7 +71,7 @@ def cholesky(a):
 def cholesky(a):
     if a.cholesky is None:
         warn_upmodule(
-            f"Converting {a} to dense to compute its Cholesky " f"decomposition.",
+            f"Converting {a} to dense to compute its Cholesky decomposition.",
             category=ToDenseWarning,
         )
         a.cholesky = LowerTriangular(B.cholesky(B.reg(B.dense(a))))
