@@ -241,7 +241,7 @@ def generate(code):
         if len(shape) in {0, 1}:
             return mat ** 2
         else:
-            return B.matmul(mat, mat, tr_b=True) + B.eye(shape[0])
+            return B.matmul(mat, mat, tr_b=True) + 2 * B.eye(shape[0])
 
     elif mat_code == "zero":
         return Zero(B.default_dtype, *shape)
