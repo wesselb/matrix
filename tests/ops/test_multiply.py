@@ -150,11 +150,6 @@ def test_multiply_lr(lr1, lr2):
         check_bin_op(B.multiply, lr1, lr2, asserted_type=LowRank)
 
 
-def test_multiply_lr_sign(lr_pd):
-    with _conditional_warning([lr_pd], lr_warnings):
-        assert B.multiply(lr_pd, lr_pd).sign == 1
-
-
 def test_multiply_lr_const(lr1, const_or_scalar2):
     check_bin_op(B.multiply, lr1, const_or_scalar2, asserted_type=LowRank)
     check_bin_op(B.multiply, const_or_scalar2, lr1, asserted_type=LowRank)

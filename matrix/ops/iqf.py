@@ -37,4 +37,4 @@ def iqf(a, b):
 
 @B.dispatch(Woodbury, object, object)
 def iqf(a, b, c):
-    return B.mm(b, B.solve(a, c), tr_a=True)
+    return B.mm(b, B.pd_inv(a), c, tr_a=True)

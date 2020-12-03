@@ -145,8 +145,7 @@ def add(a, b):
     return LowRank(
         join_left,
         join_right,
-        B.add(a_middle, b_middle),
-        sign=a.sign if a.sign == b.sign else 0,
+        B.add(a_middle, b_middle)
     )
 
 

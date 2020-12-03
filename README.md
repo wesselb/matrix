@@ -37,7 +37,7 @@ pip install backends-matrix
 <Woodbury matrix: shape=3x3, dtype=int64
  diag=<diagonal matrix: shape=3x3, dtype=float64
        diag=[2. 2. 2.]>
- lr=<low-rank matrix: shape=3x3, dtype=int64, rank=1, sign=1
+ lr=<low-rank matrix: shape=3x3, dtype=int64, rank=1
      left=[[1]
            [1]
            [1]]
@@ -48,16 +48,46 @@ pip install backends-matrix
 <Woodbury matrix: shape=3x3, dtype=float64
  diag=<diagonal matrix: shape=3x3, dtype=float64
        diag=[0.5 0.5 0.5]>
- lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1, sign=0
+ lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1
      left=<dense matrix: shape=3x1, dtype=float64
            mat=[[0.5]
                 [0.5]
                 [0.5]]>
-     middle=[[-0.4]]
+     middle=<dense matrix: shape=1x1, dtype=float64
+             mat=[[-0.4]]>
      right=<dense matrix: shape=3x1, dtype=float64
             mat=[[0.5]
                  [0.5]
                  [0.5]]>>>
+
+>>> B.inv(B.inv(2 * d + 1))
+<Woodbury matrix: shape=3x3, dtype=float64
+ diag=<diagonal matrix: shape=3x3, dtype=float64
+       diag=[2. 2. 2.]>
+ lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1
+     left=<dense matrix: shape=3x1, dtype=float64
+           mat=[[1.]
+                [1.]
+                [1.]]>
+     middle=<dense matrix: shape=1x1, dtype=float64
+             mat=[[1.]]>
+     right=<dense matrix: shape=3x1, dtype=float64
+            mat=[[1.]
+                 [1.]
+                 [1.]]>>>
+
+>>> B.inv(B.inv(2 * d + 1)) + 3
+<Woodbury matrix: shape=3x3, dtype=float64
+ diag=<diagonal matrix: shape=3x3, dtype=float64
+       diag=[2. 2. 2.]>
+ lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1
+     left=[[1.]
+           [1.]
+           [1.]]
+     middle=[[4.]]
+     right=[[1.]
+            [1.]
+            [1.]]>>
 
 >>> B.kron(d, 2 * d)
 <Kronecker product: shape=9x9, dtype=float64
@@ -65,7 +95,6 @@ pip install backends-matrix
        diag=[1. 1. 1.]>
  right=<diagonal matrix: shape=3x3, dtype=float64
         diag=[2. 2. 2.]>>
-
 
 >>> B.inv(B.kron(d, 2 * d))
 <Kronecker product: shape=9x9, dtype=float64
@@ -109,9 +138,15 @@ fill_diag(a, diag_len)
 block(*rows)
 
 matmul_diag(a, b, tr_a=False, tr_b=False)
+
+pd_inv(a)
+schur(a)
+pd_schur(a)
 iqf(a, b, c)
 iqf_diag(a, b, c)
+
 ratio(a, c)
 root(a)
+
 sample(a, num=1)
 ```

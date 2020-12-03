@@ -43,7 +43,7 @@ def negative(a):
 
 @B.dispatch(LowRank)
 def negative(a):
-    return LowRank(a.left, a.right, B.negative(a.middle), -a.sign)
+    return LowRank(a.left, a.right, B.negative(a.middle))
 
 
 @B.dispatch(Woodbury)

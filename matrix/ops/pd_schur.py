@@ -6,9 +6,9 @@ __all__ = []
 
 
 @B.dispatch(Woodbury)
-def schur(a):
-    """Compute the Schur complement associated to a matrix. A Schur complement will need
-    to make sense for the type of `a`.
+def pd_schur(a):
+    """Compute the Schur complement associated to a positive-definite matrix. A Schur
+    complement will need to make sense for the type of `a`.
 
     Args:
         a (matrix): Matrix to compute Schur complement of.
@@ -18,8 +18,8 @@ def schur(a):
     """
     if a.schur is None:
         second = B.mm(a.lr.right, B.inv(a.diag), a.lr.left, tr_a=True)
-        a.schur = B.add(B.inv(a.lr.middle), second)
+        a.schur = B.add(B.pd_inv(a.lr.middle), second)
     return a.schur
 
 
-B.schur = schur
+B.pd_schur = pd_schur

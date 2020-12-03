@@ -195,7 +195,7 @@ def multiply(a, b):
         axis=0,
     )
 
-    return LowRank(left, right, middle, sign=a.sign if a.sign == b.sign else 0)
+    return LowRank(left, right, middle)
 
 
 @B.dispatch(Constant, LowRank)

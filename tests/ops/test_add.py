@@ -142,13 +142,6 @@ def test_add_lr(lr1, lr2):
         check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
 
 
-def test_add_lr_sign(lr_pd):
-    with ConditionalContext(
-        structured(lr_pd.left), AssertDenseWarning("indexing into <diagonal>")
-    ):
-        assert B.add(lr_pd, lr_pd).sign == 1
-
-
 def test_add_lr_const(lr1, const_or_scalar2):
     with AssertDenseWarning("indexing into <diagonal>"):
         check_bin_op(B.add, const_or_scalar2, lr1, asserted_type=LowRank)
@@ -181,8 +174,8 @@ def test_add_wb_constant(wb1, const_or_scalar2):
 
 def test_add_wb_lr(wb1, lr2):
     with ConditionalContext(
-            structured(wb1.lr.left) or structured(lr2.left),
-            AssertDenseWarning("indexing into <diagonal>"),
+        structured(wb1.lr.left) or structured(lr2.left),
+        AssertDenseWarning("indexing into <diagonal>"),
     ):
         check_bin_op(B.add, wb1, lr2, asserted_type=Woodbury)
         check_bin_op(B.add, lr2, wb1, asserted_type=Woodbury)

@@ -21,6 +21,8 @@ from .multiply import *
 from .negative import *
 from .one import *
 from .ones import *
+from .pd_inv import *
+from .pd_schur import *
 from .power import *
 from .rank import *
 from .ratio import *

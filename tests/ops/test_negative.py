@@ -57,10 +57,6 @@ def test_negative_lr(lr1):
     check_un_op(B.negative, lr1, asserted_type=LowRank)
 
 
-def test_negative_lr_sign(lr_pd):
-    assert B.negative(lr_pd).sign == -1
-
-
 def test_negative_wb(wb1):
     check_un_op(B.negative, wb1, asserted_type=Woodbury)
 
