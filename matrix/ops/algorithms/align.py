@@ -1,3 +1,4 @@
+import numpy as np
 import lab as B
 
 
@@ -19,9 +20,15 @@ def align(a, with_a, b, with_b):
             where there is no match; and `with_b` in the same ordering.
     """
     # Sort the columns of `a` and `b` according to a norm so that a greedy approach
-    # is possible.
+    # is possible. Also cache control flow, which will allow us to JIT.
     a_norms = B.sum(B.multiply(a, a), axis=0)
     b_norms = B.sum(B.multiply(b, b), axis=0)
+    if B.control_flow.caching:
+        B.control_flow.set_outcome("align:a_norms", a_norms)
+        B.control_flow.set_outcome("align:b_norms", b_norms)
+    elif B.control_flow.use_cache:
+        a_norms = B.control_flow.get_outcome("align:a_norms")
+        b_norms = B.control_flow.get_outcome("align:b_norms")
     a_inds = B.argsort(a_norms)
     b_inds = B.argsort(b_norms)
     join, a, with_a, b, with_b, n_extended = _align(
@@ -33,7 +40,12 @@ def align(a, with_a, b, with_b):
         b_norms[b_inds],
         0,
     )
-    # Remove the added zeros.
+
+    # Remove the added zeros. Cache this number of zeros to allow us to JIT.
+    if B.control_flow.caching:
+        B.control_flow.set_outcome("align:n_extended", n_extended, type=int)
+    elif B.control_flow.use_cache:
+        n_extended = B.control_flow.get_outcome("align:n_extended")
     return (
         join[:, 0 : B.shape(join)[1] - n_extended],
         a[:, 0 : B.shape(a)[1] - n_extended],
