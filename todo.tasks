@@ -1,6 +1,11 @@
+TODOs:
+     ☐ `solve` for `Kronecker`.
+     ☐ svd
+
 Efficiency:
     ☐ Vector representation of triangular matrices
 
-Positivity of Woodbury matrices:
-    ☐ Preserve sign of `LowRank` in operations.
-    ☐ Use and preserve sign of low-rank matrix in `inv` and `iqf*` for `Woodbury`.
+＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿
+Archive:
+ x Use and preserve sign of low-rank matrix in `inv` and `iqf*` for `Woodbury`. @cancelled (20-12-03 12:36) @project(Positivity of Woodbury matrices)
+ x Preserve sign of `LowRank` in operations. @cancelled (20-12-03 12:36) @project(Positivity of Woodbury matrices)
