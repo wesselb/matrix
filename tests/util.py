@@ -3,11 +3,10 @@ import warnings
 
 import lab as B
 import pytest
-from numpy.testing import assert_allclose, assert_array_almost_equal
+from numpy.testing import assert_allclose
 from plum import Dispatcher
 
 from matrix import (
-    AbstractMatrix,
     Dense,
     Diagonal,
     Zero,
@@ -21,7 +20,6 @@ from matrix import (
 from matrix.util import ToDenseWarning
 
 __all__ = [
-    "allclose",
     "approx",
     "check_un_op",
     "check_bin_op",
@@ -75,23 +73,23 @@ __all__ = [
 
 _dispatch = Dispatcher()
 
-approx = assert_array_almost_equal
-
 
 @_dispatch(object, object)
-def allclose(x, y):
+def approx(x, y, rtol=1e-7, atol=1e-12):
     """Assert that two objects are numerically close.
 
     Args:
         x (object): First object.
         y (object): Second object.
+        rtol (float, optional): Relative tolerance. Defaults to `1e-7`.
+        atol (float, optional): Absolute tolerance. Defaults to `1e-12`.
     """
-    allclose(B.to_numpy(x), B.to_numpy(y))
+    approx(B.to_numpy(x), B.to_numpy(y), rtol=rtol, atol=atol)
 
 
 @_dispatch({tuple, B.Number, B.NPNumeric}, {tuple, B.Number, B.NPNumeric})
-def allclose(x, y):
-    assert_allclose(x, y, rtol=1e-7, atol=1e-14)
+def approx(x, y, **kw_args):
+    assert_allclose(x, y, **kw_args)
 
 
 def _assert_instance(x, asserted_type):
@@ -111,7 +109,7 @@ def check_un_op(op, x, asserted_type=object):
     """
     x_dense = B.dense(x)
     res = op(x)
-    allclose(res, op(x_dense))
+    approx(res, op(x_dense))
     _assert_instance(res, asserted_type)
 
 
@@ -130,13 +128,13 @@ def check_bin_op(op, x, y, asserted_type=object, check_broadcasting=True):
     y_dense = B.dense(y)
     res = op(x, y)
 
-    allclose(res, op(x_dense, y_dense))
+    approx(res, op(x_dense, y_dense))
 
     with IgnoreDenseWarning():
         if check_broadcasting:
-            allclose(op(x_dense, y), op(x_dense, y_dense))
-            allclose(op(x, y_dense), op(x_dense, y_dense))
-        allclose(op(x_dense, y_dense), op(x_dense, y_dense))
+            approx(op(x_dense, y), op(x_dense, y_dense))
+            approx(op(x, y_dense), op(x_dense, y_dense))
+        approx(op(x_dense, y_dense), op(x_dense, y_dense))
 
     _assert_instance(res, asserted_type)
 

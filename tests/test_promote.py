@@ -5,7 +5,7 @@ from plum import promote, convert
 from matrix import Zero, LowRank
 
 # noinspection PyUnresolvedReferences
-from .util import allclose, dense1, const1, const_r
+from .util import approx, dense1, const1, const_r
 
 
 def test_promote_check(dense1):
@@ -20,7 +20,7 @@ def test_promote_zero(dense1):
 
 def test_constant_to_lowrank_square(const1):
     res = convert(const1, LowRank)
-    allclose(const1, res)
+    approx(const1, res)
 
     assert isinstance(res, LowRank)
     assert res.left is res.right
@@ -28,6 +28,6 @@ def test_constant_to_lowrank_square(const1):
 
 def test_constant_to_lowrank_rectangular(const_r):
     res = convert(const_r, LowRank)
-    allclose(const_r, res)
+    approx(const_r, res)
 
     assert isinstance(res, LowRank)

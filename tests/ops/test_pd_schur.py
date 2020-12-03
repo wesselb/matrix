@@ -1,11 +1,11 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import allclose, check_un_op, AssertDenseWarning, diag_pd, lr_pd, wb_pd
+from ..util import approx, check_un_op, AssertDenseWarning, diag_pd, lr_pd, wb_pd
 
 
 def test_pd_schur(wb_pd):
-    allclose(B.schur(wb_pd), B.pd_schur(wb_pd))
+    approx(B.schur(wb_pd), B.pd_schur(wb_pd))
 
 
 def test_pd_schur_wb_cache(wb_pd):

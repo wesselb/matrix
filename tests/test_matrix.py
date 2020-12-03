@@ -3,7 +3,7 @@ import lab as B
 from matrix import Dense, Diagonal, structured
 
 # noinspection PyUnresolvedReferences
-from .util import allclose, AssertDenseWarning, dense1, dense2, diag1
+from .util import approx, AssertDenseWarning, dense1, dense2, diag1
 
 
 def test_dispatch(dense1, dense2):
@@ -21,7 +21,7 @@ def test_dispatch(dense1, dense2):
 
 
 def test_properties(dense1):
-    allclose(dense1.T, B.transpose(dense1))
+    approx(dense1.T, B.transpose(dense1))
     assert dense1.shape == B.shape(dense1)
     assert dense1.dtype == B.dtype(dense1)
 
@@ -49,14 +49,14 @@ def test_structured():
 
 
 def test_conversion_to_dense(diag1):
-    allclose(Dense(diag1), diag1)
+    approx(Dense(diag1), diag1)
     assert isinstance(Dense(diag1).mat, B.Numeric)
 
 
 def test_indexing_dense(dense1):
-    allclose(dense1[2], B.dense(dense1)[2])
+    approx(dense1[2], B.dense(dense1)[2])
 
 
 def test_indexing_diag(diag1):
     with AssertDenseWarning("indexing into <diagonal>"):
-        allclose(diag1[2], B.dense(diag1)[2])
+        approx(diag1[2], B.dense(diag1)[2])

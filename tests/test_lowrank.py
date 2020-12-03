@@ -2,7 +2,7 @@ import lab as B
 import pytest
 
 from matrix import LowRank
-from .util import allclose
+from .util import approx
 
 
 def test_lowrank_formatting():
@@ -44,14 +44,14 @@ def test_lowrank_attributes():
     lr = LowRank(left)
     assert lr.left is left
     assert lr.right is left
-    allclose(lr.middle, B.eye(2))
+    approx(lr.middle, B.eye(2))
     assert lr.rank == 2
 
     # Check given identical right.
     lr = LowRank(left, left)
     assert lr.left is left
     assert lr.right is left
-    allclose(lr.middle, B.eye(2))
+    approx(lr.middle, B.eye(2))
     assert lr.rank == 2
 
     # Check given identical right and middle.
@@ -59,7 +59,7 @@ def test_lowrank_attributes():
     lr = LowRank(left, left, middle=middle)
     assert lr.left is left
     assert lr.right is left
-    allclose(lr.middle, B.ones(2, 2))
+    approx(lr.middle, B.ones(2, 2))
     assert lr.rank == 2
 
     # Check given other right and middle factor.
@@ -67,7 +67,7 @@ def test_lowrank_attributes():
     lr = LowRank(left, right, middle=middle)
     assert lr.left is left
     assert lr.right is right
-    allclose(lr.middle, B.ones(2, 2))
+    approx(lr.middle, B.ones(2, 2))
     assert lr.rank == 2
 
     # Check rank in non-square case.

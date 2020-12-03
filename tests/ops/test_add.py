@@ -15,7 +15,7 @@ from matrix import structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_bin_op,
     AssertDenseWarning,
     ConditionalContext,

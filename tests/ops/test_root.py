@@ -5,7 +5,7 @@ from matrix import Dense, Constant, Diagonal, Kronecker, LowerTriangular
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     AssertDenseWarning,
     zero1,
@@ -23,7 +23,7 @@ def _check_root(a, asserted_type=object):
     root = B.root(a)
 
     # Check correctness.
-    allclose(B.matmul(B.dense(root), B.dense(root)), B.dense(a))
+    approx(B.matmul(B.dense(root), B.dense(root)), B.dense(a))
 
     # Check type.
     assert isinstance(root, asserted_type)

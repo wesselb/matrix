@@ -3,7 +3,7 @@ import lab as B
 from matrix import Dense, Diagonal, Woodbury, Kronecker
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     dense_pd,
     diag_pd,
@@ -15,7 +15,7 @@ from ..util import (
 
 
 def test_pd_inv_correctness(dense_pd):
-    allclose(B.pd_inv(dense_pd), B.inv(dense_pd))
+    approx(B.pd_inv(dense_pd), B.inv(dense_pd))
 
 
 def test_pd_inv_dense(dense_pd):

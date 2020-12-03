@@ -6,7 +6,7 @@ import numpy as np
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     AssertDenseWarning,
     dense_pd,

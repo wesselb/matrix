@@ -4,7 +4,7 @@ from matrix import structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     AssertDenseWarning,
     ConditionalContext,
@@ -21,7 +21,7 @@ def _check_ratio(a, b):
     res = B.ratio(a, b)
 
     # Check correctness.
-    allclose(res, B.trace(B.solve(B.dense(b), B.dense(a))))
+    approx(res, B.trace(B.solve(B.dense(b), B.dense(a))))
 
 
 def test_ratio_dense_diag(dense_pd, diag_pd):

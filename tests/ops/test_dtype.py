@@ -2,7 +2,7 @@ import lab as B
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     zero1,
     dense1,

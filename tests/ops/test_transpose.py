@@ -14,7 +14,7 @@ from matrix import (
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     zero_r,
     dense_r,

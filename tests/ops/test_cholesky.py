@@ -5,7 +5,7 @@ from matrix import Dense, Diagonal, Kronecker, LowerTriangular, LowRank
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     AssertDenseWarning,
     zero1,
@@ -46,13 +46,13 @@ def test_cholesky_diag(diag_pd):
 
 def test_cholesky_const(const_pd):
     chol = B.dense(B.cholesky(const_pd))
-    allclose(B.matmul(chol, chol, tr_b=True), const_pd)
+    approx(B.matmul(chol, chol, tr_b=True), const_pd)
     _check_cache(const_pd)
 
 
 def test_cholesky_lr(lr_pd):
     chol = B.dense(B.cholesky(lr_pd))
-    allclose(B.matmul(chol, chol, tr_b=True), lr_pd)
+    approx(B.matmul(chol, chol, tr_b=True), lr_pd)
     _check_cache(lr_pd)
 
 

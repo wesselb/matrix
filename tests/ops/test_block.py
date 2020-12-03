@@ -1,7 +1,7 @@
 import lab as B
 
 from matrix import Dense, Zero, Diagonal
-from ..util import allclose, generate, AssertDenseWarning
+from ..util import approx, generate, AssertDenseWarning
 
 
 def _dense(rows):
@@ -11,7 +11,7 @@ def _dense(rows):
 def test_block_zero():
     rows = [[generate("zero:6,6") for _ in range(3)] for _ in range(3)]
     res = B.block(*rows)
-    allclose(res, B.concat2d(*_dense(rows)))
+    approx(res, B.concat2d(*_dense(rows)))
     assert isinstance(res, Zero)
 
 
@@ -19,7 +19,7 @@ def test_block_dense():
     rows = [[generate("dense:6,6") for _ in range(3)] for _ in range(3)]
     with AssertDenseWarning("could not preserve structure"):
         res = B.block(*rows)
-    allclose(res, B.concat2d(*_dense(rows)))
+    approx(res, B.concat2d(*_dense(rows)))
 
 
 def test_block_diag():
@@ -29,7 +29,7 @@ def test_block_diag():
         [generate("zero:3,6"), generate("zero:3,6"), generate("diag:3")],
     ]
     res = B.block(*rows)
-    allclose(res, B.concat2d(*_dense(rows)))
+    approx(res, B.concat2d(*_dense(rows)))
     assert isinstance(res, Diagonal)
 
 

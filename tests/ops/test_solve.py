@@ -4,7 +4,7 @@ from matrix import Dense, Diagonal
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_bin_op,
     AssertDenseWarning,
     zero1,

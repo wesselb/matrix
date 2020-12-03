@@ -4,7 +4,7 @@ from matrix import structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     AssertDenseWarning,
     ConditionalContext,
     dense1,
@@ -17,7 +17,7 @@ from ..util import (
 def _check_matmul_diag(a, b):
     for tr_a in [False, True]:
         for tr_b in [False, True]:
-            allclose(
+            approx(
                 B.matmul_diag(a, b, tr_a=tr_a, tr_b=tr_b),
                 B.diag(B.matmul(B.dense(a), B.dense(b), tr_a=tr_a, tr_b=tr_b)),
             )

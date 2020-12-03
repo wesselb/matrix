@@ -2,7 +2,7 @@ import lab as B
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     dense1,
     dense2,
@@ -17,11 +17,11 @@ def _check_iqf(a, b, c):
     res = B.iqf(a, b, c)
 
     # Check correctness.
-    allclose(res, B.mm(B.dense(b), B.solve(B.dense(a), B.dense(c)), tr_a=True))
+    approx(res, B.mm(B.dense(b), B.solve(B.dense(a), B.dense(c)), tr_a=True))
 
 
 def test_iqf_two_arguments(dense_pd, dense1):
-    allclose(B.iqf(dense_pd, dense1), B.iqf(dense_pd, dense1, dense1))
+    approx(B.iqf(dense_pd, dense1), B.iqf(dense_pd, dense1, dense1))
 
 
 def test_iqf_dense(dense_pd, dense1, dense2):

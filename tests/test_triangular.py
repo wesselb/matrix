@@ -3,7 +3,7 @@ import lab as B
 from matrix import LowerTriangular, UpperTriangular
 
 # noinspection PyUnresolvedReferences
-from .util import allclose, dense1, dense2, diag1
+from .util import approx, dense1, dense2, diag1
 
 
 def test_lowertriangular_formatting():
@@ -27,7 +27,7 @@ def test_lowertriangular_attributes():
 
 
 def test_conversion_to_lowertriangular(diag1):
-    allclose(LowerTriangular(diag1), diag1)
+    approx(LowerTriangular(diag1), diag1)
     assert isinstance(LowerTriangular(diag1).mat, B.Numeric)
 
 
@@ -52,5 +52,5 @@ def test_uppertriangular_attributes():
 
 
 def test_conversion_to_uppertriangular(diag1):
-    allclose(UpperTriangular(diag1), diag1)
+    approx(UpperTriangular(diag1), diag1)
     assert isinstance(UpperTriangular(diag1).mat, B.Numeric)

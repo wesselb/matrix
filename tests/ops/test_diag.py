@@ -4,7 +4,7 @@ from matrix import Dense, Diagonal, structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_un_op,
     AssertDenseWarning,
     ConditionalContext,
@@ -66,7 +66,7 @@ def test_diag_kron(kron1):
 def test_diag_block_dense(dense1, dense2):
     with AssertDenseWarning(concat_warnings):
         res = B.diag(dense1, dense2)
-        allclose(
+        approx(
             res,
             B.concat2d(
                 [B.dense(dense1), B.zeros(B.dense(dense1))],
@@ -77,7 +77,7 @@ def test_diag_block_dense(dense1, dense2):
 
 
 def test_diag_block_diag(diag1, diag2):
-    allclose(
+    approx(
         B.diag(diag1, diag2),
         B.concat2d(
             [B.dense(diag1), B.zeros(B.dense(diag2))],

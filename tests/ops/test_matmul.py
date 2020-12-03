@@ -16,7 +16,7 @@ from matrix import (
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    allclose,
+    approx,
     check_bin_op,
     AssertDenseWarning,
     ConditionalContext,
@@ -101,7 +101,7 @@ def test_matmul_multiple(code_a, code_b, code_c):
                 if tr_c:
                     c = B.transpose(c)
 
-                allclose(
+                approx(
                     B.matmul(a, b, c, tr_a=tr_a, tr_b=tr_b, tr_c=tr_c),
                     B.matmul(B.matmul(a, b, tr_a=tr_a, tr_b=tr_b), c, tr_b=tr_c),
                 )

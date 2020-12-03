@@ -1,11 +1,11 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import allclose, check_un_op, AssertDenseWarning, dense1, diag1
+from ..util import approx, check_un_op, AssertDenseWarning, dense1, diag1
 
 
 def _check_take(a):
-    allclose(B.take(a, [0, 1]), B.take(B.dense(a), [0, 1]))
+    approx(B.take(a, [0, 1]), B.take(B.dense(a), [0, 1]))
 
 
 def test_take_dense(dense1):
