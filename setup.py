@@ -1,6 +1,12 @@
 from setuptools import find_packages, setup
 
-requirements = ["numpy>=1.16", "backends", "plum-dispatch", "wbml>=0.1.3", "algebra"]
+requirements = [
+    "numpy>=1.16",
+    "plum-dispatch>=0.2.3",
+    "backends>=0.4.4",
+    "wbml>=0.1.3",
+    "algebra",
+]
 
 setup(
     packages=find_packages(exclude=["docs"]),
