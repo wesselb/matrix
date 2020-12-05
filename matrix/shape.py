@@ -83,9 +83,6 @@ class Dimension:
     def __repr__(self):
         return f"Dimension({self.size})"
 
-    def __int__(self):
-        return self.size
-
 
 class Shape:
     """A shape, which comprises dimensions.
@@ -199,4 +196,4 @@ def broadcast(s1, s2):
 def broadcast(d1, d2):
     if not compatible(d1, d2):
         raise RuntimeError(f"Cannot broadcast dimensions {d1} and {d2}.")
-    return d2 if int(d1) == 1 else d1
+    return d2 if d1.size == 1 else d1

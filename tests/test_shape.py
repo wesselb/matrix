@@ -46,7 +46,6 @@ def test_dimension():
     assert d != Dimension(3)
     assert str(d) == "5"
     assert repr(d) == "Dimension(5)"
-    assert int(d) is 5
 
 
 def test_shape():
