@@ -28,7 +28,7 @@ jobs:
           COVERALLS_PARALLEL: true
         run: |
           JAX_ENABLE_X64=1 pytest -v --cov=matrix --cov-report term-missing -Werror
-          coveralls
+          coveralls --service=github
   coveralls:
     name: Finish coverage
     needs: test
