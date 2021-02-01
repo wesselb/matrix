@@ -45,7 +45,7 @@ install:
 	pip install -r requirements.txt
 
 test:
-	pytest -v --cov=$(PACKAGE) --cov-report html:cover --cov-report term-missing -Werror
+	JAX_ENABLE_X64=1 pytest -v --cov=$(PACKAGE) --cov-report html:cover --cov-report term-missing -Werror
 
 clean:
 	rm -rf docs/_build docs/source docs/readme.rst
