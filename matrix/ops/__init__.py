@@ -33,6 +33,7 @@ from .schur import *
 from .shape import *
 from .solve import *
 from .sqrt import *
+from .squeeze import *
 from .subtract import *
 from .sum import *
 from .take import *
