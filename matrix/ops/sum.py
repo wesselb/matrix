@@ -22,7 +22,7 @@ def sum(a, axis=None):
     elif axis == 0:
         return B.zeros(a.dtype, a.cols)
     elif axis == 1:
-        return B.zeros(a.dtype, b.cols)
+        return B.zeros(a.dtype, a.rows)
     else:
         _raise(axis)
 
