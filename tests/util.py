@@ -90,6 +90,7 @@ def approx(x, y, rtol=1e-7, atol=1e-12):
 @_dispatch({tuple, B.Number, B.NPNumeric}, {tuple, B.Number, B.NPNumeric})
 def approx(x, y, **kw_args):
     assert_allclose(x, y, **kw_args)
+    assert B.shape(x) == B.shape(y)
 
 
 def _assert_instance(x, asserted_type):

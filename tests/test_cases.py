@@ -64,8 +64,8 @@ def test_blr(sample_truth):
         check_posterior(m, x)
 
         if sample_truth:
-            approx(m(slope_noisy)(x0).mean, true_slope, rtol=5e-2)
-            approx(m(intercept_noisy)(x0).mean, true_intercept, rtol=5e-2)
+            approx(m(slope_noisy)(x0).mean[0, 0], true_slope, rtol=5e-2)
+            approx(m(intercept_noisy)(x0).mean[0, 0], true_intercept, rtol=5e-2)
 
 
 def test_blr_jax_jit():

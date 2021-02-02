@@ -17,9 +17,14 @@ def _raise(axis):
 
 @B.dispatch(Zero)
 def sum(a, axis=None):
-    if axis not in [None, 0, 1]:
+    if axis is None:
+        return B.cast(a.dtype, 0)
+    elif axis == 0:
+        return B.zeros(a.dtype, a.cols)
+    elif axis == 1:
+        return B.zeros(a.dtype, b.cols)
+    else:
         _raise(axis)
-    return B.cast(a.dtype, 0)
 
 
 @B.dispatch({Dense, LowerTriangular, UpperTriangular})
