@@ -22,6 +22,7 @@ from ..util import (
     ConditionalContext,
     concat_warnings,
     generate,
+    loop_batches,
     zero1,
     zero2,
     zero_r,
@@ -48,7 +49,7 @@ from ..util import (
 )
 
 
-def _check_matmul(a, b, asserted_type=object, tr_both=False):
+def _check_matmul(a, b, asserted_type=object):
     for tr_a in [False, True]:
         for tr_b in [False, True]:
             check_bin_op(
@@ -84,7 +85,12 @@ def test_matmul_zero_diag(zero1, diag2):
 
 @pytest.mark.parametrize(
     "code_a, code_b, code_c",
-    [("dense:3,6", "dense:6,6", "dense:6,6"), ("dense:6,6", "dense:6,6", "dense:6,3")],
+    loop_batches(
+        [
+            ("dense:3,6", "dense:6,6", "dense:6,6"),
+            ("dense:6,6", "dense:6,6", "dense:6,3"),
+        ]
+    ),
 )
 def test_matmul_multiple(code_a, code_b, code_c):
     for tr_a in [True, False]:
@@ -253,9 +259,7 @@ def test_matmul_wb_const(wb1, const2):
 
 def test_matmul_wb_lr(wb1, lr2):
     with ConditionalContext(
-        structured(wb1.lr.left)
-        or structured(lr2.left)
-        or wb1.lr.rank == lr2.rank == 1,
+        structured(wb1.lr.left) or structured(lr2.left) or wb1.lr.rank == lr2.rank == 1,
         AssertDenseWarning("indexing into <diagonal>"),
     ):
         _check_matmul(wb1, lr2, asserted_type=LowRank)

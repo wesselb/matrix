@@ -1,6 +1,7 @@
 import abc
 
 import lab as B
+from lab.shape import Shape
 import wbml.out
 from plum import Dispatcher, Referentiable
 from wbml.warning import warn_upmodule
@@ -94,15 +95,19 @@ class Dense(AbstractMatrix):
     def __init__(self, mat):
         assert_matrix(
             mat,
-            "Input is not a rank-2 tensor. Can only construct "
-            "dense matrices from rank-2 tensors.",
+            "Input is not a tensor of at least rank 2. "
+            "Can only construct dense matrices from tensors of at least rank 2.",
         )
         self.mat = B.dense(mat)
         self.cholesky = None
 
     def __str__(self):
-        rows, cols = B.shape(self)
-        return f"<dense matrix: shape={rows}x{cols}, dtype={dtype_str(self)}>"
+        return (
+            f"<dense matrix:"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
+            f" dtype={dtype_str(self)}>"
+        )
 
     def __repr__(self):
         return (

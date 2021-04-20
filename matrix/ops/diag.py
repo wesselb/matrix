@@ -24,7 +24,7 @@ def diag(a):
 
 @B.dispatch({Dense, LowerTriangular, UpperTriangular})
 def diag(a):
-    return B.diag(a.mat)
+    return B.diag_extract(a.mat)
 
 
 @B.dispatch(Diagonal)

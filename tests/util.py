@@ -1,5 +1,6 @@
 import re
 import warnings
+from itertools import product
 
 import lab as B
 import pytest
@@ -225,6 +226,16 @@ def generate(code):
     Returns:
         tensor: Random tensor.
     """
+    # Handle batch shape:
+    batch_code, code = code.split("|")
+
+    # Parse batch.
+    if batch_code == "":
+        batch = ()
+    else:
+        batch = tuple(int(d) for d in batch_code.split(","))
+
+    # Handle matrix shape:
     mat_code, shape_code = code.split(":")
 
     # Parse shape.
@@ -234,47 +245,47 @@ def generate(code):
         shape = tuple(int(d) for d in shape_code.split(","))
 
     if mat_code == "randn":
-        return B.randn(*shape)
+        return B.randn(*batch, *shape)
     elif mat_code == "randn_pd":
-        mat = B.randn(*shape)
+        mat = B.randn(*batch, *shape)
 
         # If it is a scalar or vector, just pointwise square it.
         if len(shape) in {0, 1}:
             return mat ** 2 + 1
         else:
-            return B.matmul(mat, mat, tr_b=True) + B.eye(shape[0])
+            return B.matmul(mat, mat, tr_b=True) + B.eye(*batch, shape[0], shape[0])
 
     elif mat_code == "zero":
-        return Zero(B.default_dtype, *shape)
+        return Zero(B.default_dtype, *batch, *shape)
 
     elif mat_code == "const":
-        return Constant(B.randn(), *shape)
+        return Constant(B.randn(*batch), *shape)
     elif mat_code == "const_pd":
-        return Constant(B.randn() ** 2 + 1, *shape)
+        return Constant(B.randn(*batch) ** 2 + 1, *shape)
 
     elif mat_code == "lt":
-        mat = B.vec_to_tril(B.randn(int(0.5 * shape[0] * (shape[0] + 1))))
+        mat = B.vec_to_tril(B.randn(*batch, int(0.5 * shape[0] * (shape[0] + 1))))
         return LowerTriangular(mat)
     elif mat_code == "lt_pd":
-        mat = generate(f"randn_pd:{shape[0]},{shape[0]}")
+        mat = generate(f"{batch_code}|randn_pd:{shape[0]},{shape[0]}")
         return LowerTriangular(B.cholesky(B.reg(mat)))
 
     elif mat_code == "ut":
-        mat = B.vec_to_tril(B.randn(int(0.5 * shape[0] * (shape[0] + 1))))
+        mat = B.vec_to_tril(B.randn(*batch, int(0.5 * shape[0] * (shape[0] + 1))))
         return UpperTriangular(B.transpose(mat))
     elif mat_code == "ut_pd":
-        mat = generate(f"randn_pd:{shape[0]},{shape[0]}")
+        mat = generate(f"{batch_code}|randn_pd:{shape[0]},{shape[0]}")
         return UpperTriangular(B.transpose(B.cholesky(B.reg(mat))))
 
     elif mat_code == "dense":
-        return Dense(generate(f"randn:{shape_code}"))
+        return Dense(generate(f"{batch_code}|randn:{shape_code}"))
     elif mat_code == "dense_pd":
-        return Dense(generate(f"randn_pd:{shape_code}"))
+        return Dense(generate(f"{batch_code}|randn_pd:{shape_code}"))
 
     elif mat_code == "diag":
-        return Diagonal(generate(f"randn:{shape_code}"))
+        return Diagonal(generate(f"{batch_code}|randn:{shape_code}"))
     elif mat_code == "diag_pd":
-        return Diagonal(generate(f"randn_pd:{shape_code}"))
+        return Diagonal(generate(f"{batch_code}|randn_pd:{shape_code}"))
 
     else:
         raise RuntimeError(f'Cannot parse generation code "{code}".')
@@ -293,159 +304,176 @@ concat_warnings = [
 
 # Fixtures:
 
-
-@pytest.fixture()
-def mat1():
-    return generate("randn:6,6")
+batch_prefixes = ["|", "3|", "2,3|"]
 
 
-@pytest.fixture()
-def mat2(mat1):
-    return generate("randn:6,6")
+@_dispatch(str)
+def loop_batches(code):
+    return [prefix + code for prefix in batch_prefixes]
 
 
-@pytest.fixture()
-def vec1():
-    return generate("randn:6")
+@_dispatch(tuple)
+def loop_batches(codes):
+    return list(product(*(loop_batches(code) for code in codes)))
 
 
-@pytest.fixture()
-def vec2():
-    return generate("randn:6")
+@_dispatch(list)
+def loop_batches(codes):
+    return [prefixed_code for code in codes for prefixed_code in loop_batches(code)]
 
 
-@pytest.fixture()
-def scalar1():
-    return generate("randn:")
+@pytest.fixture(params=loop_batches("randn:6,6"))
+def mat1(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def scalar2():
-    return generate("randn:")
+@pytest.fixture(params=loop_batches("randn:6,6"))
+def mat2(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def zero1():
-    return generate("zero:6,6")
+@pytest.fixture(params=loop_batches("randn:6"))
+def vec1(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def zero2():
-    return generate("zero:6,6")
+@pytest.fixture(params=loop_batches("randn:6"))
+def vec2(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def zero_r():
-    return generate("zero:6,4")
+@pytest.fixture(params=loop_batches("randn:"))
+def scalar1(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def dense1():
-    return generate("dense:6,6")
+@pytest.fixture(params=loop_batches("randn:"))
+def scalar2(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def dense2():
-    return generate("dense:6,6")
+@pytest.fixture(params=loop_batches("zero:6,6"))
+def zero1(request):
+    return generate(request.param)
 
 
-@pytest.fixture(params=(["dense:6,1", "dense:1,6", "dense:6,6"]))
+@pytest.fixture(params=loop_batches("zero:6,6"))
+def zero2(request):
+    return generate(request.param)
+
+
+@pytest.fixture(params=loop_batches("zero:6,4"))
+def zero_r(request):
+    return generate(request.param)
+
+
+@pytest.fixture(params=loop_batches("dense:6,6"))
+def dense1(request):
+    return generate(request.param)
+
+
+@pytest.fixture(params=loop_batches("dense:6,6"))
+def dense2(request):
+    return generate(request.param)
+
+
+@pytest.fixture(params=loop_batches(["dense:6,1", "dense:1,6", "dense:6,6"]))
 def dense_bc(request):
     return generate(request.param)
 
 
-@pytest.fixture()
-def dense_r():
-    return generate("dense:6,4")
+@pytest.fixture(params=loop_batches("dense:6,4"))
+def dense_r(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def dense_pd():
-    return generate("dense_pd:6,6")
+@pytest.fixture(params=loop_batches("dense_pd:6,6"))
+def dense_pd(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def diag1():
-    return generate("diag:6")
+@pytest.fixture(params=loop_batches("diag:6"))
+def diag1(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def diag2():
-    return generate("diag:6")
+@pytest.fixture(params=loop_batches("diag:6"))
+def diag2(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def diag_pd():
-    return generate("diag_pd:6")
+@pytest.fixture(params=loop_batches("diag_pd:6"))
+def diag_pd(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def const1():
-    return generate("const:6,6")
+@pytest.fixture(params=loop_batches("const:6,6"))
+def const1(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def const2():
-    return generate("const:6,6")
+@pytest.fixture(params=loop_batches("const:6,6"))
+def const2(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def const_r():
-    return generate("const:6,4")
+@pytest.fixture(params=loop_batches("const:6,4"))
+def const_r(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def const_pd():
-    return generate("const_pd:6,6")
+@pytest.fixture(params=loop_batches("const_pd:6,6"))
+def const_pd(request):
+    return generate(request.param)
 
 
-@pytest.fixture(params=["randn:", "const:6,6"])
+@pytest.fixture(params=loop_batches(["randn:", "const:6,6"]))
 def const_or_scalar1(request):
     return generate(request.param)
 
 
-@pytest.fixture(params=["randn:", "const:6,6"])
+@pytest.fixture(params=loop_batches(["randn:", "const:6,6"]))
 def const_or_scalar2(request):
     return generate(request.param)
 
 
-@pytest.fixture()
-def lt1():
-    return generate("lt:6")
+@pytest.fixture(params=loop_batches("lt:6"))
+def lt1(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def lt2():
-    return generate("lt:6")
+@pytest.fixture(params=loop_batches("lt:6"))
+def lt2(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def lt_pd():
-    return generate("lt_pd:6")
+@pytest.fixture(params=loop_batches("lt_pd:6"))
+def lt_pd(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def ut1():
-    return generate("ut:6")
+@pytest.fixture(params=loop_batches("ut:6"))
+def ut1(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def ut2():
-    return generate("ut:6")
+@pytest.fixture(params=loop_batches("ut:6"))
+def ut2(request):
+    return generate(request.param)
 
 
-@pytest.fixture()
-def ut_pd():
-    return generate("ut_pd:6")
+@pytest.fixture(params=loop_batches("ut_pd:6"))
+def ut_pd(request):
+    return generate(request.param)
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("dense:6,1", "dense:1,1"),
         ("dense:6,2", "dense:2,2"),
         ("dense:6,3", "dense:3,3"),
         ("diag:6", "dense:6,6"),
-    ]
+    ])
 )
 def lr1(request):
     code_lr, code_m = request.param
@@ -453,12 +481,12 @@ def lr1(request):
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("dense:6,1", "dense:1,1"),
         ("dense:6,2", "dense:2,2"),
         ("dense:6,3", "dense:3,3"),
         ("diag:6", "dense:6,6"),
-    ]
+    ])
 )
 def lr2(request):
     code_lr, code_m = request.param
@@ -466,12 +494,12 @@ def lr2(request):
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("dense:6,1", "dense:4,1", "dense:1,1"),
         ("dense:6,2", "dense:4,2", "dense:2,2"),
         ("dense:6,3", "dense:4,3", "dense:3,3"),
         ("diag:6", "dense:4,6", "dense:6,6"),
-    ]
+    ])
 )
 def lr_r(request):
     code_l, code_r, code_m = request.param
@@ -479,12 +507,12 @@ def lr_r(request):
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("dense:6,1", "dense_pd:1,2"),
         ("dense:6,2", "dense_pd:2,2"),
         ("dense:6,3", "dense_pd:3,3"),
         ("diag:6", "diag_pd:6"),
-    ]
+    ])
 )
 def lr_pd(request):
     code_l, code_m = request.param
@@ -507,7 +535,7 @@ def wb_pd(diag_pd, lr_pd):
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("diag:1", "diag:6"),
         ("diag:2", "diag:3"),
         ("diag:3", "diag:2"),
@@ -516,7 +544,7 @@ def wb_pd(diag_pd, lr_pd):
         ("dense:2,2", "dense:3,3"),
         ("dense:3,3", "dense:2,2"),
         ("dense:6,6", "dense:1,1"),
-    ]
+    ])
 )
 def kron1(request):
     code1, code2 = request.param
@@ -524,7 +552,7 @@ def kron1(request):
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("diag:1", "diag:6"),
         ("diag:2", "diag:3"),
         ("diag:3", "diag:2"),
@@ -533,7 +561,7 @@ def kron1(request):
         ("dense:2,2", "dense:3,3"),
         ("dense:3,3", "dense:2,2"),
         ("dense:6,6", "dense:1,1"),
-    ]
+    ])
 )
 def kron2(request):
     code1, code2 = request.param
@@ -541,12 +569,12 @@ def kron2(request):
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("diag:2", "dense:3,2"),
         ("dense:3,2", "diag:2"),
         ("dense:1,4", "dense:6,1"),
         ("dense:6,1", "dense:1,4"),
-    ]
+    ])
 )
 def kron_r(request):
     code1, code2 = request.param
@@ -554,7 +582,7 @@ def kron_r(request):
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("diag_pd:1", "diag_pd:6"),
         ("diag_pd:2", "diag_pd:3"),
         ("diag_pd:3", "diag_pd:2"),
@@ -563,7 +591,7 @@ def kron_r(request):
         ("dense_pd:2,2", "dense_pd:3,3"),
         ("dense_pd:3,3", "dense_pd:2,2"),
         ("dense_pd:6,6", "dense_pd:1,1"),
-    ]
+    ])
 )
 def kron_pd(request):
     code1, code2 = request.param
@@ -571,7 +599,7 @@ def kron_pd(request):
 
 
 @pytest.fixture(
-    params=[
+    params=loop_batches([
         ("diag:1", "diag:6"),
         ("diag:2", "diag:3"),
         ("diag:3", "diag:2"),
@@ -580,7 +608,7 @@ def kron_pd(request):
         ("dense:2,3", "dense:3,2"),
         ("dense:3,2", "dense:2,3"),
         ("dense:6,1", "dense:1,6"),
-    ]
+    ])
 )
 def kron_mixed(request):
     code1, code2 = request.param

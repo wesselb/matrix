@@ -1,4 +1,5 @@
 import lab as B
+from lab.shape import Shape
 
 from .matrix import AbstractMatrix, repr_format
 from .util import indent, dtype_str
@@ -32,9 +33,11 @@ class Kronecker(AbstractMatrix):
         self.dense = None
 
     def __str__(self):
-        rows, cols = B.shape(self)
         return (
-            f"<Kronecker product: shape={rows}x{cols}, dtype={dtype_str(self)}>"
+            f"<Kronecker product:"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
+            f" dtype={dtype_str(self)}>"
         )
 
     def __repr__(self):

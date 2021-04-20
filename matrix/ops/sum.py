@@ -2,11 +2,12 @@ import lab as B
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
+from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import Dense
-from ..woodbury import Woodbury
-from ..kronecker import Kronecker
+from ..shape import matrix_axis, batch_ones
 from ..triangular import LowerTriangular, UpperTriangular
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -17,12 +18,13 @@ def _raise(axis):
 
 @B.dispatch(Zero)
 def sum(a, axis=None):
-    if axis is None:
-        return B.cast(a.dtype, 0)
-    elif axis == 0:
-        return B.zeros(a.dtype, a.cols)
-    elif axis == 1:
-        return B.zeros(a.dtype, a.rows)
+    resolved_axis = matrix_axis(a, axis)
+    if resolved_axis is None:
+        return B.zero(a.dtype)
+    elif resolved_axis == 0:
+        return B.zeros(a.dtype, *B.shape_batch(a), a.cols)
+    elif resolved_axis == 1:
+        return B.zeros(a.dtype, *B.shape_batch(a), a.rows)
     else:
         _raise(axis)
 
@@ -34,9 +36,10 @@ def sum(a, axis=None):
 
 @B.dispatch(Diagonal)
 def sum(a, axis=None):
-    if axis is None:
+    resolved_axis = matrix_axis(a, axis)
+    if resolved_axis is None:
         return B.sum(a.diag)
-    elif axis == 0 or axis == 1:
+    elif resolved_axis == 0 or resolved_axis == 1:
         return a.diag
     else:
         _raise(axis)
@@ -44,35 +47,41 @@ def sum(a, axis=None):
 
 @B.dispatch(Constant)
 def sum(a, axis=None):
-    if axis is None:
-        return a.const * a.rows * a.cols
-    elif axis == 0:
-        return a.const * a.rows * B.ones(B.dtype(a.const), a.cols)
-    elif axis == 1:
-        return a.const * a.cols * B.ones(B.dtype(a.const), a.rows)
+    resolved_axis = matrix_axis(a, axis)
+    if resolved_axis is None:
+        return B.sum(a.const) * a.rows * a.cols
+    elif resolved_axis == 0:
+        const = B.expand_dims(a.const, axis=-1)
+        return const * a.rows * B.ones(B.dtype(a.const), *batch_ones(a), a.cols)
+    elif resolved_axis == 1:
+        const = B.expand_dims(a.const, axis=-1)
+        return const * a.cols * B.ones(B.dtype(a.const), *batch_ones(a), a.rows)
     else:
         _raise(axis)
 
 
 @B.dispatch(LowRank)
 def sum(a, axis=None):
-    if axis is None:
-        return B.sum(B.sum(B.matmul(a.left, a.middle), axis=0) * B.sum(a.right, axis=0))
-    elif axis == 0:
+    resolved_axis = matrix_axis(a, axis)
+    if resolved_axis is None:
+        return B.sum(
+            B.sum(B.matmul(a.left, a.middle), axis=-2) * B.sum(a.right, axis=-2)
+        )
+    elif resolved_axis == 0:
         return B.sum(
             B.multiply(
-                B.expand_dims(B.sum(a.left, axis=0), axis=0),
+                B.expand_dims(B.sum(a.left, axis=-2), axis=-2),
                 B.matmul(a.right, a.middle, tr_b=True),
             ),
-            axis=1,
+            axis=-1,
         )
-    elif axis == 1:
+    elif resolved_axis == 1:
         return B.sum(
             B.multiply(
                 B.matmul(a.left, a.middle),
-                B.expand_dims(B.sum(a.right, axis=0), axis=0),
+                B.expand_dims(B.sum(a.right, axis=-2), axis=-2),
             ),
-            axis=1,
+            axis=-1,
         )
     else:
         _raise(axis)
@@ -80,16 +89,33 @@ def sum(a, axis=None):
 
 @B.dispatch(Woodbury)
 def sum(a, axis=None):
-    return B.sum(a.diag, axis=axis) + B.sum(a.lr, axis=axis)
+    resolved_axis = matrix_axis(a, axis)
+    if resolved_axis is None:
+        lr_sum = B.sum(B.sum(a.lr, axis=-1), axis=-1)
+        diag_sum = B.sum(B.sum(a.diag, axis=-1), axis=-1)
+        return B.sum(lr_sum + diag_sum)
+    elif resolved_axis == 0:
+        return B.sum(a.lr, axis=-2) + B.sum(a.diag, axis=-2)
+    elif resolved_axis == 1:
+        return B.sum(a.lr, axis=-1) + B.sum(a.diag, axis=-1)
+    else:
+        _raise(axis)
 
 
 @B.dispatch(Kronecker)
 def sum(a, axis=None):
-    if axis is None:
-        return B.sum(a.left) * B.sum(a.right)
-    elif axis == 0:
-        return B.kron(B.sum(a.left, axis=0), B.sum(a.right, axis=0))
-    elif axis == 1:
-        return B.kron(B.sum(a.left, axis=1), B.sum(a.right, axis=1))
+    resolved_axis = matrix_axis(a, axis)
+    if resolved_axis is None:
+        left_sum = B.sum(B.sum(a.left, axis=-1), axis=-1)
+        right_sum = B.sum(B.sum(a.right, axis=-1), axis=-1)
+        return B.sum(left_sum * right_sum)
+    elif resolved_axis == 0:
+        left_sum = B.sum(a.left, axis=-2)[..., :, None]
+        right_sum = B.sum(a.right, axis=-2)[..., None, :]
+        return B.reshape(left_sum * right_sum, *B.shape_batch(a), B.shape_matrix(a)[1])
+    elif resolved_axis == 1:
+        left_sum = B.sum(a.left, axis=-1)[..., :, None]
+        right_sum = B.sum(a.right, axis=-1)[..., None, :]
+        return B.reshape(left_sum * right_sum, *B.shape_batch(a), B.shape_matrix(a)[0])
     else:
         _raise(axis)

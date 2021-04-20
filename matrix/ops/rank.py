@@ -7,4 +7,4 @@ __all__ = []
 
 @B.dispatch(AbstractMatrix)
 def rank(a):
-    return 2
+    return len(B.shape(a))

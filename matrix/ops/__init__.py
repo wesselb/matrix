@@ -5,6 +5,7 @@ from .cholesky_solve import *
 from .concat import *
 from .dense import *
 from .diag import *
+from .diag_extract import *
 from .divide import *
 from .dtype import *
 from .eye import *
@@ -31,6 +32,8 @@ from .root import *
 from .sample import *
 from .schur import *
 from .shape import *
+from .shape_batch import *
+from .shape_matrix import *
 from .solve import *
 from .sqrt import *
 from .squeeze import *

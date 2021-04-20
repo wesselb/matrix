@@ -18,20 +18,18 @@ def convert(x):
             return Zero(B.dtype(x), 1, 1)
         else:
             return Constant(x, 1, 1)
-    elif B.rank(x) == 2:
-        return Dense(x)
+    elif B.rank(x) == 1:
+        raise RuntimeError(f"Cannot convert rank 1 input to a matrix.")
     else:
-        raise RuntimeError(f"Cannot convert rank {B.rank(x)} input to a matrix.")
+        return Dense(x)
 
 
 @conversion_method(Constant, LowRank)
 def constant_to_lowrank(a):
     dtype = B.dtype(a)
-    rows, cols = B.shape(a)
+    rows, cols = B.shape_matrix(a)
     middle = B.fill_diag(a.const, 1)
     if rows == cols:
         return LowRank(B.ones(dtype, rows, 1), middle=middle)
     else:
-        return LowRank(
-            B.ones(dtype, rows, 1), B.ones(dtype, cols, 1), middle=middle
-        )
+        return LowRank(B.ones(dtype, rows, 1), B.ones(dtype, cols, 1), middle=middle)

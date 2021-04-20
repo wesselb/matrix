@@ -1,8 +1,10 @@
 import lab as B
+from lab.shape import Shape
 from plum import Dispatcher, Self
 
 from .matrix import AbstractMatrix, repr_format
 from .util import indent, dtype_str
+from .shape import assert_matrix
 
 __all__ = ["LowerTriangular", "UpperTriangular"]
 
@@ -20,13 +22,18 @@ class LowerTriangular(AbstractMatrix):
     _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
+        assert_matrix(
+            mat,
+            "Input is not a tensor of at least rank 2. "
+            "Can only construct triangular matrices from tensors of at least rank 2.",
+        )
         self.mat = B.dense(mat)
 
     def __str__(self):
-        rows, cols = B.shape(self)
         return (
             f"<lower-triangular matrix:"
-            f" shape={rows}x{cols},"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
             f" dtype={dtype_str(self)}>"
         )
 
@@ -53,13 +60,18 @@ class UpperTriangular(AbstractMatrix):
     _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
+        assert_matrix(
+            mat,
+            "Input is not a tensor of at least rank 2. "
+            "Can only construct triangular matrices from tensors of at least rank 2.",
+        )
         self.mat = B.dense(mat)
 
     def __str__(self):
-        rows, cols = B.shape(self)
         return (
             f"<upper-triangular matrix:"
-            f" shape={rows}x{cols},"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
             f" dtype={dtype_str(self)}>"
         )
 

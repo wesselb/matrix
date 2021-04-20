@@ -133,6 +133,9 @@ The following functions are added to LAB.
 They can be accessed with `B.<function>` where `import lab as B`.
 
 ```
+shape_batch(a)
+shape_matrix(a)
+
 dense(a)
 fill_diag(a, diag_len)
 block(*rows)

@@ -1,4 +1,5 @@
 import lab as B
+from lab.shape import Shape
 from plum import Dispatcher, Self
 
 from .matrix import AbstractMatrix, repr_format
@@ -28,8 +29,8 @@ class Diagonal(AbstractMatrix):
     def __init__(self, diag):
         assert_vector(
             diag,
-            "Input is not a rank-1 tensor. Can only construct "
-            "diagonal matrices from rank-1 tensors.",
+            "Input is not a tensor of at least rank 1. "
+            "Can only construct diagonal matrices from tensor of at least rank 1.",
         )
         self.diag = diag
         self.cholesky = None
@@ -37,12 +38,14 @@ class Diagonal(AbstractMatrix):
 
     @_dispatch(AbstractMatrix)
     def __init__(self, mat):
-        return Diagonal.__init__(self, B.diag(mat))
+        return Diagonal.__init__(self, B.diag_extract(mat))
 
     def __str__(self):
-        rows, cols = B.shape(self)
         return (
-            f"<diagonal matrix: shape={rows}x{cols}, dtype={dtype_str(self)}>"
+            f"<diagonal matrix:"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
+            f" dtype={dtype_str(self)}>"
         )
 
     def __repr__(self):

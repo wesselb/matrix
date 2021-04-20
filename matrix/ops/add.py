@@ -8,7 +8,7 @@ from ..constant import Zero, Constant
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
-from ..shape import assert_compatible, broadcast
+from ..shape import assert_compatible, expand_and_broadcast
 from ..triangular import LowerTriangular, UpperTriangular
 from ..util import ToDenseWarning
 from ..woodbury import Woodbury
@@ -27,13 +27,13 @@ def _reverse_call(*types):
 
 @B.dispatch(AbstractMatrix, Zero, precedence=proven())
 def add(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     return a
 
 
 @B.dispatch(Zero, AbstractMatrix, precedence=proven())
 def add(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     return b
 
 
@@ -67,8 +67,8 @@ def add(a, b):
 
 @B.dispatch(Constant, Constant)
 def add(a, b):
-    assert_compatible(a, b)
-    return Constant(a.const + b.const, *broadcast(a, b).as_tuple())
+    assert_compatible(B.shape(a), B.shape(b))
+    return Constant(a.const + b.const, *expand_and_broadcast(B.shape(a), B.shape(b)))
 
 
 @B.dispatch(Constant, AbstractMatrix)
@@ -82,8 +82,8 @@ def add(a, b):
 
 @B.dispatch(Constant, Diagonal)
 def add(a, b):
-    assert_compatible(a, b)
-    a = Constant(a.const, *broadcast(a, b).as_tuple())
+    assert_compatible(B.shape(a), B.shape(b))
+    a = Constant(a.const, *expand_and_broadcast(B.shape(a), B.shape(b)))
     return add(convert(a, LowRank), b)
 
 
@@ -135,7 +135,7 @@ _reverse_call(UpperTriangular, LowerTriangular)
 
 @B.dispatch(LowRank, LowRank)
 def add(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     join_left, _, a_middle_t, _, b_middle_t = align(
         a.left, B.transpose(a.middle), b.left, B.transpose(b.middle)
     )
@@ -151,8 +151,8 @@ def add(a, b):
 
 @B.dispatch(LowRank, Constant)
 def add(a, b):
-    assert_compatible(a, b)
-    b = Constant(b.const, *broadcast(a, b).as_tuple())
+    assert_compatible(B.shape(a), B.shape(b))
+    b = Constant(b.const, *expand_and_broadcast(B.shape(a), B.shape(b)))
     return add(a, convert(b, LowRank))
 
 

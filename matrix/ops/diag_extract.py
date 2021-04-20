@@ -6,5 +6,5 @@ __all__ = []
 
 
 @B.dispatch(AbstractMatrix)
-def shape(a):
-    return B.shape_batch(a) + B.shape_matrix(a)
+def diag_extract(a):
+    return B.diag(a)

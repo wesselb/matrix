@@ -1,5 +1,6 @@
-from plum import Dispatcher, Self
 import lab as B
+from lab.shape import Shape
+from plum import Dispatcher, Self
 
 from .diagonal import Diagonal
 from .lowrank import LowRank
@@ -35,7 +36,7 @@ class Woodbury(AbstractMatrix):
 
     @_dispatch(Diagonal, LowRank)
     def __init__(self, diag, lr):
-        assert_compatible(diag, lr)
+        assert_compatible(B.shape(diag), B.shape(lr))
         self.diag = diag
         self.lr = lr
         self.cholesky = None
@@ -43,9 +44,11 @@ class Woodbury(AbstractMatrix):
         self.dense = None
 
     def __str__(self):
-        rows, cols = B.shape(self)
         return (
-            f"<Woodbury matrix: shape={rows}x{cols}, dtype={dtype_str(self)}>"
+            f"<Woodbury matrix:"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
+            f" dtype={dtype_str(self)}>"
         )
 
     def __repr__(self):

@@ -26,13 +26,13 @@ def _reverse_call(*types):
 
 @B.dispatch(AbstractMatrix, Zero, precedence=proven())
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     return b
 
 
 @B.dispatch(Zero, AbstractMatrix, precedence=proven())
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     return a
 
 
@@ -63,7 +63,7 @@ def multiply(a, b):
 
 @B.dispatch(Diagonal, AbstractMatrix)
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     # In the case of broadcasting, `B.diag(b)` will not get the diagonal of the
     # broadcasted version of `b`, so we exercise extra caution in that case.
     rows, cols = B.shape(b)
@@ -82,13 +82,13 @@ _reverse_call(Diagonal, AbstractMatrix)
 
 @B.dispatch(Constant, Constant)
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     return Constant(a.const * b.const, *broadcast(a, b).as_tuple())
 
 
 @B.dispatch(Constant, AbstractMatrix)
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     if structured(b):
         warn_upmodule(
             f"Multiplying {a} and {b}: converting to dense.", category=ToDenseWarning
@@ -98,7 +98,7 @@ def multiply(a, b):
 
 @B.dispatch(Constant, Diagonal)
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     return Diagonal(a.const * b.diag)
 
 
@@ -167,7 +167,7 @@ redirect(B.multiply, (UpperTriangular, Diagonal), (AbstractMatrix, Diagonal))
 
 @B.dispatch(LowRank, LowRank)
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
 
     if structured(a.left, a.right, b.left, b.right):
         warn_upmodule(
@@ -200,7 +200,7 @@ def multiply(a, b):
 
 @B.dispatch(Constant, LowRank)
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     return LowRank(b.left, b.right, B.multiply(a.const, b.middle))
 
 
@@ -240,14 +240,14 @@ def multiply(a, b):
     assert (
         left_compatible and right_compatible
     ), f"Kronecker products {a} and {b} must be compatible, but they are not."
-    assert_compatible(a.left, b.left)
-    assert_compatible(a.right, b.right)
+    assert_compatible(B.shape(a.left), B.shape(b.left))
+    assert_compatible(B.shape(a.right), B.shape(b.right))
     return Kronecker(B.multiply(a.left, b.left), B.multiply(a.right, b.right))
 
 
 @B.dispatch(Constant, Kronecker)
 def multiply(a, b):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
     return Kronecker(a.const * b.left, b.right)
 
 

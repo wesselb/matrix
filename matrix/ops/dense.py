@@ -7,6 +7,7 @@ from ..lowrank import LowRank
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
 from ..kronecker import Kronecker
+from ..shape import batch_ones
 
 __all__ = []
 
@@ -30,7 +31,7 @@ B.dense = dense
 @B.dispatch(Zero)
 def dense(a):
     if a.dense is None:
-        a.dense = B.zeros(a.dtype, a.rows, a.cols)
+        a.dense = B.zeros(a.dtype, *B.shape(a))
     return a.dense
 
 
@@ -42,14 +43,16 @@ def dense(a):
 @B.dispatch(Diagonal)
 def dense(a):
     if a.dense is None:
-        a.dense = B.diag(a.diag)
+        a.dense = B.diag_construct(a.diag)
     return a.dense
 
 
 @B.dispatch(Constant)
 def dense(a):
     if a.dense is None:
-        a.dense = a.const * B.ones(B.dtype(a.const), a.rows, a.cols)
+        ones_shape = batch_ones(a) + B.shape_matrix(a)
+        const = B.expand_dims(B.expand_dims(a.const, axis=-1), axis=-1)
+        a.dense = const * B.ones(B.dtype(a.const), *ones_shape)
     return a.dense
 
 
@@ -70,5 +73,11 @@ def dense(a):
 @B.dispatch(Kronecker)
 def dense(a):
     if a.dense is None:
-        a.dense = B.kron(B.dense(a.left), B.dense(a.right))
+        left = B.dense(a.left)
+        right = B.dense(a.right)
+        # Compute the Kronecker products whilst enabling batching.
+        left = left[..., :, None, :, None]
+        right = right[..., None, :, None, :]
+        # Trust that the shape computation works correctly.
+        a.dense = B.reshape(left * right, *B.shape(a))
     return a.dense

@@ -1,4 +1,5 @@
 import lab as B
+from lab.shape import Shape
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_matrix
@@ -38,32 +39,41 @@ class LowRank(AbstractMatrix):
         msg = "Can only construct low-rank matrices from matrix factors."
 
         # Check left factor.
-        assert_matrix(self.left, f"Left factor is not a rank-2 tensor. {msg}")
+        assert_matrix(
+            self.left, f"Left factor is not a tensor of at least rank 2. {msg}"
+        )
 
         # Check middle factor, if it is given.
         if self._middle is not None:
-            assert_matrix(self._middle, f"Middle factor is not a rank-2 tensor. {msg}")
-            if B.shape(self.left)[1] != B.shape(self._middle)[0]:
+            assert_matrix(
+                self._middle,
+                f"Middle factor is not a tensor of at least rank 2. {msg}"
+            )
+            if B.shape_matrix(self.left)[1] != B.shape_matrix(self._middle)[0]:
                 raise AssertionError(
-                    f"Left factor has {B.shape(self.left)[1]} columns "
-                    f"and middle factor has {B.shape(self.middle)[0]} rows."
+                    f"Left factor has {B.shape_matrix(self.left)[1]} columns, "
+                    f"but middle factor has {B.shape_matrix(self.middle)[0]} rows."
                 )
 
         # Check right factor, if it is given.
         if self._right is not None:
-            assert_matrix(self._right, f"Right factor is not a rank-2 tensor. {msg}")
+            assert_matrix(
+                self._right,
+                f"Right factor is tensor of at least rank 2. {msg}"
+            )
 
             if self._middle is not None:
-                if B.shape(self._right)[1] != B.shape(self._middle)[1]:
+                if B.shape_matrix(self._right)[1] != B.shape_matrix(self._middle)[1]:
                     raise AssertionError(
-                        f"Right factor has {B.shape(self._right)[1]} columns "
-                        f"and middle factor has {B.shape(self.middle)[1]} columns."
+                        f"Right factor has {B.shape_matrix(self._right)[1]} column(s), "
+                        f"but middle factor has {B.shape_matrix(self.middle)[1]} "
+                        f"column(s)."
                     )
             else:
-                if B.shape(self._right)[1] != B.shape(self.left)[1]:
+                if B.shape_matrix(self._right)[1] != B.shape_matrix(self.left)[1]:
                     raise AssertionError(
-                        f"Right factor has {B.shape(self._right)[1]} columns and "
-                        f"left factor has {B.shape(self.left)[1]} columns."
+                        f"Right factor has {B.shape_matrix(self._right)[1]} column(s), "
+                        f"but left factor has {B.shape_matrix(self.left)[1]} column(s)."
                     )
 
         # Caching attributes:
@@ -72,9 +82,9 @@ class LowRank(AbstractMatrix):
 
         # Determine `rank`.
         if self._middle is None:
-            self.rank = B.shape(self.left)[1]
+            self.rank = B.shape_matrix(self.left)[1]
         else:
-            self.rank = min(B.shape(self._middle))
+            self.rank = min(B.shape_matrix(self._middle))
 
     @property
     def right(self):
@@ -95,11 +105,12 @@ class LowRank(AbstractMatrix):
             return self._middle
 
     def __str__(self):
-        rows, cols = B.shape(self)
         return (
             f"<low-rank matrix:"
-            f" shape={rows}x{cols},"
-            f" dtype={dtype_str(self)}," + f" rank={self.rank}>"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
+            f" dtype={dtype_str(self)},"
+            f" rank={self.rank}>"
         )
 
     def __repr__(self):

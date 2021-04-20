@@ -1,8 +1,8 @@
 import lab as B
+from lab.shape import Shape
 
 from .matrix import AbstractMatrix, repr_format
-from .shape import assert_scalar
-from .util import dtype_str
+from .util import dtype_str, indent
 
 __all__ = ["Zero", "Constant"]
 
@@ -10,23 +10,29 @@ __all__ = ["Zero", "Constant"]
 class Zero(AbstractMatrix):
     """Zero matrix.
 
+    Args:
+        dtype (dtype): Data type.
+        *batch (int, optional): Shape of batch.
+        rows (int): Number of rows.
+        cols (int): Number of columns.
+
     Attributes:
         dtype (dtype): Data type.
+        batch (tuple): Shape of batch.
         rows (int): Number of rows.
         cols (int): Number of columns.
         dense (matrix or None): Dense version of the matrix, once it has been
             computed.
-
-    Args:
-        dtype (dtype): Data type.
-        rows (int): Number of rows.
-        cols (int): Number of columns.
     """
 
-    def __init__(self, dtype, rows, cols):
+    def __init__(self, dtype, *shape):
+        # Check that at least a rank-2 tensor is specified.
+        if len(shape) < 2:
+            raise ValueError("Must specify the number of rows and columns.")
         self._dtype = dtype
-        self.rows = rows
-        self.cols = cols
+        self.batch = shape[:-2]
+        self.rows = shape[-2]
+        self.cols = shape[-1]
         self.dense = None
 
     @property
@@ -34,8 +40,12 @@ class Zero(AbstractMatrix):
         return self._dtype
 
     def __str__(self):
-        rows, cols = B.shape(self)
-        return f"<zero matrix: shape={rows}x{cols}, dtype={dtype_str(self.dtype)}>"
+        return (
+            f"<zero matrix:"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
+            f" dtype={dtype_str(self.dtype)}>"
+        )
 
     def __repr__(self):
         return str(self)
@@ -60,10 +70,6 @@ class Constant(AbstractMatrix):
     """
 
     def __init__(self, const, rows, cols):
-        assert_scalar(
-            const,
-            "Input is not a scalar. Can only construct constant matrices from scalars.",
-        )
         self.const = const
         self.rows = rows
         self.cols = cols
@@ -71,13 +77,18 @@ class Constant(AbstractMatrix):
         self.dense = None
 
     def __str__(self):
-        rows, cols = B.shape(self)
         return (
             f"<constant matrix:"
-            f" shape={rows}x{cols},"
-            f" dtype={dtype_str(self)},"
-            f" const={repr_format(self.const)}>"
+            f" batch={Shape(*B.shape_batch(self))},"
+            f" shape={Shape(*B.shape_matrix(self))},"
+            f" dtype={dtype_str(self)}>"
         )
 
     def __repr__(self):
-        return str(self)
+        return (
+                str(self)[:-1]
+                + "\n"
+                + f" const="
+                + indent(repr_format(self.const), " " * 7).strip()
+                + ">"
+        )

@@ -27,9 +27,13 @@ def test_properties(dense1):
 
 
 def test_dense_formatting():
-    assert str(Dense(B.ones(3, 3))) == "<dense matrix: shape=3x3, dtype=float64>"
     assert (
-        repr(Dense(B.ones(3, 3))) == "<dense matrix: shape=3x3, dtype=float64\n"
+        str(Dense(B.ones(3, 3)))
+        == "<dense matrix: batch=(), shape=(3, 3), dtype=float64>"
+    )
+    assert (
+        repr(Dense(B.ones(3, 3))) == ""
+        "<dense matrix: batch=(), shape=(3, 3), dtype=float64\n"
         " mat=[[1. 1. 1.]\n"
         "      [1. 1. 1.]\n"
         "      [1. 1. 1.]]>"
@@ -54,9 +58,9 @@ def test_conversion_to_dense(diag1):
 
 
 def test_indexing_dense(dense1):
-    approx(dense1[2], B.dense(dense1)[2])
+    approx(dense1[..., 2, :], B.dense(dense1)[..., 2, :])
 
 
 def test_indexing_diag(diag1):
     with AssertDenseWarning("indexing into <diagonal>"):
-        approx(diag1[2], B.dense(diag1)[2])
+        approx(diag1[..., 2, :], B.dense(diag1)[..., 2, :])

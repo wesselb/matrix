@@ -21,7 +21,7 @@ from ..util import (
 
 
 def _check_sum(a):
-    for axis in [None, 0, 1]:
+    for axis in [None, B.rank(a) - 2, B.rank(a) - 1, -2, -1]:
 
         def sum(a):
             return B.sum(a, axis=axis)
@@ -29,7 +29,7 @@ def _check_sum(a):
         check_un_op(sum, a)
 
     with pytest.raises(ValueError):
-        B.sum(a, axis=2)
+        B.sum(a, axis=5)
 
 
 def test_sum_zero(zero_r):
