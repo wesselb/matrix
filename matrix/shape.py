@@ -111,12 +111,12 @@ class Shape:
         return tuple(d.size for d in self.dims)
 
 
-@B.dispatch(Shape)
-def transpose(a):
+@B.dispatch
+def transpose(a: Shape):
     return Shape(*reversed(a.dims))
 
 
-@dispatch([object])
+@dispatch
 def get_shape(*xs):
     """Get the shapes of objects as :class:`.shape.Shape` objects.
 
@@ -129,12 +129,12 @@ def get_shape(*xs):
     return tuple(get_shape(x) for x in xs)
 
 
-@dispatch(object)
+@dispatch
 def get_shape(x):
     return Shape(*[Dimension(d) for d in B.shape(x)])
 
 
-@dispatch(object, object)
+@dispatch
 def compatible(x1, x2):
     """Assert that two objects have compatible shapes.
 
@@ -148,15 +148,15 @@ def compatible(x1, x2):
     return compatible(*get_shape(x1, x2))
 
 
-@dispatch(Shape, Shape)
-def compatible(s1, s2):
+@dispatch
+def compatible(s1: Shape, s2: Shape):
     return s1.rank == s2.rank and all(
         compatible(d1, d2) for d1, d2 in zip(s1.dims, s2.dims)
     )
 
 
-@dispatch(Dimension, Dimension)
-def compatible(d1, d2):
+@dispatch
+def compatible(d1: Dimension, d2: Dimension):
     return d1.size == 1 or d2.size == 1 or d1.size == d2.size
 
 
@@ -172,7 +172,7 @@ def assert_compatible(x1, x2):
     )
 
 
-@dispatch(object, object)
+@dispatch
 def broadcast(x1, x2):
     """Broadcast the shapes of two objects.
 
@@ -186,14 +186,14 @@ def broadcast(x1, x2):
     return broadcast(*get_shape(x1, x2))
 
 
-@dispatch(Shape, Shape)
-def broadcast(s1, s2):
+@dispatch
+def broadcast(s1: Shape, s2: Shape):
     assert_compatible(s1, s2)
     return Shape(*(broadcast(d1, d2) for d1, d2 in zip(s1.dims, s2.dims)))
 
 
-@dispatch(Dimension, Dimension)
-def broadcast(d1, d2):
+@dispatch
+def broadcast(d1: Dimension, d2: Dimension):
     if not compatible(d1, d2):
         raise RuntimeError(f"Cannot broadcast dimensions {d1} and {d2}.")
     return d2 if d1.size == 1 else d1

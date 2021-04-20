@@ -4,7 +4,7 @@ import warnings
 import lab as B
 import pytest
 from numpy.testing import assert_allclose
-from plum import Dispatcher
+from plum import Dispatcher, Union
 
 from matrix import (
     Dense,
@@ -74,7 +74,7 @@ __all__ = [
 _dispatch = Dispatcher()
 
 
-@_dispatch(object, object)
+@_dispatch
 def approx(x, y, rtol=1e-7, atol=1e-12):
     """Assert that two objects are numerically close.
 
@@ -87,8 +87,12 @@ def approx(x, y, rtol=1e-7, atol=1e-12):
     approx(B.to_numpy(x), B.to_numpy(y), rtol=rtol, atol=atol)
 
 
-@_dispatch({tuple, B.Number, B.NPNumeric}, {tuple, B.Number, B.NPNumeric})
-def approx(x, y, **kw_args):
+@_dispatch
+def approx(
+    x: Union[tuple, B.Number, B.NPNumeric],
+    y: Union[tuple, B.Number, B.NPNumeric],
+    **kw_args,
+):
     assert_allclose(x, y, **kw_args)
     assert B.shape(x) == B.shape(y)
 

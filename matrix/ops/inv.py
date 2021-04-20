@@ -9,18 +9,18 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
-@B.dispatch(Dense)
-def inv(a):
+@B.dispatch
+def inv(a: Dense):
     return Dense(B.inv(a.mat))
 
 
-@B.dispatch(Diagonal)
-def inv(a):
+@B.dispatch
+def inv(a: Diagonal):
     return Diagonal(B.divide(1, a.diag))
 
 
-@B.dispatch(Woodbury)
-def inv(a):
+@B.dispatch
+def inv(a: Woodbury):
     diag_inv = B.inv(a.diag)
     # Explicitly computing the inverse is not great numerically, but solving
     # against left or right destroys symmetry, which hinders further algebraic
@@ -32,6 +32,6 @@ def inv(a):
     ))
 
 
-@B.dispatch(Kronecker)
-def inv(a):
+@B.dispatch
+def inv(a: Kronecker):
     return Kronecker(B.inv(a.left), B.inv(a.right))

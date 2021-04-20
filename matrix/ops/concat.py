@@ -7,8 +7,8 @@ from ..util import ToDenseWarning
 __all__ = []
 
 
-@B.dispatch([AbstractMatrix])
-def concat(*elements, axis=0):
+@B.dispatch
+def concat(*elements: AbstractMatrix, axis=0):
     if structured(*elements):
         elements_str = ", ".join(map(str, elements[:3]))
         if len(elements) > 3:

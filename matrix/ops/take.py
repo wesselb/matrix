@@ -7,8 +7,8 @@ from ..util import ToDenseWarning
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix, object)
-def take(a, indices_or_mask, axis=0):
+@B.dispatch
+def take(a: AbstractMatrix, indices_or_mask, axis=0):
     if structured(a):
         warn_upmodule(f"Taking from {a}: converting to dense.", category=ToDenseWarning)
     return B.take(B.dense(a), indices_or_mask, axis=axis)

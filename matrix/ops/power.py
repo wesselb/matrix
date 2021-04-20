@@ -11,13 +11,13 @@ from ..util import ToDenseWarning
 __all__ = []
 
 
-@B.dispatch(Zero, B.Numeric)
-def power(a, b):
+@B.dispatch
+def power(a: Zero, b: B.Numeric):
     return a
 
 
-@B.dispatch(AbstractMatrix, B.Numeric)
-def power(a, b):
+@B.dispatch
+def power(a: AbstractMatrix, b: B.Numeric):
     if structured(a):
         warn_upmodule(
             f"Taking an element-wise power of {a}: converting to dense.",
@@ -26,26 +26,26 @@ def power(a, b):
     return Dense(B.power(B.dense(a), b))
 
 
-@B.dispatch(Diagonal, B.Numeric)
-def power(a, b):
+@B.dispatch
+def power(a: Diagonal, b: B.Numeric):
     return Diagonal(B.power(a.diag, b))
 
 
-@B.dispatch(Constant, B.Numeric)
-def power(a, b):
+@B.dispatch
+def power(a: Constant, b: B.Numeric):
     return Constant(B.power(a.const, b), a.rows, a.cols)
 
 
-@B.dispatch(LowerTriangular, B.Numeric)
-def power(a, b):
+@B.dispatch
+def power(a: LowerTriangular, b: B.Numeric):
     return LowerTriangular(B.power(a.mat, b))
 
 
-@B.dispatch(UpperTriangular, B.Numeric)
-def power(a, b):
+@B.dispatch
+def power(a: UpperTriangular, b: B.Numeric):
     return UpperTriangular(B.power(a.mat, b))
 
 
-@B.dispatch(Kronecker, B.Numeric)
-def power(a, b):
+@B.dispatch
+def power(a: Kronecker, b: B.Numeric):
     return Kronecker(B.power(a.left, b), B.power(a.right, b))

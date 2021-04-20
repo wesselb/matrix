@@ -1,12 +1,14 @@
+from typing import Union
+
 import lab as B
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
+from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import Dense
-from ..woodbury import Woodbury
-from ..kronecker import Kronecker
 from ..triangular import LowerTriangular, UpperTriangular
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -15,8 +17,8 @@ def _raise(axis):
     raise ValueError(f"Cannot sum over axis {axis}.")
 
 
-@B.dispatch(Zero)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Zero, axis=None):
     if axis is None:
         return B.cast(a.dtype, 0)
     elif axis == 0:
@@ -27,13 +29,13 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch({Dense, LowerTriangular, UpperTriangular})
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Union[Dense, LowerTriangular, UpperTriangular], axis=None):
     return B.sum(a.mat, axis=axis)
 
 
-@B.dispatch(Diagonal)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Diagonal, axis=None):
     if axis is None:
         return B.sum(a.diag)
     elif axis == 0 or axis == 1:
@@ -42,8 +44,8 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch(Constant)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Constant, axis=None):
     if axis is None:
         return a.const * a.rows * a.cols
     elif axis == 0:
@@ -54,8 +56,8 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch(LowRank)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: LowRank, axis=None):
     if axis is None:
         return B.sum(B.sum(B.matmul(a.left, a.middle), axis=0) * B.sum(a.right, axis=0))
     elif axis == 0:
@@ -78,13 +80,13 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch(Woodbury)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Woodbury, axis=None):
     return B.sum(a.diag, axis=axis) + B.sum(a.lr, axis=axis)
 
 
-@B.dispatch(Kronecker)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Kronecker, axis=None):
     if axis is None:
         return B.sum(a.left) * B.sum(a.right)
     elif axis == 0:

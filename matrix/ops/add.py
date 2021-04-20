@@ -1,3 +1,5 @@
+from typing import Union
+
 import lab as B
 from algebra import proven
 from plum import convert
@@ -16,23 +18,23 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
-def _reverse_call(*types):
-    @B.add.extend(*reversed(types))
-    def add(a, b):
+def _reverse_call(t0, t1):
+    @B.add.dispatch
+    def add(a: t1, b: t0):
         return add(b, a)
 
 
 # Zero
 
 
-@B.dispatch(AbstractMatrix, Zero, precedence=proven())
-def add(a, b):
+@B.dispatch(precedence=proven())
+def add(a: AbstractMatrix, b: Zero):
     assert_compatible(a, b)
     return a
 
 
-@B.dispatch(Zero, AbstractMatrix, precedence=proven())
-def add(a, b):
+@B.dispatch(precedence=proven())
+def add(a: Zero, b: AbstractMatrix):
     assert_compatible(a, b)
     return b
 
@@ -40,8 +42,8 @@ def add(a, b):
 # Dense
 
 
-@B.dispatch(AbstractMatrix, AbstractMatrix)
-def add(a, b):
+@B.dispatch
+def add(a: AbstractMatrix, b: AbstractMatrix):
     if structured(a) and structured(b):
         warn_upmodule(
             f"Adding {a} and {b}: converting to dense.", category=ToDenseWarning
@@ -49,30 +51,30 @@ def add(a, b):
     return Dense(B.add(B.dense(a), B.dense(b)))
 
 
-@B.dispatch(Dense, Dense)
-def add(a, b):
+@B.dispatch
+def add(a: Dense, b: Dense):
     return Dense(B.add(a.mat, b.mat))
 
 
 # Diagonal
 
 
-@B.dispatch(Diagonal, Diagonal)
-def add(a, b):
+@B.dispatch
+def add(a: Diagonal, b: Diagonal):
     return Diagonal(B.add(a.diag, b.diag))
 
 
 # Constant
 
 
-@B.dispatch(Constant, Constant)
-def add(a, b):
+@B.dispatch
+def add(a: Constant, b: Constant):
     assert_compatible(a, b)
     return Constant(a.const + b.const, *broadcast(a, b).as_tuple())
 
 
-@B.dispatch(Constant, AbstractMatrix)
-def add(a, b):
+@B.dispatch
+def add(a: Constant, b: AbstractMatrix):
     if structured(b):
         warn_upmodule(
             f"Adding {a} and {b}: converting to dense.", category=ToDenseWarning
@@ -80,8 +82,8 @@ def add(a, b):
     return Dense(a.const + B.dense(b))
 
 
-@B.dispatch(Constant, Diagonal)
-def add(a, b):
+@B.dispatch
+def add(a: Constant, b: Diagonal):
     assert_compatible(a, b)
     a = Constant(a.const, *broadcast(a, b).as_tuple())
     return add(convert(a, LowRank), b)
@@ -94,13 +96,13 @@ _reverse_call(Constant, Diagonal)
 # LowerTriangular
 
 
-@B.dispatch(LowerTriangular, LowerTriangular)
-def add(a, b):
+@B.dispatch
+def add(a: LowerTriangular, b: LowerTriangular):
     return LowerTriangular(a.mat + b.mat)
 
 
-@B.dispatch(LowerTriangular, Diagonal)
-def add(a, b):
+@B.dispatch
+def add(a: LowerTriangular, b: Diagonal):
     # TODO: Optimise away `B.dense` call.
     return LowerTriangular(a.mat + B.dense(b))
 
@@ -111,18 +113,18 @@ _reverse_call(LowerTriangular, Diagonal)
 # UpperTriangular
 
 
-@B.dispatch(UpperTriangular, UpperTriangular)
-def add(a, b):
+@B.dispatch
+def add(a: UpperTriangular, b: UpperTriangular):
     return UpperTriangular(a.mat + b.mat)
 
 
-@B.dispatch(UpperTriangular, LowerTriangular)
-def add(a, b):
+@B.dispatch
+def add(a: UpperTriangular, b: LowerTriangular):
     return Dense(a.mat + b.mat)
 
 
-@B.dispatch(UpperTriangular, Diagonal)
-def add(a, b):
+@B.dispatch
+def add(a: UpperTriangular, b: Diagonal):
     return UpperTriangular(a.mat + B.dense(b))
 
 
@@ -133,8 +135,8 @@ _reverse_call(UpperTriangular, LowerTriangular)
 # LowRank
 
 
-@B.dispatch(LowRank, LowRank)
-def add(a, b):
+@B.dispatch
+def add(a: LowRank, b: LowRank):
     assert_compatible(a, b)
     join_left, _, a_middle_t, _, b_middle_t = align(
         a.left, B.transpose(a.middle), b.left, B.transpose(b.middle)
@@ -142,58 +144,54 @@ def add(a, b):
     join_right, _, a_middle, _, b_middle = align(
         a.right, B.transpose(a_middle_t), b.right, B.transpose(b_middle_t)
     )
-    return LowRank(
-        join_left,
-        join_right,
-        B.add(a_middle, b_middle)
-    )
+    return LowRank(join_left, join_right, B.add(a_middle, b_middle))
 
 
-@B.dispatch(LowRank, Constant)
-def add(a, b):
+@B.dispatch
+def add(a: LowRank, b: Constant):
     assert_compatible(a, b)
     b = Constant(b.const, *broadcast(a, b).as_tuple())
     return add(a, convert(b, LowRank))
 
 
-@B.dispatch(Constant, LowRank)
-def add(a, b):
+@B.dispatch
+def add(a: Constant, b: LowRank):
     return add(b, a)
 
 
-@B.dispatch(LowRank, Diagonal)
-def add(a, b):
+@B.dispatch
+def add(a: LowRank, b: Diagonal):
     return Woodbury(b, a)
 
 
-@B.dispatch(Diagonal, LowRank)
-def add(a, b):
+@B.dispatch
+def add(a: Diagonal, b: LowRank):
     return Woodbury(a, b)
 
 
 # Woodbury
 
 
-@B.dispatch(Woodbury, Woodbury)
-def add(a, b):
+@B.dispatch
+def add(a: Woodbury, b: Woodbury):
     return Woodbury(a.diag + b.diag, a.lr + b.lr)
 
 
-@B.dispatch(Woodbury, Diagonal)
-def add(a, b):
+@B.dispatch
+def add(a: Woodbury, b: Diagonal):
     return Woodbury(a.diag + b, a.lr)
 
 
-@B.dispatch(Diagonal, Woodbury)
-def add(a, b):
+@B.dispatch
+def add(a: Diagonal, b: Woodbury):
     return add(b, a)
 
 
 @B.dispatch.multi((Woodbury, Constant), (Woodbury, LowRank))
-def add(a, b):
+def add(a: Woodbury, b: Union[Constant, LowRank]):
     return Woodbury(a.diag, a.lr + b)
 
 
 @B.dispatch.multi((Constant, Woodbury), (LowRank, Woodbury))
-def add(a, b):
+def add(a: Union[Constant, LowRank], b: Woodbury):
     return add(b, a)

@@ -1,14 +1,14 @@
 import lab as B
 from wbml.warning import warn_upmodule
 
-from ..matrix import AbstractMatrix, Dense, structured
+from ..matrix import AbstractMatrix, structured
 from ..util import ToDenseWarning
 
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def squeeze(a):
+@B.dispatch
+def squeeze(a: AbstractMatrix):
     if structured(a):
         warn_upmodule(f"Squeezing {a}: converting to dense.", category=ToDenseWarning)
     return B.squeeze(B.dense(a))

@@ -1,3 +1,5 @@
+from typing import Union
+
 import lab as B
 from wbml.warning import warn_upmodule
 
@@ -17,8 +19,8 @@ def _assert_square_root(a):
     assert_square(a, "Can only take a square root of square matrices.")
 
 
-@B.dispatch(B.Numeric)
-def root(a):  # pragma: no cover
+@B.dispatch
+def root(a: B.Numeric):  # pragma: no cover
     """Compute the positive square root of a positive-definite matrix.
 
     Args:
@@ -35,37 +37,37 @@ def root(a):  # pragma: no cover
 B.root = root
 
 
-@B.dispatch(Zero)
-def root(a):
+@B.dispatch
+def root(a: Zero):
     _assert_square_root(a)
     return a
 
 
-@B.dispatch(Dense)
-def root(a):
+@B.dispatch
+def root(a: Dense):
     return Dense(B.root(B.dense(a)))
 
 
-@B.dispatch(Diagonal)
-def root(a):
+@B.dispatch
+def root(a: Diagonal):
     _assert_square_root(a)
     return B.cholesky(a)
 
 
-@B.dispatch(Constant)
-def root(a):
+@B.dispatch
+def root(a: Constant):
     _assert_square_root(a)
     return B.cholesky(a)
 
 
-@B.dispatch({LowRank, Woodbury})
-def root(a):
+@B.dispatch
+def root(a: Union[LowRank, Woodbury]):
     warn_upmodule(
         f"Converting {a} to dense to compute its square root.", category=ToDenseWarning
     )
     return Dense(B.root(B.dense(a)))
 
 
-@B.dispatch(Kronecker)
-def root(a):
+@B.dispatch
+def root(a: Kronecker):
     return Kronecker(B.root(a.left), B.root(a.right))

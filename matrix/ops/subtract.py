@@ -9,6 +9,6 @@ __all__ = []
 # Zero
 
 
-@B.dispatch(AbstractMatrix, AbstractMatrix, precedence=proven())
-def subtract(a, b):
+@B.dispatch(precedence=proven())
+def subtract(a: AbstractMatrix, b: AbstractMatrix):
     return B.add(a, B.negative(b))

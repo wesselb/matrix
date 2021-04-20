@@ -11,13 +11,13 @@ from ..util import ToDenseWarning
 __all__ = []
 
 
-@B.dispatch(Zero)
-def sqrt(a):
+@B.dispatch
+def sqrt(a: Zero):
     return a
 
 
-@B.dispatch(AbstractMatrix)
-def sqrt(a):
+@B.dispatch
+def sqrt(a: AbstractMatrix):
     if structured(a):
         warn_upmodule(
             f"Taking an element-wise square root of {a}: converting to dense.",
@@ -26,26 +26,26 @@ def sqrt(a):
     return Dense(B.sqrt(B.dense(a)))
 
 
-@B.dispatch(Diagonal)
-def sqrt(a):
+@B.dispatch
+def sqrt(a: Diagonal):
     return Diagonal(B.sqrt(a.diag))
 
 
-@B.dispatch(Constant)
-def sqrt(a):
+@B.dispatch
+def sqrt(a: Constant):
     return Constant(B.sqrt(a.const), a.rows, a.cols)
 
 
-@B.dispatch(LowerTriangular)
-def sqrt(a):
+@B.dispatch
+def sqrt(a: LowerTriangular):
     return LowerTriangular(B.sqrt(a.mat))
 
 
-@B.dispatch(UpperTriangular)
-def sqrt(a):
+@B.dispatch
+def sqrt(a: UpperTriangular):
     return UpperTriangular(B.sqrt(a.mat))
 
 
-@B.dispatch(Kronecker)
-def sqrt(a):
+@B.dispatch
+def sqrt(a: Kronecker):
     return Kronecker(B.sqrt(a.left), B.sqrt(a.right))

@@ -5,6 +5,6 @@ from ..matrix import AbstractMatrix
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def uprank(a):
+@B.dispatch
+def uprank(a: AbstractMatrix):
     return a

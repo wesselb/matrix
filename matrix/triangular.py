@@ -1,5 +1,4 @@
 import lab as B
-from plum import Dispatcher, Self
 
 from .matrix import AbstractMatrix, repr_format
 from .util import indent, dtype_str
@@ -16,8 +15,6 @@ class LowerTriangular(AbstractMatrix):
     Args:
         mat (matrix): Dense lower-triangular matrix.
     """
-
-    _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
         self.mat = B.dense(mat)
@@ -49,8 +46,6 @@ class UpperTriangular(AbstractMatrix):
     Args:
         mat (matrix): Dense upper-triangular matrix.
     """
-
-    _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
         self.mat = B.dense(mat)

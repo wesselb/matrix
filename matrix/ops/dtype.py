@@ -1,3 +1,5 @@
+from typing import Union
+
 import lab as B
 
 from ..constant import Zero, Constant
@@ -11,36 +13,36 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
-@B.dispatch(Zero)
-def dtype(a):
+@B.dispatch
+def dtype(a: Zero):
     return a.dtype
 
 
-@B.dispatch({Dense, LowerTriangular, UpperTriangular})
-def dtype(a):
+@B.dispatch
+def dtype(a: Union[Dense, LowerTriangular, UpperTriangular]):
     return B.dtype(a.mat)
 
 
-@B.dispatch(Diagonal)
-def dtype(a):
+@B.dispatch
+def dtype(a: Diagonal):
     return B.dtype(a.diag)
 
 
-@B.dispatch(Constant)
-def dtype(a):
+@B.dispatch
+def dtype(a: Constant):
     return B.dtype(a.const)
 
 
-@B.dispatch(LowRank)
-def dtype(a):
+@B.dispatch
+def dtype(a: LowRank):
     return B.dtype(a.left)
 
 
-@B.dispatch(Woodbury)
-def dtype(a):
+@B.dispatch
+def dtype(a: Woodbury):
     return B.dtype(a.lr)
 
 
-@B.dispatch(Kronecker)
-def dtype(a):
+@B.dispatch
+def dtype(a: Kronecker):
     return B.dtype(a.left)

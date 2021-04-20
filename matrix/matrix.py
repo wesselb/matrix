@@ -2,7 +2,7 @@ import abc
 
 import lab as B
 import wbml.out
-from plum import Dispatcher, Referentiable
+from plum import Dispatcher
 from wbml.warning import warn_upmodule
 
 from .shape import assert_matrix
@@ -13,7 +13,7 @@ __all__ = ["AbstractMatrix", "Dense", "repr_format", "structured"]
 _dispatch = Dispatcher()
 
 
-class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
+class AbstractMatrix(metaclass=abc.ABCMeta):
     """Abstract matrix type."""
 
     def __neg__(self):
@@ -114,7 +114,7 @@ class Dense(AbstractMatrix):
         )
 
 
-@_dispatch(object)
+@_dispatch
 def repr_format(a):
     """Format an object for display in `__repr__` methods.
 
@@ -127,12 +127,12 @@ def repr_format(a):
     return wbml.out.format(a, info=False)
 
 
-@_dispatch(AbstractMatrix)
-def repr_format(a):
+@_dispatch
+def repr_format(a: AbstractMatrix):
     return repr(a)
 
 
-@_dispatch(object, [object])
+@_dispatch
 def structured(*xs):
     """Check whether there is any structured matrix.
 
@@ -145,16 +145,16 @@ def structured(*xs):
     return any(structured(x) for x in xs)
 
 
-@_dispatch(AbstractMatrix)
-def structured(x):
+@_dispatch
+def structured(x: AbstractMatrix):
     return True
 
 
-@_dispatch(Dense)
-def structured(x):
+@_dispatch
+def structured(x: Dense):
     return False
 
 
-@_dispatch(B.Numeric)
-def structured(x):
+@_dispatch
+def structured(x: B.Numeric):
     return False

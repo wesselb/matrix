@@ -7,7 +7,7 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
-@B.dispatch(object)
+@B.dispatch
 def sample(a, num=1):  # pragma: no cover
     """Sample from covariance matrices.
 
@@ -34,6 +34,6 @@ def sample(a, num=1):  # pragma: no cover
 B.sample = sample
 
 
-@B.dispatch(Woodbury)
-def sample(a, num=1):
+@B.dispatch
+def sample(a: Woodbury, num=1):
     return B.sample(a.diag, num=num) + B.sample(a.lr, num=num)

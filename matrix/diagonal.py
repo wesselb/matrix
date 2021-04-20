@@ -1,11 +1,13 @@
 import lab as B
-from plum import Dispatcher, Self
+from plum import Dispatcher
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_vector
 from .util import indent, dtype_str
 
 __all__ = ["Diagonal"]
+
+_dispatch = Dispatcher()
 
 
 class Diagonal(AbstractMatrix):
@@ -22,10 +24,8 @@ class Diagonal(AbstractMatrix):
         diag (vector): Diagonal of matrix.
     """
 
-    _dispatch = Dispatcher(in_class=Self)
-
-    @_dispatch(B.Numeric)
-    def __init__(self, diag):
+    @_dispatch
+    def __init__(self, diag: B.Numeric):
         assert_vector(
             diag,
             "Input is not a rank-1 tensor. Can only construct "
@@ -35,15 +35,13 @@ class Diagonal(AbstractMatrix):
         self.cholesky = None
         self.dense = None
 
-    @_dispatch(AbstractMatrix)
-    def __init__(self, mat):
-        return Diagonal.__init__(self, B.diag(mat))
+    @_dispatch
+    def __init__(self, mat: AbstractMatrix):
+        Diagonal.__init__(self, B.diag(mat))
 
     def __str__(self):
         rows, cols = B.shape(self)
-        return (
-            f"<diagonal matrix: shape={rows}x{cols}, dtype={dtype_str(self)}>"
-        )
+        return f"<diagonal matrix: shape={rows}x{cols}, dtype={dtype_str(self)}>"
 
     def __repr__(self):
         return (

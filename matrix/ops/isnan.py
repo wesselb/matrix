@@ -7,8 +7,8 @@ from ..util import ToDenseWarning
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def isnan(a):
+@B.dispatch
+def isnan(a: AbstractMatrix):
     if structured(a):
         warn_upmodule(
             f'Applying "isnan" to {a}: converting to dense.', category=ToDenseWarning

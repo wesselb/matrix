@@ -5,6 +5,6 @@ from ..matrix import AbstractMatrix
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def to_numpy(a):
+@B.dispatch
+def to_numpy(a: AbstractMatrix):
     return B.to_numpy(B.dense(a))

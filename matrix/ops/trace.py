@@ -5,7 +5,7 @@ from ..matrix import AbstractMatrix
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def trace(a):
+@B.dispatch
+def trace(a: AbstractMatrix):
     # The implementation of diagonal is optimised, so this should be efficient.
     return B.sum(B.diag(a))

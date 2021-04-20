@@ -6,6 +6,6 @@ from ..constant import Zero
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def zeros(a):
+@B.dispatch
+def zeros(a: AbstractMatrix):
     return Zero(B.dtype(a), *B.shape(a))

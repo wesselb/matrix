@@ -6,6 +6,6 @@ from ..constant import Constant
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def ones(a):
+@B.dispatch
+def ones(a: AbstractMatrix):
     return Constant(B.one(a), *B.shape(a))

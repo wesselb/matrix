@@ -5,6 +5,6 @@ from ..matrix import AbstractMatrix
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def zero(a):
+@B.dispatch
+def zero(a: AbstractMatrix):
     return B.zero(B.dtype(a))

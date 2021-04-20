@@ -11,46 +11,46 @@ from ..kronecker import Kronecker
 __all__ = []
 
 
-@B.dispatch(Zero)
-def negative(a):
+@B.dispatch
+def negative(a: Zero):
     return a
 
 
-@B.dispatch(Dense)
-def negative(a):
+@B.dispatch
+def negative(a: Dense):
     return Dense(B.negative(a.mat))
 
 
-@B.dispatch(Diagonal)
-def negative(a):
+@B.dispatch
+def negative(a: Diagonal):
     return Diagonal(B.negative(a.diag))
 
 
-@B.dispatch(Constant)
-def negative(a):
+@B.dispatch
+def negative(a: Constant):
     return Constant(-a.const, a.rows, a.cols)
 
 
-@B.dispatch(LowerTriangular)
-def negative(a):
+@B.dispatch
+def negative(a: LowerTriangular):
     return LowerTriangular(B.negative(a.mat))
 
 
-@B.dispatch(UpperTriangular)
-def negative(a):
+@B.dispatch
+def negative(a: UpperTriangular):
     return UpperTriangular(B.negative(a.mat))
 
 
-@B.dispatch(LowRank)
-def negative(a):
+@B.dispatch
+def negative(a: LowRank):
     return LowRank(a.left, a.right, B.negative(a.middle))
 
 
-@B.dispatch(Woodbury)
-def negative(a):
+@B.dispatch
+def negative(a: Woodbury):
     return Woodbury(B.negative(a.diag), B.negative(a.lr))
 
 
-@B.dispatch(Kronecker)
-def negative(a):
+@B.dispatch
+def negative(a: Kronecker):
     return Kronecker(B.negative(a.left), a.right)

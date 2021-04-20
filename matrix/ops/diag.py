@@ -1,3 +1,5 @@
+from typing import Union
+
 import lab as B
 from wbml.warning import warn_upmodule
 
@@ -17,28 +19,28 @@ def _diag_len(a):
     return B.minimum(*B.shape(a))
 
 
-@B.dispatch(Zero)
-def diag(a):
+@B.dispatch
+def diag(a: Zero):
     return B.zeros(B.dtype(a), _diag_len(a))
 
 
-@B.dispatch({Dense, LowerTriangular, UpperTriangular})
-def diag(a):
+@B.dispatch
+def diag(a: Union[Dense, LowerTriangular, UpperTriangular]):
     return B.diag(a.mat)
 
 
-@B.dispatch(Diagonal)
-def diag(a):
+@B.dispatch
+def diag(a: Diagonal):
     return a.diag
 
 
-@B.dispatch(Constant)
-def diag(a):
+@B.dispatch
+def diag(a: Constant):
     return a.const * B.ones(B.dtype(a), _diag_len(a))
 
 
-@B.dispatch(LowRank)
-def diag(a):
+@B.dispatch
+def diag(a: LowRank):
     if structured(a.left, a.right):
         warn_upmodule(
             f"Getting the diagonal of {a}: converting the factors to dense.",
@@ -52,20 +54,20 @@ def diag(a):
     )
 
 
-@B.dispatch(Woodbury)
-def diag(a):
+@B.dispatch
+def diag(a: Woodbury):
     return B.diag(a.diag) + B.diag(a.lr)
 
 
-@B.dispatch(Kronecker)
-def diag(a):
+@B.dispatch
+def diag(a: Kronecker):
     return B.kron(B.diag(a.left), B.diag(a.right))
 
 
 # Construct block-diagonal matrices.
 
 
-@B.dispatch(object, object)
+@B.dispatch
 def diag(a, b):
     # We could merge this with `block`, but `block` has a lot of overhead. It
     # seems advantageous to optimise this common case.
@@ -83,6 +85,6 @@ def diag(a, b):
     return Dense(B.concat2d([a, B.zeros(dtype, ar, bc)], [B.zeros(dtype, br, ac), b]))
 
 
-@B.dispatch(Diagonal, Diagonal)
-def diag(a, b):
+@B.dispatch
+def diag(a: Diagonal, b: Diagonal):
     return Diagonal(B.concat(a.diag, b.diag))
