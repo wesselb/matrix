@@ -27,7 +27,7 @@ jobs:
           COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
           COVERALLS_PARALLEL: true
         run: |
-          JAX_ENABLE_X64=1 pytest -v --cov=matrix --cov-report term-missing -Werror ignore::DeprecationWarning
+          JAX_ENABLE_X64=1 pytest -v --cov=matrix --cov-report term-missing -Werror -W ignore::DeprecationWarning
           coveralls --service=github
   coveralls:
     name: Finish coverage
