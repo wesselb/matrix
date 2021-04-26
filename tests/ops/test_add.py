@@ -137,13 +137,17 @@ def test_add_ut_const(ut1, const_or_scalar2):
 def test_add_lr(lr1, lr2):
     with ConditionalContext(
         structured(lr1.left) or structured(lr2.left),
-        AssertDenseWarning("indexing into <diagonal>"),
+        AssertDenseWarning(
+            ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+        ),
     ):
         check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
 
 
 def test_add_lr_const(lr1, const_or_scalar2):
-    with AssertDenseWarning("indexing into <diagonal>"):
+    with AssertDenseWarning(
+        ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+    ):
         check_bin_op(B.add, const_or_scalar2, lr1, asserted_type=LowRank)
         check_bin_op(B.add, lr1, const_or_scalar2, asserted_type=LowRank)
 
@@ -156,7 +160,9 @@ def test_add_lr_diag(lr1, diag2):
 def test_add_wb(wb1, wb2):
     with ConditionalContext(
         structured(wb1.lr.left) or structured(wb2.lr.left),
-        AssertDenseWarning("indexing into <diagonal>"),
+        AssertDenseWarning(
+            ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+        ),
     ):
         check_bin_op(B.add, wb1, wb2, asserted_type=Woodbury)
 
@@ -167,7 +173,9 @@ def test_add_wb_diag(wb1, diag1):
 
 
 def test_add_wb_constant(wb1, const_or_scalar2):
-    with AssertDenseWarning("indexing into <diagonal>"):
+    with AssertDenseWarning(
+        ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+    ):
         check_bin_op(B.add, wb1, const_or_scalar2, asserted_type=Woodbury)
         check_bin_op(B.add, const_or_scalar2, wb1, asserted_type=Woodbury)
 
@@ -175,7 +183,9 @@ def test_add_wb_constant(wb1, const_or_scalar2):
 def test_add_wb_lr(wb1, lr2):
     with ConditionalContext(
         structured(wb1.lr.left) or structured(lr2.left),
-        AssertDenseWarning("indexing into <diagonal>"),
+        AssertDenseWarning(
+            ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+        ),
     ):
         check_bin_op(B.add, wb1, lr2, asserted_type=Woodbury)
         check_bin_op(B.add, lr2, wb1, asserted_type=Woodbury)

@@ -1,4 +1,3 @@
-import jax
 import jax.numpy as jnp
 import lab.jax as B
 import pytest
@@ -80,12 +79,13 @@ def test_blr_jax_jit():
             f = a + b * (lambda x: x) + c * (lambda x: x ** 2)
 
             e1 = GP(0.1 * Delta(), measure=prior)
-            e2 = GP(0.1 * Delta(), measure=prior)
+            e2 = GP(0.2 * Delta(), measure=prior)
             y1 = f + e1
             y2 = f + e2
 
             return prior, y1, y2
 
+        @B.jit
         def posterior_marginals(x_obs, y_obs):
             prior, y1, y2 = build_model()
             post = prior | (y1(x_obs), y_obs)
@@ -93,24 +93,13 @@ def test_blr_jax_jit():
 
         # Sample some observations.
         _, y, _ = build_model()
-        x_obs = B.linspace(jnp.float64, 0, 10, 5)
-        y_obs = y(x_obs).sample()
-
-        with B.ControlFlowCache() as posterior_marginals_flow:
-            posterior_marginals(*B.to_numpy(x_obs, y_obs))
-
-        @jax.jit
-        def posterior_marginals_jitted(*args):
-            with posterior_marginals_flow:
-                return posterior_marginals(*args)
-
         x_obs = B.linspace(jnp.float64, 0, 10, 10)
         y_obs = y(x_obs).sample()
 
         # Test that the JIT works and produces the correct result.
         approx(
             posterior_marginals(*B.to_numpy(x_obs, y_obs)),
-            posterior_marginals_jitted(x_obs, y_obs),
+            posterior_marginals(x_obs, y_obs),
             # Different computations can give different numerical behaviour.
-            rtol=1e-5
+            rtol=1e-5,
         )

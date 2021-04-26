@@ -230,7 +230,9 @@ def test_matmul_wb(wb1, wb2):
         structured(wb1.lr.left)
         or structured(wb2.lr.left)
         or wb1.lr.rank == 1 == wb2.lr.rank == 1,
-        AssertDenseWarning("indexing into <diagonal>"),
+        AssertDenseWarning(
+            ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+        ),
     ):
         _check_matmul(wb1, wb2, asserted_type=Woodbury)
 
@@ -246,17 +248,19 @@ def test_matmul_wb_diag(wb1, diag2):
 
 
 def test_matmul_wb_const(wb1, const2):
-    with AssertDenseWarning("indexing into <diagonal>"):
+    with AssertDenseWarning(
+        ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+    ):
         _check_matmul(wb1, const2, asserted_type=LowRank)
         _check_matmul(const2, wb1, asserted_type=LowRank)
 
 
 def test_matmul_wb_lr(wb1, lr2):
     with ConditionalContext(
-        structured(wb1.lr.left)
-        or structured(lr2.left)
-        or wb1.lr.rank == lr2.rank == 1,
-        AssertDenseWarning("indexing into <diagonal>"),
+        structured(wb1.lr.left) or structured(lr2.left) or wb1.lr.rank == lr2.rank == 1,
+        AssertDenseWarning(
+            ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+        ),
     ):
         _check_matmul(wb1, lr2, asserted_type=LowRank)
         _check_matmul(lr2, wb1, asserted_type=LowRank)

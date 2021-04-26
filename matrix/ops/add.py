@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 
 import lab as B
@@ -16,6 +17,8 @@ from ..util import ToDenseWarning
 from ..woodbury import Woodbury
 
 __all__ = []
+
+log = logging.getLogger(__name__)
 
 
 def _reverse_call(t0, t1):
@@ -135,16 +138,43 @@ _reverse_call(UpperTriangular, LowerTriangular)
 # LowRank
 
 
+def _pad_zero_row(a):
+    zeros = B.zeros(B.dtype(a), 1, B.shape(a)[1])
+    return B.concat(a, zeros, axis=0)
+
+
+def _pad_zero_col(a):
+    zeros = B.zeros(B.dtype(a), B.shape(a)[0], 1)
+    return B.concat(a, zeros, axis=1)
+
+
+def _pad_zero_both(a):
+    return _pad_zero_col(_pad_zero_row(a))
+
+
 @B.dispatch
 def add(a: LowRank, b: LowRank):
     assert_compatible(a, b)
-    join_left, _, a_middle_t, _, b_middle_t = align(
-        a.left, B.transpose(a.middle), b.left, B.transpose(b.middle)
-    )
-    join_right, _, a_middle, _, b_middle = align(
-        a.right, B.transpose(a_middle_t), b.right, B.transpose(b_middle_t)
-    )
-    return LowRank(join_left, join_right, B.add(a_middle, b_middle))
+
+    l_a_p, l_b_p, l_a_jp, l_b_jp = align(a.left, b.left)
+    r_a_p, r_b_p, r_a_jp, r_b_jp = align(a.right, b.right)
+
+    # Join left parts.
+    a_left = B.take(_pad_zero_col(a.left), l_a_jp, axis=-1)
+    b_left = B.take(_pad_zero_col(b.left), l_b_jp, axis=-1)
+    join_left = a_left + b_left
+
+    # Join right parts.
+    a_right = B.take(_pad_zero_col(a.right), r_a_jp, axis=-1)
+    b_right = B.take(_pad_zero_col(b.right), r_b_jp, axis=-1)
+    join_right = a_right + b_right
+
+    # Join middle parts.
+    a_mid = B.take(B.take(_pad_zero_both(a.middle), l_a_p, axis=-2), r_a_p, axis=-1)
+    b_mid = B.take(B.take(_pad_zero_both(b.middle), l_b_p, axis=-2), r_b_p, axis=-1)
+    join_middle = a_mid + b_mid
+
+    return LowRank(join_left, join_right, join_middle)
 
 
 @B.dispatch
