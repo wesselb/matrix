@@ -136,6 +136,7 @@ They can be accessed with `B.<function>` where `import lab as B`.
 dense(a)
 fill_diag(a, diag_len)
 block(*rows)
+block_diag(*blocks)
 
 matmul_diag(a, b, tr_a=False, tr_b=False)
 
