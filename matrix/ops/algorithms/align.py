@@ -29,8 +29,8 @@ def align(a, b):
     a_norms = B.sum(B.multiply(a, a), axis=0)
     b_norms = B.sum(B.multiply(b, b), axis=0)
 
-    # Perform sorting to enable linear-time algorithm. These need to be Python lists
-    # containing integers.
+    # Perform sorting to enable linear-time algorithm. These need to be regular Python
+    # lists.
     a_sorted_inds = list(B.argsort(a_norms))
     b_sorted_inds = list(B.argsort(b_norms))
 
