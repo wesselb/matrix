@@ -353,7 +353,7 @@ def dense2():
     return generate("dense:6,6")
 
 
-@pytest.fixture(params=(["dense:6,1", "dense:1,6", "dense:6,6"]))
+@pytest.fixture(params=["dense:6,1", "dense:1,6", "dense:6,6"])
 def dense_bc(request):
     return generate(request.param)
 
