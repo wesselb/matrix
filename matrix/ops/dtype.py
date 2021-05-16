@@ -35,14 +35,14 @@ def dtype(a: Constant):
 
 @B.dispatch
 def dtype(a: LowRank):
-    return B.dtype(a.left)
+    return B.dtype(a.left, a.right, a.middle)
 
 
 @B.dispatch
 def dtype(a: Woodbury):
-    return B.dtype(a.lr)
+    return B.dtype(a.diag, a.lr)
 
 
 @B.dispatch
 def dtype(a: Kronecker):
-    return B.dtype(a.left)
+    return B.dtype(a.left, a.right)

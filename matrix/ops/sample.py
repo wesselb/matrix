@@ -18,17 +18,8 @@ def sample(a, num=1):  # pragma: no cover
     Returns:
         tensor: Samples as rank 2 column vectors.
     """
-    # Convert integer data types to floats.
-    dtype = B.dtype(a)
-    if B.issubdtype(B.dtype(a), np.integer):
-        warn_upmodule(
-            "Data type of covariance matrix is integer: sampling floats anyway."
-        )
-        dtype = float
-
-    # Perform sampling operation.
     chol = B.cholesky(a)
-    return B.matmul(chol, B.randn(dtype, B.shape(chol)[1], num))
+    return B.matmul(chol, B.randn(B.dtype_float(a), B.shape(chol)[1], num))
 
 
 B.sample = sample

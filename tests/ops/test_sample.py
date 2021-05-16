@@ -27,8 +27,7 @@ def _est_cov(a):
 
 def test_sample_conversion():
     const = Constant(1, 5, 5)
-    with pytest.warns(UserWarning, match="Data type of covariance matrix is integer"):
-        sample = B.sample(const)
+    sample = B.sample(const)
     assert B.issubdtype(B.dtype(sample), np.floating)
 
 

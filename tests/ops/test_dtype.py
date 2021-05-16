@@ -1,5 +1,7 @@
 import lab as B
+import numpy as np
 
+from matrix import Diagonal, LowRank, Kronecker
 # noinspection PyUnresolvedReferences
 from ..util import (
     approx,
@@ -44,9 +46,38 @@ def test_dtype_lr(lr1):
     assert B.dtype(lr1) == B.default_dtype
 
 
+def test_dtype_lr_promotion():
+    lr = LowRank(B.ones(int, 5, 2), B.ones(int, 5, 2), B.ones(int, 2, 2))
+    assert B.dtype(lr) == np.int64
+    lr = LowRank(B.ones(float, 5, 2), B.ones(int, 5, 2), B.ones(int, 2, 2))
+    assert B.dtype(lr) == np.float64
+    lr = LowRank(B.ones(int, 5, 2), B.ones(float, 5, 2), B.ones(int, 2, 2))
+    assert B.dtype(lr) == np.float64
+    lr = LowRank(B.ones(int, 5, 2), B.ones(int, 5, 2), B.ones(float, 2, 2))
+    assert B.dtype(lr) == np.float64
+
+
 def test_dtype_wb(wb1):
     assert B.dtype(wb1) == B.default_dtype
 
 
+def test_dtype_wb_promotion():
+    wb = LowRank(B.ones(int, 5, 5)) + Diagonal(B.ones(int, 5))
+    assert B.dtype(wb) == np.int64
+    wb = LowRank(B.ones(float, 5, 5)) + Diagonal(B.ones(int, 5))
+    assert B.dtype(wb) == np.float64
+    wb = LowRank(B.ones(int, 5, 5)) + Diagonal(B.ones(float, 5))
+    assert B.dtype(wb) == np.float64
+
+
 def test_dtype_kron(kron1):
     assert B.dtype(kron1) == B.default_dtype
+
+
+def test_dtype_kron_promotion():
+    kron = Kronecker(B.ones(int, 5, 5), B.ones(int, 5, 5))
+    assert B.dtype(kron) == np.int64
+    kron = Kronecker(B.ones(float, 5, 5), B.ones(int, 5, 5))
+    assert B.dtype(kron) == np.float64
+    kron = Kronecker(B.ones(int, 5, 5), B.ones(float, 5, 5))
+    assert B.dtype(kron) == np.float64
