@@ -9,6 +9,7 @@ from .util import approx, IgnoreDenseWarning
 
 @pytest.mark.parametrize("sample_truth", [True, False])
 def test_blr(sample_truth):
+
     with IgnoreDenseWarning():
 
         def check_posterior(m, x):
@@ -93,7 +94,7 @@ def test_blr_jax_jit():
         def posterior_marginals(x_obs, y_obs):
             prior, y1, y2 = build_model()
             post = prior | (y1(x_obs), y_obs)
-            return post(y2)(x_obs).marginals()
+            return post(y2)(x_obs).marginal_credible_bounds()
 
         # Sample some observations.
         _, y, _ = build_model()
