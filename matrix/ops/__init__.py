@@ -1,6 +1,7 @@
 from .add import *
 from .block import *
 from .block_diag import *
+from .broadcast_to import *
 from .cholesky import *
 from .cholesky_solve import *
 from .concat import *

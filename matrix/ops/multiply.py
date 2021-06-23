@@ -27,13 +27,13 @@ def _reverse_call(t0, t1):
 @B.dispatch(precedence=proven())
 def multiply(a: AbstractMatrix, b: Zero):
     assert_compatible(a, b)
-    return b
+    return B.broadcast_to(b, *broadcast(a, b).as_tuple())
 
 
 @B.dispatch(precedence=proven())
 def multiply(a: Zero, b: AbstractMatrix):
     assert_compatible(a, b)
-    return a
+    return B.broadcast_to(a, *broadcast(a, b).as_tuple())
 
 
 # Dense
@@ -93,7 +93,7 @@ def multiply(a: Constant, b: AbstractMatrix):
         warn_upmodule(
             f"Multiplying {a} and {b}: converting to dense.", category=ToDenseWarning
         )
-    return Dense(a.const * B.dense(b))
+    return Dense(B.broadcast_to(a.const * B.dense(b), *broadcast(a, b).as_tuple()))
 
 
 @B.dispatch

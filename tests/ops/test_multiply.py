@@ -51,6 +51,11 @@ def _conditional_warning(mats, message):
     return ConditionalContext(structured(*mats), AssertDenseWarning(message))
 
 
+def test_multiply_zero_dense(zero1, dense_bc):
+    check_bin_op(B.multiply, zero1, dense_bc, asserted_type=Zero)
+    check_bin_op(B.multiply, dense_bc, zero1, asserted_type=Zero)
+
+
 def test_multiply_zero_diag(zero1, diag2):
     check_bin_op(B.multiply, zero1, diag2, asserted_type=Zero)
     check_bin_op(B.multiply, diag2, zero1, asserted_type=Zero)
@@ -73,9 +78,9 @@ def test_multiply_const(const_or_scalar1, const2):
     check_bin_op(B.multiply, const_or_scalar1, const2, asserted_type=Constant)
 
 
-def test_multiply_const_dense(const_or_scalar1, dense2):
-    check_bin_op(B.multiply, const_or_scalar1, dense2, asserted_type=Dense)
-    check_bin_op(B.multiply, dense2, const_or_scalar1, asserted_type=Dense)
+def test_multiply_const_dense(const_or_scalar1, dense_bc):
+    check_bin_op(B.multiply, const_or_scalar1, dense_bc, asserted_type=Dense)
+    check_bin_op(B.multiply, dense_bc, const_or_scalar1, asserted_type=Dense)
 
 
 def test_multiply_const_fallback_warning(const1, diag2):
