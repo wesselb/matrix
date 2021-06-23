@@ -124,7 +124,7 @@ def repr_format(a):
     Returns:
         str: String representation of `a`.
     """
-    return wbml.out.format(a, info=False)
+    return wbml.out.format(a, False)
 
 
 @_dispatch
