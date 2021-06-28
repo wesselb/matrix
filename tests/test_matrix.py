@@ -1,9 +1,17 @@
 import lab as B
+import numpy as np
 
 from matrix import Dense, Diagonal, structured
-
 # noinspection PyUnresolvedReferences
-from .util import approx, AssertDenseWarning, dense1, dense2, diag1
+from .util import (
+    approx,
+    AssertDenseWarning,
+    check_un_op,
+    dense1,
+    dense2,
+    dense_bc,
+    diag1,
+)
 
 
 def test_dispatch(dense1, dense2):
@@ -60,3 +68,36 @@ def test_indexing_dense(dense1):
 def test_indexing_diag(diag1):
     with AssertDenseWarning("indexing into <diagonal>"):
         approx(diag1[2], B.dense(diag1)[2])
+
+
+def test_reshaping_dense(dense1):
+    check_un_op(lambda a: a.reshape(-1), dense1)
+    # Check that, in this case, also tuples and lists can be passed.
+    check_un_op(lambda a: a.reshape((-1,)), dense1)
+    check_un_op(lambda a: a.reshape([-1]), dense1)
+
+
+def test_squeeze_dense(dense_bc):
+    check_un_op(lambda a: a.squeeze(), dense_bc)
+
+
+def test_flatten_dense(dense_bc):
+    check_un_op(lambda a: a.flatten(), dense_bc)
+
+
+def test_numpy_reshape_dense(dense1):
+    check_un_op(lambda a: np.reshape(a, (a.shape[0] * a.shape[1], -1)), dense1)
+
+
+def test_numpy_reshape_diag(diag1):
+    with AssertDenseWarning("converting <diagonal> to a regular tensor"):
+        check_un_op(lambda a: np.reshape(a, (a.shape[0] * a.shape[1], -1)), diag1)
+
+
+def test_numpy_diagonal_dense(dense1):
+    check_un_op(lambda a: np.diagonal(a), dense1)
+
+
+def test_numpy_diagonal_diag(diag1):
+    with AssertDenseWarning("converting <diagonal> to a regular tensor"):
+        check_un_op(lambda a: np.diagonal(a), diag1)

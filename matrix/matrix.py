@@ -1,4 +1,5 @@
 import abc
+from typing import Union
 
 import lab as B
 import wbml.out
@@ -70,6 +71,20 @@ class AbstractMatrix(metaclass=abc.ABCMeta):
     def dtype(self):
         return B.dtype(self)
 
+    def squeeze(self):
+        return B.squeeze(self)
+
+    @_dispatch
+    def reshape(self, shape: Union[tuple, list]):
+        return B.reshape(self, *shape)
+
+    @_dispatch
+    def reshape(self, *shape: B.Int):
+        return B.reshape(self, *shape)
+
+    def flatten(self):
+        return self.reshape(-1)
+
     @abc.abstractmethod
     def __str__(self):  # pragma: no cover
         pass
@@ -77,6 +92,14 @@ class AbstractMatrix(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __repr__(self):  # pragma: no cover
         pass
+
+    def __array__(self):
+        if structured(self):
+            warn_upmodule(
+                f"Converting {self} to a regular tensor: converting to dense.",
+                category=ToDenseWarning,
+            )
+        return B.dense(self)
 
 
 class Dense(AbstractMatrix):

@@ -1,16 +1,23 @@
 import lab as B
 from wbml.warning import warn_upmodule
 
-from ..matrix import AbstractMatrix, Dense
+from ..matrix import AbstractMatrix, Dense, structured
 from ..util import ToDenseWarning
 
 __all__ = []
 
 
 @B.dispatch
-def reshape(a: AbstractMatrix, rows: B.Int, cols: B.Int):
-    warn_upmodule(f"Converting {a} to dense for reshaping.", category=ToDenseWarning)
-    return Dense(B.reshape(B.dense(a), rows, cols))
+def reshape(a: AbstractMatrix, *shape: B.Int):
+    if structured(a):
+        warn_upmodule(
+            f"Converting {a} to dense for reshaping.", category=ToDenseWarning
+        )
+    a = B.reshape(B.dense(a), *shape)
+    if len(shape) == 2:
+        return Dense(a)
+    else:
+        return a
 
 
 @B.dispatch
