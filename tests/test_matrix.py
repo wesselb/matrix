@@ -90,4 +90,4 @@ def test_flatten_dense(dense_bc):
 
 
 def test_diagonal_dense(dense_bc):
-    check_un_op(lambda a: a.flatten(), dense_bc)
+    check_un_op(lambda a: a.diagonal(), dense_bc)

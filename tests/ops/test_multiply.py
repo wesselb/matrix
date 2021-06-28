@@ -212,13 +212,13 @@ def test_multiply_wb_lr(wb1, lr2):
 
 
 def test_multiply_kron(kron1, kron2):
-    if B.shape(kron1.left) == B.shape(kron2.left) and B.shape(kron1.right) == B.shape(
-        kron2.right
-    ):
+    lefts_align = B.shape(kron1.left) == B.shape(kron2.left)
+    rights_align = B.shape(kron1.right) == B.shape(kron2.right)
+    if lefts_align and rights_align:
         check_bin_op(B.multiply, kron1, kron2, asserted_type=Kronecker)
     else:
         with pytest.raises(AssertionError):
-            B.matmul(kron1, kron2)
+            B.multiply(kron1, kron2)
 
 
 def test_multiply_kron_dense(kron1, dense2):
