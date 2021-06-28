@@ -85,6 +85,9 @@ class AbstractMatrix(metaclass=abc.ABCMeta):
     def flatten(self):
         return self.reshape(-1)
 
+    def diagonal(self):
+        return B.diag(self)
+
     @abc.abstractmethod
     def __str__(self):  # pragma: no cover
         pass
@@ -92,14 +95,6 @@ class AbstractMatrix(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def __repr__(self):  # pragma: no cover
         pass
-
-    def __array__(self):
-        if structured(self):
-            warn_upmodule(
-                f"Converting {self} to a regular tensor: converting to dense.",
-                category=ToDenseWarning,
-            )
-        return B.dense(self)
 
 
 class Dense(AbstractMatrix):
@@ -160,12 +155,19 @@ def structured(*xs):
     """Check whether there is any structured matrix.
 
     Args:
-        xs (matrices): Matrices to check.
+        *xs (matrix): Matrices to check.
 
     Returns:
         bool: `True` if there is any structure.
     """
     return any(structured(x) for x in xs)
+
+
+@_dispatch
+def structured(x):
+    raise RuntimeError(
+        f"Could not determine whether {x} is a structured matrix or not."
+    )
 
 
 @_dispatch
