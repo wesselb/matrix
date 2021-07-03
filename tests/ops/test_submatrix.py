@@ -71,7 +71,7 @@ def test_submatrix_lt(lt1):
     _check_submatrix(lt1, asserted_type=LowerTriangular)
 
 
-def test_submatrix_lt(ut1):
+def test_submatrix_ut(ut1):
     _check_submatrix(ut1, asserted_type=UpperTriangular)
 
 
