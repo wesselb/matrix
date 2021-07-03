@@ -162,17 +162,17 @@ def add(a: LowRank, b: LowRank):
     # Join left parts.
     a_left = B.take(_pad_zero_col(a.left), l_a_jp, axis=-1)
     b_left = B.take(_pad_zero_col(b.left), l_b_jp, axis=-1)
-    join_left = a_left + b_left
+    join_left = add(a_left, b_left)
 
     # Join right parts.
     a_right = B.take(_pad_zero_col(a.right), r_a_jp, axis=-1)
     b_right = B.take(_pad_zero_col(b.right), r_b_jp, axis=-1)
-    join_right = a_right + b_right
+    join_right = add(a_right, b_right)
 
     # Join middle parts.
     a_mid = B.take(B.take(_pad_zero_both(a.middle), l_a_p, axis=-2), r_a_p, axis=-1)
     b_mid = B.take(B.take(_pad_zero_both(b.middle), l_b_p, axis=-2), r_b_p, axis=-1)
-    join_middle = a_mid + b_mid
+    join_middle = add(a_mid, b_mid)
 
     return LowRank(join_left, join_right, join_middle)
 
@@ -204,12 +204,12 @@ def add(a: Diagonal, b: LowRank):
 
 @B.dispatch
 def add(a: Woodbury, b: Woodbury):
-    return Woodbury(a.diag + b.diag, a.lr + b.lr)
+    return Woodbury(add(a.diag, b.diag), add(a.lr, b.lr))
 
 
 @B.dispatch
 def add(a: Woodbury, b: Diagonal):
-    return Woodbury(a.diag + b, a.lr)
+    return Woodbury(add(a.diag, b), a.lr)
 
 
 @B.dispatch
@@ -219,7 +219,7 @@ def add(a: Diagonal, b: Woodbury):
 
 @B.dispatch.multi((Woodbury, Constant), (Woodbury, LowRank))
 def add(a: Woodbury, b: Union[Constant, LowRank]):
-    return Woodbury(a.diag, a.lr + b)
+    return Woodbury(a.diag, add(a.lr, b))
 
 
 @B.dispatch.multi((Constant, Woodbury), (LowRank, Woodbury))

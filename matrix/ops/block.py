@@ -43,6 +43,9 @@ def block(row, *rows):
     return Dense(B.concat2d(*[[B.dense(x) for x in row] for row in rows]))
 
 
+B.block = block
+
+
 def _attempt_zero(rows):
     # Check whether the result is just zeros.
     if all([all([isinstance(x, Zero) for x in row]) for row in rows]):
@@ -85,6 +88,3 @@ def _attempt_diagonal(rows):
                     return None
 
     return Diagonal(B.concat(*[B.diag(x) for x in diagonal_blocks]))
-
-
-B.block = block

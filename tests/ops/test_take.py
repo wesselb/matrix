@@ -3,6 +3,8 @@ import lab.jax as B
 import numpy as np
 import pytest
 
+from matrix import Dense, Zero, Constant, LowRank
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     AssertDenseWarning,
@@ -13,10 +15,11 @@ from ..util import (
     diag1,
     mat1,
     zero1,
+    lr1,
 )
 
 
-def _check_take(a):
+def _check_take(a, asserted_type=object):
     for axis in [0, 1, -1]:
         for indices_or_mask in [
             [0, 1],
@@ -24,36 +27,31 @@ def _check_take(a):
             [True, True, False, False, True, False],
         ]:
             for wrap in [list, tuple, np.array]:
-                approx(
-                    B.take(a, wrap(indices_or_mask), axis=axis),
-                    B.take(B.dense(a), wrap(indices_or_mask), axis=axis),
-                )
-
-
-def test_take_jit(mat1):
-    @B.jit
-    def take_jitted(a):
-        return B.take(a, [0, 1])
-
-    approx(take_jitted(jnp.array(mat1)), B.take(B.dense(mat1), [0, 1]))
+                res = B.take(a, wrap(indices_or_mask), axis=axis)
+                approx(res, B.take(B.dense(a), wrap(indices_or_mask), axis=axis))
+                assert isinstance(res, asserted_type)
 
 
 def test_take_zero(zero1):
     with pytest.raises(ValueError):
         B.take(zero1, [[1]])
-    _check_take(zero1)
+    _check_take(zero1, asserted_type=Zero)
 
 
 def test_take_dense(dense1):
-    _check_take(dense1)
+    _check_take(dense1, asserted_type=Dense)
 
 
 def test_take_diag(diag1):
     with AssertDenseWarning("taking from <diagonal>"):
-        _check_take(diag1)
+        _check_take(diag1, asserted_type=Dense)
 
 
 def test_take_const(const1):
     with pytest.raises(ValueError):
         B.take(const1, [[1]])
-    _check_take(const1)
+    _check_take(const1, asserted_type=Constant)
+
+
+def test_take_lr(lr1):
+    check_take(lr1, asserted_type=LowRank)
