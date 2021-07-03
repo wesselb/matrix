@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 requirements = [
     "numpy>=1.16",
     "plum-dispatch>=1",
-    "backends>=1.3",
+    "backends>=1.3.3",
     "wbml>=0.3",
     "algebra",
 ]
