@@ -3,10 +3,11 @@ import lab.jax as B
 import numpy as np
 import pytest
 
-from matrix import Dense, Zero, Constant, LowRank
+from matrix import Dense, Zero, Constant, LowRank, structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
+    ConditionalContext,
     AssertDenseWarning,
     approx,
     check_un_op,
@@ -54,4 +55,8 @@ def test_take_const(const1):
 
 
 def test_take_lr(lr1):
-    check_take(lr1, asserted_type=LowRank)
+    with ConditionalContext(
+        structured(lr1.left, lr1.right),
+        AssertDenseWarning("taking from <diagonal>"),
+    ):
+        _check_take(lr1, asserted_type=LowRank)

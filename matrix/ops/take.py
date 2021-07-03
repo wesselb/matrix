@@ -43,7 +43,7 @@ def take(a: AbstractMatrix, indices_or_mask, axis=0):
 
 @B.dispatch
 def take(a: Zero, indices_or_mask, axis=0):
-    axis, indices_or_mask = _resolve_arguments(a, indices_or_mask, axis)
+    indices_or_mask, axis = _resolve_arguments(a, indices_or_mask, axis)
     count = _count_indices_or_mask(indices_or_mask)
     if axis == 0:
         return Zero(a.dtype, count, a.cols)
@@ -56,7 +56,7 @@ def take(a: Zero, indices_or_mask, axis=0):
 
 @B.dispatch
 def take(a: Constant, indices_or_mask, axis=0):
-    axis, indices_or_mask = _resolve_arguments(a, indices_or_mask, axis)
+    indices_or_mask, axis = _resolve_arguments(a, indices_or_mask, axis)
     count = _count_indices_or_mask(indices_or_mask)
     if axis == 0:
         return Constant(a.const, count, a.cols)
