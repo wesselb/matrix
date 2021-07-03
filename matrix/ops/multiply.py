@@ -241,10 +241,9 @@ def multiply(a: Kronecker, b: Kronecker):
     right_compatible = B.shape(a.right) == B.shape(b.right)
     if not (left_compatible and right_compatible):
         raise AssertionError(
-            f"Kronecker products {a} and {b} must be compatible, but they are not."
+            f"Factors of Kronecker products {a} and {b} must be compatible, "
+            f"but they are not."
         )
-    assert_compatible(a.left, b.left)
-    assert_compatible(a.right, b.right)
     return Kronecker(B.multiply(a.left, b.left), B.multiply(a.right, b.right))
 
 
