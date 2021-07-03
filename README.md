@@ -124,6 +124,7 @@ The following composite types are provided:
 LowRank
 Woodbury
 Kronecker
+TiledBlocks
 ```
 
 
