@@ -3,7 +3,7 @@ from plum import Dispatcher
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_vector
-from .util import indent, dtype_str
+from .util import dtype_str, indent
 
 __all__ = ["Diagonal"]
 
@@ -15,10 +15,9 @@ class Diagonal(AbstractMatrix):
 
     Attributes:
         diag (vector): Diagonal of the matrix.
-        cholesky (:class:`.constant.Diagonal` or none): Cholesky
-            decomposition of the matrix, once it has been computed.
-        dense (matrix or None): Dense version of the matrix, once it has been
-            computed.
+        cholesky (:class:`.constant.Diagonal` or None): Cholesky decomposition of the
+            matrix, once it has been computed.
+        dense (matrix or None): Dense version of the matrix, once it has been computed.
 
     Args:
         diag (vector): Diagonal of matrix.

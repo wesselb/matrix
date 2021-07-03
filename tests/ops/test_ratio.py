@@ -4,10 +4,10 @@ from matrix import structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    approx,
-    check_un_op,
     AssertDenseWarning,
     ConditionalContext,
+    approx,
+    check_un_op,
     dense1,
     dense2,
     dense_pd,

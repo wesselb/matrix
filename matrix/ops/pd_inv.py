@@ -1,10 +1,10 @@
 import lab as B
+from plum import Union, convert
 
-from plum import convert, Union
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
-from ..matrix import AbstractMatrix
 from ..lowrank import LowRank
+from ..matrix import AbstractMatrix
 from ..woodbury import Woodbury
 
 __all__ = []

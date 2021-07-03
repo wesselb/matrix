@@ -2,14 +2,14 @@ import lab as B
 import pytest
 
 from matrix.shape import (
-    assert_scalar,
-    assert_vector,
-    assert_matrix,
     Dimension,
     Shape,
-    compatible,
     assert_compatible,
+    assert_matrix,
+    assert_scalar,
+    assert_vector,
     broadcast,
+    compatible,
 )
 
 # noinspection PyUnresolvedReferences

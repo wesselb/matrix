@@ -4,22 +4,22 @@ from matrix import Dense, Diagonal, structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    approx,
-    check_un_op,
     AssertDenseWarning,
     ConditionalContext,
+    approx,
+    check_un_op,
     concat_warnings,
-    zero1,
+    const1,
     dense1,
     dense2,
     diag1,
     diag2,
-    const1,
+    kron1,
+    lr1,
     lt1,
     ut1,
-    lr1,
     wb1,
-    kron1,
+    zero1,
 )
 
 

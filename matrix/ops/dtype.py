@@ -2,11 +2,12 @@ from typing import Union
 
 import lab as B
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import Dense
+from ..tiledblocks import TiledBlocks
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
 
@@ -46,3 +47,8 @@ def dtype(a: Woodbury):
 @B.dispatch
 def dtype(a: Kronecker):
     return B.dtype(a.left, a.right)
+
+
+@B.dispatch
+def dtype(a: TiledBlocks):
+    return B.dtype(*a.blocks)

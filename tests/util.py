@@ -7,15 +7,16 @@ from numpy.testing import assert_allclose
 from plum import Dispatcher, Union
 
 from matrix import (
+    Constant,
     Dense,
     Diagonal,
-    Zero,
-    Constant,
-    LowerTriangular,
-    UpperTriangular,
-    LowRank,
-    Woodbury,
     Kronecker,
+    LowerTriangular,
+    LowRank,
+    TiledBlocks,
+    UpperTriangular,
+    Woodbury,
+    Zero,
 )
 from matrix.util import ToDenseWarning
 
@@ -69,6 +70,9 @@ __all__ = [
     "kron_r",
     "kron_pd",
     "kron_mixed",
+    "tb_axis",
+    "tb1",
+    "tb2",
 ]
 
 _dispatch = Dispatcher()
@@ -589,3 +593,28 @@ def kron_pd(request):
 def kron_mixed(request):
     code1, code2 = request.param
     return Kronecker(generate(code1), generate(code2))
+
+
+@pytest.fixture(params=[0, 1])
+def tb_axis(request):
+    return request.param
+
+
+_tb_codes = [
+    [("dense:3,3", 2), ("zero:3,3", 3), ("lt:3,3", 4)],
+    [("diag:3", 2), ("ut:3,3", 3), ("diag:3", 1)],
+]
+
+
+@pytest.fixture(params=_tb_codes)
+def tb1(request, tb_axis):
+    return TiledBlocks(
+        *((generate(code), rep) for code, rep in request.param), axis=tb_axis
+    )
+
+
+@pytest.fixture(params=_tb_codes)
+def tb2(request, tb_axis):
+    return TiledBlocks(
+        *((generate(code), rep) for code, rep in request.param), axis=tb_axis
+    )

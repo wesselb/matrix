@@ -1,7 +1,7 @@
 import lab as B
 
 from .matrix import AbstractMatrix, repr_format
-from .util import indent, dtype_str
+from .util import dtype_str, indent
 
 __all__ = ["LowerTriangular", "UpperTriangular"]
 

@@ -1,7 +1,7 @@
 import lab as B
 from plum import add_promotion_rule, conversion_method
 
-from .constant import Zero, Constant
+from .constant import Constant, Zero
 from .lowrank import LowRank
 from .matrix import AbstractMatrix, Dense
 
@@ -32,6 +32,4 @@ def constant_to_lowrank(a):
     if rows == cols:
         return LowRank(B.ones(dtype, rows, 1), middle=middle)
     else:
-        return LowRank(
-            B.ones(dtype, rows, 1), B.ones(dtype, cols, 1), middle=middle
-        )
+        return LowRank(B.ones(dtype, rows, 1), B.ones(dtype, cols, 1), middle=middle)

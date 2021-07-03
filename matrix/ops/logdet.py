@@ -2,12 +2,12 @@ from typing import Union
 
 import lab as B
 
-from ..matrix import AbstractMatrix
 from ..diagonal import Diagonal
+from ..kronecker import Kronecker
+from ..matrix import AbstractMatrix
+from ..shape import assert_square
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
-from ..kronecker import Kronecker
-from ..shape import assert_square
 
 __all__ = []
 

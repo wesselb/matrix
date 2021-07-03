@@ -1,5 +1,5 @@
-from plum import Dispatcher
 import lab as B
+from plum import Dispatcher
 
 __all__ = ["ToDenseWarning", "indent", "dtype_str", "redirect"]
 

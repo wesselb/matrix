@@ -1,16 +1,7 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import (
-    approx,
-    check_un_op,
-    dense1,
-    dense2,
-    dense_pd,
-    diag_pd,
-    lr_pd,
-    wb_pd,
-)
+from ..util import approx, check_un_op, dense1, dense2, dense_pd, diag_pd, lr_pd, wb_pd
 
 
 def _check_iqf(a, b, c):

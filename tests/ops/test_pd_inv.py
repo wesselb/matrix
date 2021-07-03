@@ -1,16 +1,17 @@
 import lab as B
 
-from matrix import Dense, Diagonal, Woodbury, Kronecker
+from matrix import Dense, Diagonal, Kronecker, Woodbury
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     approx,
     check_un_op,
+    const_pd,
     dense_pd,
     diag_pd,
-    const_pd,
+    kron_pd,
     lr_pd,
     wb_pd,
-    kron_pd,
 )
 
 

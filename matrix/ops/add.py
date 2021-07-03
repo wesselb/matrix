@@ -6,8 +6,7 @@ from algebra import proven
 from plum import convert
 from wbml.warning import warn_upmodule
 
-from .algorithms.align import align
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
@@ -15,6 +14,7 @@ from ..shape import assert_compatible, broadcast
 from ..triangular import LowerTriangular, UpperTriangular
 from ..util import ToDenseWarning
 from ..woodbury import Woodbury
+from .algorithms.align import align
 
 __all__ = []
 

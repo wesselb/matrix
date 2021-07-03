@@ -1,16 +1,16 @@
 import lab as B
 from algebra import proven
-from wbml.warning import warn_upmodule
 from plum import convert
+from wbml.warning import warn_upmodule
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
 from ..shape import get_shape
 from ..triangular import LowerTriangular, UpperTriangular
-from ..util import redirect, ToDenseWarning
+from ..util import ToDenseWarning, redirect
 from ..woodbury import Woodbury
 
 __all__ = []

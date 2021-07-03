@@ -1,13 +1,7 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import (
-    approx,
-    check_un_op,
-    AssertDenseWarning,
-    dense_bc,
-    lr1,
-)
+from ..util import AssertDenseWarning, approx, check_un_op, dense_bc, lr1
 
 
 def test_squeeze_dense(dense_bc):

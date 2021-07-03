@@ -2,9 +2,9 @@ import lab as B
 from plum import Dispatcher
 from wbml.warning import warn_upmodule
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..matrix import AbstractMatrix, Dense, structured
-from ..shape import get_shape, Shape, Dimension, broadcast
+from ..shape import Dimension, Shape, broadcast, get_shape
 from ..util import ToDenseWarning
 
 __all__ = []

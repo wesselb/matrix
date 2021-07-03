@@ -1,31 +1,36 @@
 import lab as B
+import pytest
 
 from matrix import (
+    Constant,
     Dense,
     Diagonal,
-    Zero,
-    Constant,
-    LowRank,
-    Woodbury,
     Kronecker,
     LowerTriangular,
+    LowRank,
+    TiledBlocks,
     UpperTriangular,
+    Woodbury,
+    Zero,
 )
 
 # noinspection PyUnresolvedReferences
 from ..util import (
+    AssertDenseWarning,
     approx,
     check_un_op,
-    zero_r,
+    const_r,
     dense_r,
     diag1,
-    const_r,
-    lt1,
-    ut1,
+    kron_r,
     lr1,
     lr_r,
+    lt1,
+    tb1,
+    tb_axis,
+    ut1,
     wb1,
-    kron_r,
+    zero_r,
 )
 
 
@@ -63,3 +68,14 @@ def test_transpose_wb(wb1):
 
 def test_transpose_kron(kron_r):
     check_un_op(B.transpose, kron_r, asserted_type=Kronecker)
+
+
+def test_transpose_tb(tb1):
+    with AssertDenseWarning(["tiling", "concatenating"]):
+        check_un_op(B.transpose, tb1, asserted_type=TiledBlocks)
+
+
+def test_transpose_tb_axis(tb1):
+    tb1.axis = 3
+    with pytest.raises(RuntimeError):
+        B.transpose(tb1)

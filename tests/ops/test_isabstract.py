@@ -1,20 +1,21 @@
-import numpy as np
 import jax.numpy as jnp
 import lab as B
+import numpy as np
+
 from matrix import (
-    Zero,
+    Constant,
     Dense,
     Diagonal,
-    Constant,
-    LowerTriangular,
-    UpperTriangular,
-    LowRank,
-    Woodbury,
     Kronecker,
+    LowerTriangular,
+    LowRank,
+    UpperTriangular,
+    Woodbury,
+    Zero,
 )
 
 # noinspection PyUnresolvedReferences
-from ..util import dense1, diag1, const1, lt1, ut1, lr1, wb1, kron1
+from ..util import const1, dense1, diag1, kron1, lr1, lt1, ut1, wb1
 
 
 def check_isabstract(constructor, *args):

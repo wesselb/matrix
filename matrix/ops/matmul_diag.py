@@ -1,7 +1,7 @@
 import lab as B
 
-from .matmul import _tr
 from ..lowrank import LowRank
+from .matmul import _tr
 
 __all__ = []
 

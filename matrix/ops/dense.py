@@ -2,13 +2,14 @@ from typing import Union
 
 import lab as B
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
-from ..matrix import Dense
+from ..kronecker import Kronecker
 from ..lowrank import LowRank
+from ..matrix import AbstractMatrix, Dense
+from ..tiledblocks import TiledBlocks
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
-from ..kronecker import Kronecker
 
 __all__ = []
 
@@ -27,6 +28,11 @@ def dense(a):
 
 
 B.dense = dense
+
+
+@B.dispatch
+def dense(a: AbstractMatrix):
+    raise RuntimeError(f"Cannot convert {a} to dense.")
 
 
 @B.dispatch
@@ -73,4 +79,19 @@ def dense(a: Woodbury):
 def dense(a: Kronecker):
     if a.dense is None:
         a.dense = B.kron(B.dense(a.left), B.dense(a.right))
+    return a.dense
+
+
+@B.dispatch
+def dense(a: TiledBlocks):
+    if a.dense is None:
+        repeated_blocks = []
+        for block, rep in zip(a.blocks, a.reps):
+            if a.axis == 0:
+                repeated_blocks.append(B.tile(block, rep, 1))
+            elif a.axis == 1:
+                repeated_blocks.append(B.tile(block, 1, rep))
+            else:
+                raise RuntimeError(f"Invalid axis {a.axis}.")
+        a.dense = B.concat(*repeated_blocks, axis=a.axis)
     return a.dense

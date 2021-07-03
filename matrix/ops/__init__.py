@@ -40,6 +40,7 @@ from .squeeze import *
 from .subtract import *
 from .sum import *
 from .take import *
+from .tile import *
 from .to_numpy import *
 from .trace import *
 from .transpose import *

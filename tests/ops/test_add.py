@@ -1,47 +1,47 @@
-import pytest
 import lab as B
+import pytest
 from plum import Dispatcher
 
 from matrix import (
+    Constant,
     Dense,
     Diagonal,
-    Constant,
     LowerTriangular,
-    UpperTriangular,
     LowRank,
+    UpperTriangular,
     Woodbury,
+    structured,
 )
-from matrix import structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    approx,
-    check_bin_op,
     AssertDenseWarning,
     ConditionalContext,
+    approx,
+    check_bin_op,
     concat_warnings,
-    zero1,
-    zero2,
+    const1,
+    const2,
+    const_or_scalar1,
+    const_or_scalar2,
     dense1,
     dense2,
     dense_bc,
     diag1,
     diag2,
-    const_or_scalar1,
-    const_or_scalar2,
-    const1,
-    const2,
+    kron1,
+    kron2,
+    lr1,
+    lr2,
+    lr_pd,
     lt1,
     lt2,
     ut1,
     ut2,
-    lr1,
-    lr2,
-    lr_pd,
     wb1,
     wb2,
-    kron1,
-    kron2,
+    zero1,
+    zero2,
 )
 
 _dispatch = Dispatcher()

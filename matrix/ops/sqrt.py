@@ -1,7 +1,7 @@
 import lab as B
 from wbml.warning import warn_upmodule
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..matrix import AbstractMatrix, Dense, structured

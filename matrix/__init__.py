@@ -5,5 +5,6 @@ from .lowrank import *
 from .matrix import *
 from .ops import *
 from .promote import *
+from .tiledblocks import *
 from .triangular import *
 from .woodbury import *

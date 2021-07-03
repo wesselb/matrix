@@ -1,7 +1,7 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import approx, check_bin_op, AssertDenseWarning, dense_pd
+from ..util import AssertDenseWarning, approx, check_bin_op, dense_pd
 
 
 def test_cholesky_solve_lt(dense_pd):

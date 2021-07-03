@@ -9,7 +9,7 @@ from ..util import ToDenseWarning
 __all__ = []
 
 
-def block(*rows):
+def block(row, *rows):
     """Construct a matrix from its blocks, preserving structure when possible.
 
     Assumes that every row has an equal number of blocks and that the sizes
@@ -21,6 +21,8 @@ def block(*rows):
     Returns:
         matrix: Assembled matrix with as much structured as possible.
     """
+    rows = (row,) + rows
+
     if len(rows) == 1 and len(rows[0]) == 1:
         # There is just one block. Return it.
         return rows[0][0]
@@ -46,8 +48,8 @@ def _attempt_zero(rows):
     if all([all([isinstance(x, Zero) for x in row]) for row in rows]):
         # Determine the resulting data type and shape.
         dtype = B.dtype(rows[0][0])
-        grid_rows = sum([B.shape(row[0])[0] for row in rows])
-        grid_cols = sum([B.shape(x)[1] for x in rows[0]])
+        grid_rows = sum([B.shape(row[0], 0) for row in rows])
+        grid_cols = sum([B.shape(x, 1) for x in rows[0]])
 
         return Zero(dtype, grid_rows, grid_cols)
     else:

@@ -7,7 +7,7 @@ from plum import Dispatcher
 from wbml.warning import warn_upmodule
 
 from .shape import assert_matrix
-from .util import indent, dtype_str, ToDenseWarning
+from .util import ToDenseWarning, dtype_str, indent
 
 __all__ = ["AbstractMatrix", "Dense", "repr_format", "structured"]
 

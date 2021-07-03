@@ -1,10 +1,11 @@
 import jax.numpy as jnp
 import lab.jax as B
 import pytest
-from stheno.jax import Measure, GP, Delta
+from stheno.jax import GP, Delta, Measure
 
 from matrix import Woodbury
-from .util import approx, IgnoreDenseWarning
+
+from .util import IgnoreDenseWarning, approx
 
 
 @pytest.mark.parametrize("sample_truth", [True, False])

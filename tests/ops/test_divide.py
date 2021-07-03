@@ -4,9 +4,9 @@ from matrix import Dense
 
 # noinspection PyUnresolvedReferences
 from ..util import (
+    AssertDenseWarning,
     approx,
     check_bin_op,
-    AssertDenseWarning,
     dense1,
     dense2,
     diag1,

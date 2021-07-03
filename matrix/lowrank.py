@@ -2,7 +2,7 @@ import lab as B
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_matrix
-from .util import indent, dtype_str
+from .util import dtype_str, indent
 
 __all__ = ["LowRank"]
 

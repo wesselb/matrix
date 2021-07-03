@@ -1,22 +1,22 @@
-import pytest
 import lab as B
+import pytest
 
-from matrix import Dense, Diagonal, Constant, LowRank, Woodbury, Kronecker, Zero
+from matrix import Constant, Dense, Diagonal, Kronecker, LowRank, Woodbury, Zero
 
 # noinspection PyUnresolvedReferences
 from ..util import (
     approx,
     check_un_op,
-    zero_r,
+    const_r,
     dense_r,
     diag1,
-    const_r,
-    lt1,
-    ut1,
+    kron_r,
     lr1,
     lr_r,
+    lt1,
+    ut1,
     wb1,
-    kron_r,
+    zero_r,
 )
 
 

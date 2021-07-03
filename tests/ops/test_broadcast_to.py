@@ -1,10 +1,10 @@
 import lab as B
 import pytest
 
-from matrix import Zero, Dense, Diagonal, Constant, LowRank
+from matrix import Constant, Dense, Diagonal, LowRank, Zero
 
 # noinspection PyUnresolvedReferences
-from ..util import generate, check_un_op, AssertDenseWarning, dense_bc, diag1
+from ..util import AssertDenseWarning, check_un_op, dense_bc, diag1, generate
 
 
 def f_test(x):

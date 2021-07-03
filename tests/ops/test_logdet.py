@@ -1,5 +1,5 @@
-import pytest
 import lab as B
+import pytest
 
 # noinspection PyUnresolvedReferences
 from ..util import (
@@ -7,11 +7,11 @@ from ..util import (
     check_un_op,
     dense_pd,
     diag_pd,
-    lt_pd,
+    kron_pd,
     lr_pd,
+    lt_pd,
     ut_pd,
     wb_pd,
-    kron_pd,
 )
 
 

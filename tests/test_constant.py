@@ -1,4 +1,4 @@
-from matrix import Zero, Constant
+from matrix import Constant, Zero
 
 
 def test_zero_formatting():

@@ -1,7 +1,7 @@
 import lab as B
 
-from ..matrix import AbstractMatrix
 from ..constant import Constant
+from ..matrix import AbstractMatrix
 
 __all__ = []
 

@@ -1,13 +1,12 @@
 import lab as B
 import pytest
 
-
 from matrix import Dense, Diagonal, structured
 
 # noinspection PyUnresolvedReferences
 from .util import (
-    approx,
     AssertDenseWarning,
+    approx,
     check_un_op,
     dense1,
     dense2,

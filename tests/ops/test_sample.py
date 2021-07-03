@@ -1,19 +1,19 @@
 import lab as B
+import numpy as np
 import pytest
 
 from matrix import Constant
-import numpy as np
 
 # noinspection PyUnresolvedReferences
 from ..util import (
+    AssertDenseWarning,
     approx,
     check_un_op,
-    AssertDenseWarning,
     dense_pd,
     diag_pd,
+    kron_pd,
     lr_pd,
     wb_pd,
-    kron_pd,
 )
 
 

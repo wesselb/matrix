@@ -167,9 +167,9 @@ def assert_compatible(x1, x2):
         x1 (object): First object.
         x2 (object): Second object.
     """
-    assert compatible(x1, x2), (
-        f"Objects {x1} and {x2} are asserted to be compatible, but they are not."
-    )
+    assert compatible(
+        x1, x2
+    ), f"Objects {x1} and {x2} are asserted to be compatible, but they are not."
 
 
 @dispatch

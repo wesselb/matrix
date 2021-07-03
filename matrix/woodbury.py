@@ -5,7 +5,7 @@ from .diagonal import Diagonal
 from .lowrank import LowRank
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_compatible
-from .util import indent, dtype_str
+from .util import dtype_str, indent
 
 __all__ = ["Woodbury"]
 

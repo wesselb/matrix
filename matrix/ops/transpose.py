@@ -1,12 +1,13 @@
 import lab as B
 
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
-from ..matrix import Dense
-from ..constant import Zero, Constant
-from ..lowrank import LowRank
-from ..woodbury import Woodbury
 from ..kronecker import Kronecker
+from ..lowrank import LowRank
+from ..matrix import Dense
+from ..tiledblocks import TiledBlocks
 from ..triangular import LowerTriangular, UpperTriangular
+from ..woodbury import Woodbury
 
 __all__ = []
 
@@ -54,3 +55,13 @@ def transpose(a: Woodbury):
 @B.dispatch
 def transpose(a: Kronecker):
     return Kronecker(B.transpose(a.left), B.transpose(a.right))
+
+
+@B.dispatch
+def transpose(a: TiledBlocks):
+    if a.axis not in {0, 1}:
+        raise RuntimeError(f"Invalid axis {a.axis}.")
+    return TiledBlocks(
+        *((B.transpose(block), rep) for block, rep in zip(a.blocks, a.reps)),
+        axis=1 - a.axis,
+    )

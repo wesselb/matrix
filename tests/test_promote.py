@@ -1,11 +1,11 @@
 import lab as B
 import pytest
-from plum import promote, convert
+from plum import convert, promote
 
-from matrix import Zero, LowRank
+from matrix import LowRank, Zero
 
 # noinspection PyUnresolvedReferences
-from .util import approx, dense1, const1, const_r
+from .util import approx, const1, const_r, dense1
 
 
 def test_promote_check(dense1):
