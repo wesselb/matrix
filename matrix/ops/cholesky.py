@@ -28,7 +28,7 @@ def cholesky(a: Zero):
 def cholesky(a: Dense):
     _assert_square_cholesky(a)
     if a.cholesky is None:
-        a.cholesky = LowerTriangular(B.cholesky(B.reg(a.mat)))
+        a.cholesky = LowerTriangular(B.cholesky(a.mat))
     return a.cholesky
 
 
@@ -64,7 +64,7 @@ def cholesky(a: Woodbury):
             f"Converting {a} to dense to compute its Cholesky decomposition.",
             category=ToDenseWarning,
         )
-        a.cholesky = LowerTriangular(B.cholesky(B.reg(B.dense(a))))
+        a.cholesky = LowerTriangular(B.cholesky(B.dense(a)))
     return a.cholesky
 
 

@@ -265,14 +265,14 @@ def generate(code):
         return LowerTriangular(mat)
     elif mat_code == "lt_pd":
         mat = generate(f"randn_pd:{shape[0]},{shape[0]}")
-        return LowerTriangular(B.cholesky(B.reg(mat)))
+        return LowerTriangular(B.cholesky(mat))
 
     elif mat_code == "ut":
         mat = B.vec_to_tril(B.randn(int(0.5 * shape[0] * (shape[0] + 1))))
         return UpperTriangular(B.transpose(mat))
     elif mat_code == "ut_pd":
         mat = generate(f"randn_pd:{shape[0]},{shape[0]}")
-        return UpperTriangular(B.transpose(B.cholesky(B.reg(mat))))
+        return UpperTriangular(B.transpose(B.cholesky(mat)))
 
     elif mat_code == "dense":
         return Dense(generate(f"randn:{shape_code}"))
