@@ -1,5 +1,4 @@
 import lab as B
-import pytest
 from plum import Union
 from wbml.warning import warn_upmodule
 
