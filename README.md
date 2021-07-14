@@ -12,7 +12,6 @@ Structured matrices
 See [the instructions here](https://gist.github.com/wesselb/4b44bf87f3789425f96e26c4308d0adc).
 Then simply
 
-
 ```bash
 pip install backends-matrix
 ```
@@ -137,7 +136,6 @@ They can be accessed with `B.<function>` where `import lab as B`.
 dense(a)
 fill_diag(a, diag_len)
 block(*rows)
-block_diag(*blocks)
 
 matmul_diag(a, b, tr_a=False, tr_b=False)
 
