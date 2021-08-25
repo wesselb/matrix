@@ -35,14 +35,14 @@ def _count_indices_or_mask(indices_or_mask: B.Numeric):
 
 
 @B.dispatch
-def take(a: AbstractMatrix, indices_or_mask, axis=0):
+def take(a: AbstractMatrix, indices_or_mask, axis: B.Int = 0):
     if structured(a):
         warn_upmodule(f"Taking from {a}: converting to dense.", category=ToDenseWarning)
     return Dense(B.take(B.dense(a), indices_or_mask, axis=axis))
 
 
 @B.dispatch
-def take(a: Zero, indices_or_mask, axis=0):
+def take(a: Zero, indices_or_mask, axis: B.Int = 0):
     indices_or_mask, axis = _resolve_arguments(a, indices_or_mask, axis)
     count = _count_indices_or_mask(indices_or_mask)
     if axis == 0:
@@ -55,7 +55,7 @@ def take(a: Zero, indices_or_mask, axis=0):
 
 
 @B.dispatch
-def take(a: Constant, indices_or_mask, axis=0):
+def take(a: Constant, indices_or_mask, axis: B.Int = 0):
     indices_or_mask, axis = _resolve_arguments(a, indices_or_mask, axis)
     count = _count_indices_or_mask(indices_or_mask)
     if axis == 0:
@@ -68,7 +68,7 @@ def take(a: Constant, indices_or_mask, axis=0):
 
 
 @B.dispatch
-def take(a: LowRank, indices_or_mask, axis=0):
+def take(a: LowRank, indices_or_mask, axis: B.Int = 0):
     axis = resolve_axis(a, axis)
     if axis == 0:
         return LowRank(B.take(a.left, indices_or_mask), a.right, a.middle)

@@ -8,7 +8,7 @@ __all__ = []
 
 
 @B.dispatch
-def triangular_solve(a: LowerTriangular, b: AbstractMatrix, lower_a=True):
+def triangular_solve(a: LowerTriangular, b: AbstractMatrix, lower_a: bool = True):
     if not lower_a:
         warn_upmodule(
             f'Solving against {a}, but "lower_a" is set to "False": ignoring flag.',
@@ -18,7 +18,7 @@ def triangular_solve(a: LowerTriangular, b: AbstractMatrix, lower_a=True):
 
 
 @B.dispatch
-def triangular_solve(a: UpperTriangular, b: AbstractMatrix, lower_a=True):
+def triangular_solve(a: UpperTriangular, b: AbstractMatrix, lower_a: bool = True):
     if lower_a:
         warn_upmodule(
             f'Solving against {a}, but "lower_a" is set to "True": ignoring flag.',

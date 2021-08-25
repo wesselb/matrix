@@ -6,7 +6,7 @@ __all__ = []
 
 
 @B.dispatch
-def sample(a, num=1):  # pragma: no cover
+def sample(a, num: B.Int = 1):  # pragma: no cover
     """Sample from covariance matrices.
 
     Args:
@@ -24,5 +24,5 @@ B.sample = sample
 
 
 @B.dispatch
-def sample(a: Woodbury, num=1):
+def sample(a: Woodbury, num: B.Int = 1):
     return B.sample(a.diag, num=num) + B.sample(a.lr, num=num)

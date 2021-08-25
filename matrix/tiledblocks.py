@@ -62,11 +62,13 @@ class TiledBlocks(AbstractMatrix):
         self.dense = None
 
     @_dispatch
-    def __init__(self, *blocks: Union[B.Numeric, AbstractMatrix], axis=0):
+    def __init__(self, *blocks: Union[B.Numeric, AbstractMatrix], axis: B.Int = 0):
         TiledBlocks.__init__(self, *((block, 1) for block in blocks), axis=axis)
 
     @_dispatch
-    def __init__(self, block: Union[B.Numeric, AbstractMatrix], reps: B.Int, axis=0):
+    def __init__(
+        self, block: Union[B.Numeric, AbstractMatrix], reps: B.Int, axis: B.Int = 0
+    ):
         TiledBlocks.__init__(self, (block, reps), axis=axis)
 
     def __str__(self):

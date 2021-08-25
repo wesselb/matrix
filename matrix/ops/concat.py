@@ -9,7 +9,7 @@ __all__ = []
 
 
 @B.dispatch
-def concat(element: AbstractMatrix, *elements: AbstractMatrix, axis=0):
+def concat(element: AbstractMatrix, *elements: AbstractMatrix, axis: B.Int = 0):
     elements = (element,) + elements
 
     if structured(*elements):
@@ -24,7 +24,7 @@ def concat(element: AbstractMatrix, *elements: AbstractMatrix, axis=0):
 
 
 @B.dispatch
-def concat(element: TiledBlocks, *elements: TiledBlocks, axis=0):
+def concat(element: TiledBlocks, *elements: TiledBlocks, axis: B.Int = 0):
     elements = (element,) + elements
 
     if not all([el.axis == axis for el in elements]):

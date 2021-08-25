@@ -52,6 +52,9 @@ class AbstractMatrix(metaclass=abc.ABCMeta):
     def __matmul__(self, other):
         return B.matmul(self, other)
 
+    def __rmatmul__(self, other):
+        return B.matmul(other, self )
+
     def __getitem__(self, item):
         if structured(self):
             warn_upmodule(
