@@ -19,7 +19,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install gfortran
-          python -m pip install --upgrade pip
+          # We need to pin `pip`. See https://github.com/pypa/pip/issues/10373.
+          python -m pip==20.2.2 install --upgrade pip
           pip install --no-cache-dir -U -r requirements.txt | cat
       - name: Test
         env:
