@@ -1,3 +1,5 @@
+from ._version import version as __version__  # noqa
+
 from .constant import *
 from .diagonal import *
 from .kronecker import *
