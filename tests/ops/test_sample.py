@@ -25,6 +25,13 @@ def _est_cov(a):
     assert err < 1e-1
 
 
+def _check_state(a):
+    state, sample1 = B.sample(B.create_random_state(B.dtype(a), seed=0), a)
+    state, sample2 = B.sample(B.create_random_state(B.dtype(a), seed=0), a)
+    assert isinstance(state, B.RandomState)
+    approx(sample1, sample2)
+
+
 def test_sample_conversion():
     const = Constant(1, 5, 5)
     sample = B.sample(const)
@@ -33,19 +40,24 @@ def test_sample_conversion():
 
 def test_sample_dense(dense_pd):
     _est_cov(dense_pd)
+    _check_state(dense_pd)
 
 
 def test_sample_diag(diag_pd):
     _est_cov(diag_pd)
+    _check_state(diag_pd)
 
 
 def test_sample_lr(lr_pd):
     _est_cov(lr_pd)
+    _check_state(lr_pd)
 
 
 def test_sample_wb(wb_pd):
     _est_cov(wb_pd)
+    _check_state(wb_pd)
 
 
 def test_sample_kron(kron_pd):
     _est_cov(kron_pd)
+    _check_state(kron_pd)

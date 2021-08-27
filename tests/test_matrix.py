@@ -27,6 +27,7 @@ def test_dispatch(dense1, dense2):
     assert isinstance(dense1.__rtruediv__(dense2), Dense)
     assert isinstance(dense1 ** 2, Dense)
     assert isinstance(dense1 @ dense2, Dense)
+    assert isinstance(dense1.__rmatmul__(dense2), Dense)
 
 
 def test_properties(dense1):

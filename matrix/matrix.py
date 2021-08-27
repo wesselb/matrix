@@ -53,7 +53,7 @@ class AbstractMatrix(metaclass=abc.ABCMeta):
         return B.matmul(self, other)
 
     def __rmatmul__(self, other):
-        return B.matmul(other, self )
+        return B.matmul(other, self)
 
     def __getitem__(self, item):
         if structured(self):
