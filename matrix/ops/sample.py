@@ -27,7 +27,9 @@ B.sample = sample
 
 @B.dispatch
 def sample(a, num: B.Int = 1):
-    return sample(B.global_random_state(a), a, num=num)[1]
+    state, res = sample(B.global_random_state(a), a, num=num)
+    B.set_global_random_state(state)
+    return res
 
 
 @B.dispatch
