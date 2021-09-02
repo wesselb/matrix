@@ -5,18 +5,19 @@ from itertools import product
 import lab as B
 import pytest
 from numpy.testing import assert_allclose
-from plum import Dispatcher
+from plum import Dispatcher, Union
 
 from matrix import (
+    Constant,
     Dense,
     Diagonal,
-    Zero,
-    Constant,
-    LowerTriangular,
-    UpperTriangular,
-    LowRank,
-    Woodbury,
     Kronecker,
+    LowerTriangular,
+    LowRank,
+    TiledBlocks,
+    UpperTriangular,
+    Woodbury,
+    Zero,
 )
 from matrix.util import ToDenseWarning
 
@@ -70,12 +71,15 @@ __all__ = [
     "kron_r",
     "kron_pd",
     "kron_mixed",
+    "tb_axis",
+    "tb1",
+    "tb2",
 ]
 
 _dispatch = Dispatcher()
 
 
-@_dispatch(object, object)
+@_dispatch
 def approx(x, y, rtol=1e-7, atol=1e-12):
     """Assert that two objects are numerically close.
 
@@ -88,8 +92,12 @@ def approx(x, y, rtol=1e-7, atol=1e-12):
     approx(B.to_numpy(x), B.to_numpy(y), rtol=rtol, atol=atol)
 
 
-@_dispatch({tuple, B.Number, B.NPNumeric}, {tuple, B.Number, B.NPNumeric})
-def approx(x, y, **kw_args):
+@_dispatch
+def approx(
+    x: Union[tuple, B.Number, B.NPNumeric],
+    y: Union[tuple, B.Number, B.NPNumeric],
+    **kw_args,
+):
     assert_allclose(x, y, **kw_args)
     assert B.shape(x) == B.shape(y)
 
@@ -268,14 +276,14 @@ def generate(code):
         return LowerTriangular(mat)
     elif mat_code == "lt_pd":
         mat = generate(f"{batch_code}|randn_pd:{shape[0]},{shape[0]}")
-        return LowerTriangular(B.cholesky(B.reg(mat)))
+        return LowerTriangular(B.cholesky(mat))
 
     elif mat_code == "ut":
         mat = B.vec_to_tril(B.randn(*batch, int(0.5 * shape[0] * (shape[0] + 1))))
         return UpperTriangular(B.transpose(mat))
     elif mat_code == "ut_pd":
         mat = generate(f"{batch_code}|randn_pd:{shape[0]},{shape[0]}")
-        return UpperTriangular(B.transpose(B.cholesky(B.reg(mat))))
+        return UpperTriangular(B.transpose(B.cholesky(mat)))
 
     elif mat_code == "dense":
         return Dense(generate(f"{batch_code}|randn:{shape_code}"))
@@ -613,3 +621,28 @@ def kron_pd(request):
 def kron_mixed(request):
     code1, code2 = request.param
     return Kronecker(generate(code1), generate(code2))
+
+
+@pytest.fixture(params=[0, 1])
+def tb_axis(request):
+    return request.param
+
+
+_tb_codes = [
+    [("dense:3,3", 2), ("zero:3,3", 3), ("lt:3,3", 4)],
+    [("diag:3", 2), ("ut:3,3", 3), ("diag:3", 1)],
+]
+
+
+@pytest.fixture(params=_tb_codes)
+def tb1(request, tb_axis):
+    return TiledBlocks(
+        *((generate(code), rep) for code, rep in request.param), axis=tb_axis
+    )
+
+
+@pytest.fixture(params=_tb_codes)
+def tb2(request, tb_axis):
+    return TiledBlocks(
+        *((generate(code), rep) for code, rep in request.param), axis=tb_axis
+    )

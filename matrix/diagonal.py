@@ -4,9 +4,11 @@ from plum import Dispatcher, Self
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_vector
-from .util import indent, dtype_str
+from .util import dtype_str, indent
 
 __all__ = ["Diagonal"]
+
+_dispatch = Dispatcher()
 
 
 class Diagonal(AbstractMatrix):
@@ -14,19 +16,16 @@ class Diagonal(AbstractMatrix):
 
     Attributes:
         diag (vector): Diagonal of the matrix.
-        cholesky (:class:`.constant.Diagonal` or none): Cholesky
-            decomposition of the matrix, once it has been computed.
-        dense (matrix or None): Dense version of the matrix, once it has been
-            computed.
+        cholesky (:class:`.constant.Diagonal` or None): Cholesky decomposition of the
+            matrix, once it has been computed.
+        dense (matrix or None): Dense version of the matrix, once it has been computed.
 
     Args:
         diag (vector): Diagonal of matrix.
     """
 
-    _dispatch = Dispatcher(in_class=Self)
-
-    @_dispatch(B.Numeric)
-    def __init__(self, diag):
+    @_dispatch
+    def __init__(self, diag: B.Numeric):
         assert_vector(
             diag,
             "Input is not a tensor of at least rank 1. "
@@ -36,8 +35,8 @@ class Diagonal(AbstractMatrix):
         self.cholesky = None
         self.dense = None
 
-    @_dispatch(AbstractMatrix)
-    def __init__(self, mat):
+    @_dispatch
+    def __init__(self, mat: AbstractMatrix):
         return Diagonal.__init__(self, B.diag_extract(mat))
 
     def __str__(self):

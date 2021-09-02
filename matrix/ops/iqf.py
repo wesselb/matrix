@@ -1,11 +1,12 @@
 import lab as B
 
+from ..lowrank import LowRank
 from ..woodbury import Woodbury
 
 __all__ = []
 
 
-@B.dispatch(object, object, object)
+@B.dispatch
 def iqf(a, b, c):
     """Compute `transpose(b) inv(a) c` where `a` is assumed to be positive
     definite.
@@ -30,11 +31,18 @@ def iqf(a, b, c):
 B.iqf = iqf
 
 
-@B.dispatch(object, object)
+@B.dispatch
 def iqf(a, b):
     return iqf(a, b, b)
 
 
-@B.dispatch(Woodbury, object, object)
-def iqf(a, b, c):
+@B.dispatch
+def iqf(a: Woodbury, b, c):
     return B.mm(b, B.pd_inv(a), c, tr_a=True)
+
+
+# @B.dispatch
+# def iqf(a: Woodbury, b: LowRank, c: LowRank):
+#     middle_left = B.mm(b.right, b.middle, tr_b=True)
+#     middle_right = B.mm(c.right, c.middle, tr_b=True)
+#     return LowRank(b.right, c.right, B.iqf(a, middle_left, middle_right))

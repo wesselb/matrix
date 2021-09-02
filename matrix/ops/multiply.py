@@ -2,45 +2,45 @@ import lab as B
 from algebra import proven
 from wbml.warning import warn_upmodule
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
 from ..shape import assert_compatible, broadcast
 from ..triangular import LowerTriangular, UpperTriangular
-from ..util import redirect, ToDenseWarning
+from ..util import ToDenseWarning, redirect
 from ..woodbury import Woodbury
 
 __all__ = []
 
 
-def _reverse_call(*types):
-    @B.multiply.extend(*reversed(types))
-    def multiply(a, b):
+def _reverse_call(t0, t1):
+    @B.multiply.dispatch
+    def multiply(a: t1, b: t0):
         return multiply(b, a)
 
 
 # Zero
 
 
-@B.dispatch(AbstractMatrix, Zero, precedence=proven())
-def multiply(a, b):
+@B.dispatch(precedence=proven())
+def multiply(a: AbstractMatrix, b: Zero):
     assert_compatible(B.shape(a), B.shape(b))
-    return b
+    return B.broadcast_to(b, *broadcast(a, b))
 
 
-@B.dispatch(Zero, AbstractMatrix, precedence=proven())
-def multiply(a, b):
+@B.dispatch(precedence=proven())
+def multiply(a: Zero, b: AbstractMatrix):
     assert_compatible(B.shape(a), B.shape(b))
-    return a
+    return B.broadcast_to(a, *broadcast(a, b))
 
 
 # Dense
 
 
-@B.dispatch(AbstractMatrix, AbstractMatrix)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: AbstractMatrix, b: AbstractMatrix):
     if structured(a, b):
         warn_upmodule(
             f"Multiplying {a} and {b}: converting to dense.", category=ToDenseWarning
@@ -48,21 +48,21 @@ def multiply(a, b):
     return Dense(B.multiply(B.dense(a), B.dense(b)))
 
 
-@B.dispatch(Dense, Dense)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: Dense, b: Dense):
     return Dense(B.multiply(a.mat, b.mat))
 
 
 # Diagonal
 
 
-@B.dispatch(Diagonal, Diagonal)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: Diagonal, b: Diagonal):
     return Diagonal(B.multiply(a.diag, b.diag))
 
 
-@B.dispatch(Diagonal, AbstractMatrix)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: Diagonal, b: AbstractMatrix):
     assert_compatible(B.shape(a), B.shape(b))
     # In the case of broadcasting, `B.diag(b)` will not get the diagonal of the
     # broadcasted version of `b`, so we exercise extra caution in that case.
@@ -71,7 +71,7 @@ def multiply(a, b):
         b_diag = B.squeeze(B.dense(b))
     else:
         b_diag = B.diag(b)
-    return Diagonal(a.diag * b_diag)
+    return Diagonal(B.multiply(a.diag, b_diag))
 
 
 _reverse_call(Diagonal, AbstractMatrix)
@@ -80,26 +80,26 @@ _reverse_call(Diagonal, AbstractMatrix)
 # Constant
 
 
-@B.dispatch(Constant, Constant)
-def multiply(a, b):
-    assert_compatible(B.shape(a), B.shape(b))
-    return Constant(a.const * b.const, *broadcast(a, b).as_tuple())
+@B.dispatch
+def multiply(a: Constant, b: Constant):
+    assert_compatible(a, b)
+    return Constant(B.multiply(a.const, b.const), *broadcast(a, b))
 
 
-@B.dispatch(Constant, AbstractMatrix)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: Constant, b: AbstractMatrix):
     assert_compatible(B.shape(a), B.shape(b))
     if structured(b):
         warn_upmodule(
             f"Multiplying {a} and {b}: converting to dense.", category=ToDenseWarning
         )
-    return Dense(a.const * B.dense(b))
+    return Dense(B.broadcast_to(B.multiply(a.const, B.dense(b)), *broadcast(a, b)))
 
 
-@B.dispatch(Constant, Diagonal)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: Constant, b: Diagonal):
     assert_compatible(B.shape(a), B.shape(b))
-    return Diagonal(a.const * b.diag)
+    return Diagonal(B.multiply(a.const, b.diag))
 
 
 _reverse_call(Constant, AbstractMatrix)
@@ -109,19 +109,19 @@ _reverse_call(Constant, Diagonal)
 # LowerTriangular
 
 
-@B.dispatch(LowerTriangular, LowerTriangular)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: LowerTriangular, b: LowerTriangular):
     return LowerTriangular(B.multiply(a.mat, b.mat))
 
 
-@B.dispatch(LowerTriangular, AbstractMatrix)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: LowerTriangular, b: AbstractMatrix):
     # TODO: Optimise away `B.dense` call.
-    return LowerTriangular(a.mat * B.dense(b))
+    return LowerTriangular(B.multiply(a.mat, B.dense(b)))
 
 
-@B.dispatch(LowerTriangular, Constant)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: LowerTriangular, b: Constant):
     return LowerTriangular(B.multiply(a.mat, b.const))
 
 
@@ -134,24 +134,24 @@ redirect(B.multiply, (LowerTriangular, Diagonal), (AbstractMatrix, Diagonal))
 # UpperTriangular
 
 
-@B.dispatch(UpperTriangular, UpperTriangular)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: UpperTriangular, b: UpperTriangular):
     return UpperTriangular(B.multiply(a.mat, b.mat))
 
 
-@B.dispatch(UpperTriangular, LowerTriangular)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: UpperTriangular, b: LowerTriangular):
     return Diagonal(B.multiply(B.diag(a), B.diag(b)))
 
 
-@B.dispatch(UpperTriangular, AbstractMatrix)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: UpperTriangular, b: AbstractMatrix):
     # TODO: Optimise away `B.dense` call.
     return UpperTriangular(a.mat * B.dense(b))
 
 
-@B.dispatch(UpperTriangular, Constant)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: UpperTriangular, b: Constant):
     return UpperTriangular(B.multiply(a.mat, b.const))
 
 
@@ -165,8 +165,8 @@ redirect(B.multiply, (UpperTriangular, Diagonal), (AbstractMatrix, Diagonal))
 # LowRank
 
 
-@B.dispatch(LowRank, LowRank)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: LowRank, b: LowRank):
     assert_compatible(B.shape(a), B.shape(b))
 
     if structured(a.left, a.right, b.left, b.right):
@@ -198,28 +198,28 @@ def multiply(a, b):
     return LowRank(left, right, middle)
 
 
-@B.dispatch(Constant, LowRank)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: Constant, b: LowRank):
     assert_compatible(B.shape(a), B.shape(b))
     return LowRank(b.left, b.right, B.multiply(a.const, b.middle))
 
 
-@B.dispatch(LowRank, Constant)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: LowRank, b: Constant):
     return multiply(b, a)
 
 
 # Woodbury
 
 
-@B.dispatch(Woodbury, AbstractMatrix)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: Woodbury, b: AbstractMatrix):
     # Expand out Woodbury matrices.
     return B.add(B.multiply(a.diag, b), B.multiply(a.lr, b))
 
 
-@B.dispatch(AbstractMatrix, Woodbury)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: AbstractMatrix, b: Woodbury):
     return multiply(b, a)
 
 
@@ -233,24 +233,19 @@ redirect(B.multiply, (Woodbury, UpperTriangular), (Woodbury, AbstractMatrix))
 # Kronecker
 
 
-@B.dispatch(Kronecker, Kronecker)
-def multiply(a, b):
-    left_compatible = B.shape(a.left) == B.shape(b.left)
-    right_compatible = B.shape(a.right) == B.shape(b.right)
-    assert (
-        left_compatible and right_compatible
-    ), f"Kronecker products {a} and {b} must be compatible, but they are not."
+@B.dispatch
+def multiply(a: Kronecker, b: Kronecker):
     assert_compatible(B.shape(a.left), B.shape(b.left))
     assert_compatible(B.shape(a.right), B.shape(b.right))
     return Kronecker(B.multiply(a.left, b.left), B.multiply(a.right, b.right))
 
 
-@B.dispatch(Constant, Kronecker)
-def multiply(a, b):
-    assert_compatible(B.shape(a), B.shape(b))
-    return Kronecker(a.const * b.left, b.right)
+@B.dispatch
+def multiply(a: Constant, b: Kronecker):
+    assert_compatible(a, b)
+    return Kronecker(B.multiply(a.const, b.left), b.right)
 
 
-@B.dispatch(Kronecker, Constant)
-def multiply(a, b):
+@B.dispatch
+def multiply(a: Kronecker, b: Constant):
     return multiply(b, a)

@@ -1,18 +1,21 @@
+from typing import Union
+
 import lab as B
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
-from ..matrix import Dense
+from ..kronecker import Kronecker
 from ..lowrank import LowRank
+from ..matrix import AbstractMatrix, Dense
+from ..shape import batch_ones
+from ..tiledblocks import TiledBlocks
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
-from ..kronecker import Kronecker
-from ..shape import batch_ones
 
 __all__ = []
 
 
-@B.dispatch(object)
+@B.dispatch
 def dense(a):
     """Convert a (structured) matrix to a dense, numeric matrix.
 
@@ -28,27 +31,32 @@ def dense(a):
 B.dense = dense
 
 
-@B.dispatch(Zero)
-def dense(a):
+@B.dispatch
+def dense(a: AbstractMatrix):
+    raise RuntimeError(f"Cannot convert {a} to dense.")
+
+
+@B.dispatch
+def dense(a: Zero):
     if a.dense is None:
         a.dense = B.zeros(a.dtype, *B.shape(a))
     return a.dense
 
 
-@B.dispatch({Dense, LowerTriangular, UpperTriangular})
-def dense(a):
+@B.dispatch
+def dense(a: Union[Dense, LowerTriangular, UpperTriangular]):
     return a.mat
 
 
-@B.dispatch(Diagonal)
-def dense(a):
+@B.dispatch
+def dense(a: Diagonal):
     if a.dense is None:
         a.dense = B.diag_construct(a.diag)
     return a.dense
 
 
-@B.dispatch(Constant)
-def dense(a):
+@B.dispatch
+def dense(a: Constant):
     if a.dense is None:
         ones_shape = batch_ones(a) + B.shape_matrix(a)
         const = B.expand_dims(B.expand_dims(a.const, axis=-1), axis=-1)
@@ -56,22 +64,22 @@ def dense(a):
     return a.dense
 
 
-@B.dispatch(LowRank)
-def dense(a):
+@B.dispatch
+def dense(a: LowRank):
     if a.dense is None:
         a.dense = B.dense(B.mm(a.left, a.middle, a.right, tr_c=True))
     return a.dense
 
 
-@B.dispatch(Woodbury)
-def dense(a):
+@B.dispatch
+def dense(a: Woodbury):
     if a.dense is None:
         a.dense = B.dense(a.diag) + B.dense(a.lr)
     return a.dense
 
 
-@B.dispatch(Kronecker)
-def dense(a):
+@B.dispatch
+def dense(a: Kronecker):
     if a.dense is None:
         left = B.dense(a.left)
         right = B.dense(a.right)
@@ -80,4 +88,19 @@ def dense(a):
         right = right[..., None, :, None, :]
         # Trust that the shape computation works correctly.
         a.dense = B.reshape(left * right, *B.shape(a))
+    return a.dense
+
+
+@B.dispatch
+def dense(a: TiledBlocks):
+    if a.dense is None:
+        repeated_blocks = []
+        for block, rep in zip(a.blocks, a.reps):
+            if a.axis == 0:
+                repeated_blocks.append(B.tile(block, rep, 1))
+            elif a.axis == 1:
+                repeated_blocks.append(B.tile(block, 1, rep))
+            else:
+                raise RuntimeError(f"Invalid axis {a.axis}.")
+        a.dense = B.concat(*repeated_blocks, axis=a.axis)
     return a.dense

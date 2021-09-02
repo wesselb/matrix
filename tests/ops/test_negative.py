@@ -1,31 +1,31 @@
 import lab as B
 
 from matrix import (
+    Constant,
     Dense,
     Diagonal,
-    Zero,
-    Constant,
-    LowerTriangular,
-    UpperTriangular,
-    LowRank,
-    Woodbury,
     Kronecker,
+    LowerTriangular,
+    LowRank,
+    UpperTriangular,
+    Woodbury,
+    Zero,
 )
 
 # noinspection PyUnresolvedReferences
 from ..util import (
     approx,
     check_un_op,
-    zero1,
+    const1,
     dense1,
     diag1,
-    const1,
-    lt1,
-    ut1,
+    kron1,
     lr1,
     lr_pd,
+    lt1,
+    ut1,
     wb1,
-    kron1,
+    zero1,
 )
 
 

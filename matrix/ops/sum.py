@@ -1,6 +1,7 @@
 import lab as B
+from plum import Union
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
@@ -16,8 +17,8 @@ def _raise(axis):
     raise ValueError(f"Cannot sum over axis {axis}.")
 
 
-@B.dispatch(Zero)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Zero, axis: Union[B.Int, None] = None):
     resolved_axis = matrix_axis(a, axis)
     if resolved_axis is None:
         return B.zero(a.dtype)
@@ -29,13 +30,15 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch({Dense, LowerTriangular, UpperTriangular})
-def sum(a, axis=None):
+@B.dispatch
+def sum(
+    a: Union[Dense, LowerTriangular, UpperTriangular], axis: Union[B.Int, None] = None
+):
     return B.sum(a.mat, axis=axis)
 
 
-@B.dispatch(Diagonal)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Diagonal, axis: Union[B.Int, None] = None):
     resolved_axis = matrix_axis(a, axis)
     if resolved_axis is None:
         return B.sum(a.diag)
@@ -45,8 +48,8 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch(Constant)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Constant, axis: Union[B.Int, None] = None):
     resolved_axis = matrix_axis(a, axis)
     if resolved_axis is None:
         return B.sum(a.const) * a.rows * a.cols
@@ -60,8 +63,8 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch(LowRank)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: LowRank, axis: Union[B.Int, None] = None):
     resolved_axis = matrix_axis(a, axis)
     if resolved_axis is None:
         return B.sum(
@@ -87,8 +90,8 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch(Woodbury)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Woodbury, axis: Union[B.Int, None] = None):
     resolved_axis = matrix_axis(a, axis)
     if resolved_axis is None:
         lr_sum = B.sum(B.sum(a.lr, axis=-1), axis=-1)
@@ -102,8 +105,8 @@ def sum(a, axis=None):
         _raise(axis)
 
 
-@B.dispatch(Kronecker)
-def sum(a, axis=None):
+@B.dispatch
+def sum(a: Kronecker, axis: Union[B.Int, None] = None):
     resolved_axis = matrix_axis(a, axis)
     if resolved_axis is None:
         left_sum = B.sum(B.sum(a.left, axis=-1), axis=-1)

@@ -1,14 +1,16 @@
 import lab as B
 from lab.shape import Shape
-from plum import Dispatcher, Self
+from plum import Dispatcher
 
 from .diagonal import Diagonal
 from .lowrank import LowRank
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_compatible
-from .util import indent, dtype_str
+from .util import dtype_str, indent
 
 __all__ = ["Woodbury"]
+
+_dispatch = Dispatcher()
 
 
 class Woodbury(AbstractMatrix):
@@ -32,10 +34,8 @@ class Woodbury(AbstractMatrix):
         lr (:class:`.diagonal.LowRank`): Low-rank part.
     """
 
-    _dispatch = Dispatcher(in_class=Self)
-
-    @_dispatch(Diagonal, LowRank)
-    def __init__(self, diag, lr):
+    @_dispatch
+    def __init__(self, diag: Diagonal, lr: LowRank):
         assert_compatible(B.shape(diag), B.shape(lr))
         self.diag = diag
         self.lr = lr

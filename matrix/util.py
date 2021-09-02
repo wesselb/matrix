@@ -1,5 +1,5 @@
-from plum import Dispatcher
 import lab as B
+from plum import Dispatcher
 
 __all__ = ["ToDenseWarning", "indent", "dtype_str", "redirect"]
 
@@ -23,7 +23,7 @@ def indent(x, indentation="  "):
     return indentation + x.replace("\n", "\n" + indentation)
 
 
-@_dispatch(object)
+@_dispatch
 def dtype_str(x):
     """Get the data type of an object as string.
 
@@ -36,8 +36,8 @@ def dtype_str(x):
     return dtype_str(B.dtype(x))
 
 
-@_dispatch(B.DType)
-def dtype_str(dtype):
+@_dispatch
+def dtype_str(dtype: B.DType):
     if isinstance(dtype, type):
         return dtype.__name__
     else:
@@ -55,7 +55,7 @@ def redirect(f, types_from, types_to, reverse=True):
             reversed. Defaults to `True`.
     """
     target_method = f.invoke(*types_to)
-    f.extend(*types_from)(target_method)
+    f.dispatch_multi(types_from)(target_method)
     if reverse and len(types_from) > 1:
         target_method = f.invoke(*reversed(types_to))
-        f.extend(*reversed(types_from))(target_method)
+        f.dispatch_multi(tuple(reversed(types_from)))(target_method)

@@ -1,10 +1,10 @@
 import lab as B
 import pytest
 
-from matrix import Dense, Diagonal, Woodbury, Kronecker
+from matrix import Dense, Diagonal, Kronecker, Woodbury
 
 # noinspection PyUnresolvedReferences
-from ..util import approx, check_un_op, dense1, diag1, const1, lr1, wb1, kron1
+from ..util import approx, check_un_op, const1, dense1, diag1, kron1, lr1, wb1
 
 
 def test_inv_dense(dense1):

@@ -1,9 +1,17 @@
 import lab as B
-
+import pytest
 from matrix import Dense, Diagonal, structured
 
 # noinspection PyUnresolvedReferences
-from .util import approx, AssertDenseWarning, dense1, dense2, diag1
+from .util import (
+    AssertDenseWarning,
+    approx,
+    check_un_op,
+    dense1,
+    dense2,
+    dense_bc,
+    diag1,
+)
 
 
 def test_dispatch(dense1, dense2):
@@ -18,6 +26,7 @@ def test_dispatch(dense1, dense2):
     assert isinstance(dense1.__rtruediv__(dense2), Dense)
     assert isinstance(dense1 ** 2, Dense)
     assert isinstance(dense1 @ dense2, Dense)
+    assert isinstance(dense1.__rmatmul__(dense2), Dense)
 
 
 def test_properties(dense1):
@@ -50,6 +59,8 @@ def test_structured():
     assert structured(Diagonal(B.ones(3)))
     assert not structured(Dense(B.ones(3, 3)))
     assert not structured(B.ones(3, 3))
+    with pytest.raises(RuntimeError):
+        structured(int)
 
 
 def test_conversion_to_dense(diag1):
@@ -64,3 +75,22 @@ def test_indexing_dense(dense1):
 def test_indexing_diag(diag1):
     with AssertDenseWarning("indexing into <diagonal>"):
         approx(diag1[..., 2, :], B.dense(diag1)[..., 2, :])
+
+
+def test_squeeze_dense(dense_bc):
+    check_un_op(lambda a: a.squeeze(), dense_bc)
+
+
+def test_reshaping_dense(dense1):
+    check_un_op(lambda a: a.reshape(-1), dense1)
+    # Check that, in this case, also tuples and lists can be passed.
+    check_un_op(lambda a: a.reshape((-1,)), dense1)
+    check_un_op(lambda a: a.reshape([-1]), dense1)
+
+
+def test_flatten_dense(dense_bc):
+    check_un_op(lambda a: a.flatten(), dense_bc)
+
+
+def test_diagonal_dense(dense_bc):
+    check_un_op(lambda a: a.diagonal(), dense_bc)

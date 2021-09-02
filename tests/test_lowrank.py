@@ -2,6 +2,7 @@ import lab as B
 import pytest
 
 from matrix import LowRank
+
 from .util import approx
 
 

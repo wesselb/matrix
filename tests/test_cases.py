@@ -1,20 +1,25 @@
-import jax
 import jax.numpy as jnp
 import lab.jax as B
 import pytest
-from stheno.jax import Measure, GP, Unique, Delta
+from stheno.jax import GP, Delta, Measure
 
 from matrix import Woodbury
-from .util import approx, IgnoreDenseWarning
+
+from .util import IgnoreDenseWarning, approx
 
 
 @pytest.mark.parametrize("sample_truth", [True, False])
 def test_blr(sample_truth):
+
     with IgnoreDenseWarning():
 
         def check_posterior(m, x):
-            for p in [f_noisy, slope_noisy, intercept_noisy]:
-                fdd = p(Unique(x.copy()))
+            for p, noise in [
+                (f_noisy, 0.2 ** 2),
+                (slope_noisy, 0.1 ** 2),
+                (intercept_noisy, 0.1 ** 2),
+            ]:
+                fdd = p(x, noise)
                 # Check that the posterior is of the right form and mimics the prior.
                 assert isinstance(fdd.var, Woodbury)
                 assert isinstance(m(fdd).var, Woodbury)
@@ -45,22 +50,22 @@ def test_blr(sample_truth):
         else:
             y_obs = f_noisy(x).sample()
 
-        m = m | (m(f_noisy)(Unique(x.copy())), y_obs)
+        m = m | (m(f)(x, 0.2 ** 2), y_obs)
         check_posterior(m, x)
 
-        m = m | (m(slope_noisy)(Unique(x0.copy())), true_slope)
+        m = m | (m(slope)(x0, 0.1 ** 2), true_slope)
         check_posterior(m, x)
 
         # Sample more and condition on `y` and the intercept.
         if sample_truth:
             y_obs = true_slope * x + true_intercept
         else:
-            y_obs = m(f_noisy)(Unique(x.copy())).sample()
+            y_obs = m(f)(x, 0.2 ** 2).sample()
 
-        m = m | (m(f_noisy)(Unique(x.copy())), y_obs)
+        m = m | (m(f)(x, 0.2 ** 2), y_obs)
         check_posterior(m, x)
 
-        m = m | (m(intercept_noisy)(Unique(x0.copy())), true_intercept)
+        m = m | (m(intercept)(x0, 0.1 ** 2), true_intercept)
         check_posterior(m, x)
 
         if sample_truth:
@@ -80,37 +85,27 @@ def test_blr_jax_jit():
             f = a + b * (lambda x: x) + c * (lambda x: x ** 2)
 
             e1 = GP(0.1 * Delta(), measure=prior)
-            e2 = GP(0.1 * Delta(), measure=prior)
+            e2 = GP(0.2 * Delta(), measure=prior)
             y1 = f + e1
             y2 = f + e2
 
             return prior, y1, y2
 
+        @B.jit
         def posterior_marginals(x_obs, y_obs):
             prior, y1, y2 = build_model()
             post = prior | (y1(x_obs), y_obs)
-            return post(y2)(x_obs).marginals()
+            return post(y2)(x_obs).marginal_credible_bounds()
 
         # Sample some observations.
         _, y, _ = build_model()
-        x_obs = B.linspace(jnp.float64, 0, 10, 5)
-        y_obs = y(x_obs).sample()
-
-        with B.ControlFlowCache() as posterior_marginals_flow:
-            posterior_marginals(*B.to_numpy(x_obs, y_obs))
-
-        @jax.jit
-        def posterior_marginals_jitted(*args):
-            with posterior_marginals_flow:
-                return posterior_marginals(*args)
-
         x_obs = B.linspace(jnp.float64, 0, 10, 10)
         y_obs = y(x_obs).sample()
 
         # Test that the JIT works and produces the correct result.
         approx(
             posterior_marginals(*B.to_numpy(x_obs, y_obs)),
-            posterior_marginals_jitted(x_obs, y_obs),
+            posterior_marginals(x_obs, y_obs),
             # Different computations can give different numerical behaviour.
-            rtol=1e-5
+            rtol=1e-5,
         )

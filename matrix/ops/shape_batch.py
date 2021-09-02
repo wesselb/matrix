@@ -1,3 +1,5 @@
+from typing import Union
+
 import lab as B
 from lab.shape import Shape
 from plum import convert
@@ -14,49 +16,49 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
-@B.dispatch(B.Numeric)
-def shape_batch(a):
+@B.dispatch
+def shape_batch(a: B.Numeric):
     return B.shape_batch(convert(a, AbstractMatrix))
 
 
-@B.dispatch({Dense, LowerTriangular, UpperTriangular})
-def shape_batch(a):
+@B.dispatch
+def shape_batch(a: Union[Dense, LowerTriangular, UpperTriangular]):
     return B.shape(a.mat)[:-2]
 
 
-@B.dispatch(Diagonal)
-def shape_batch(a):
+@B.dispatch
+def shape_batch(a: Diagonal):
     return B.shape(a.diag)[:-1]
 
 
-@B.dispatch(Zero)
-def shape_batch(a):
+@B.dispatch
+def shape_batch(a: Zero):
     return a.batch
 
 
-@B.dispatch(Constant)
-def shape_batch(a):
+@B.dispatch
+def shape_batch(a: Constant):
     return B.shape(a.const)
 
 
-@B.dispatch(LowRank)
-def shape_batch(a):
+@B.dispatch
+def shape_batch(a: LowRank):
     return expand_and_broadcast(
         Shape(*B.shape_batch(a.left)),
         Shape(*B.shape_batch(a.middle)),
-        Shape(*B.shape_batch(a.right))
+        Shape(*B.shape_batch(a.right)),
     )
 
 
-@B.dispatch(Woodbury)
-def shape_batch(a):
+@B.dispatch
+def shape_batch(a: Woodbury):
     return expand_and_broadcast(
         Shape(*B.shape_batch(a.lr)), Shape(*B.shape_batch(a.diag))
     )
 
 
-@B.dispatch(Kronecker)
-def shape_batch(a):
+@B.dispatch
+def shape_batch(a: Kronecker):
     return expand_and_broadcast(
         Shape(*B.shape_batch(a.left)), Shape(*B.shape_batch(a.right))
     )

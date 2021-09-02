@@ -1,54 +1,59 @@
-import pytest
 import lab as B
+import pytest
 
 from matrix import (
-    structured,
     AbstractMatrix,
+    Constant,
     Dense,
     Diagonal,
-    Zero,
-    Constant,
-    LowerTriangular,
-    UpperTriangular,
-    LowRank,
-    Woodbury,
     Kronecker,
+    LowerTriangular,
+    LowRank,
+    UpperTriangular,
+    Woodbury,
+    Zero,
+    structured,
 )
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    approx,
-    check_bin_op,
     AssertDenseWarning,
     ConditionalContext,
-    zero1,
-    zero2,
+    approx,
+    check_bin_op,
+    const1,
+    const2,
+    const_or_scalar1,
+    const_or_scalar2,
     dense1,
     dense2,
     dense_bc,
     diag1,
     diag2,
-    const_or_scalar1,
-    const_or_scalar2,
-    const1,
-    const2,
+    kron1,
+    kron2,
+    lr1,
+    lr2,
+    lr_pd,
     lt1,
     lt2,
     ut1,
     ut2,
-    lr1,
-    lr2,
-    lr_pd,
     wb1,
     wb2,
-    kron1,
-    kron2,
+    zero1,
+    zero2,
 )
 
 
 def _conditional_warning(mats, message):
     mats = [mat.left for mat in mats] + [mat.right for mat in mats]
     return ConditionalContext(structured(*mats), AssertDenseWarning(message))
+
+
+def test_multiply_zero_dense(zero1, dense_bc):
+    check_bin_op(B.multiply, zero1, dense_bc, asserted_type=Zero)
+    check_bin_op(B.multiply, dense_bc, zero1, asserted_type=Zero)
 
 
 def test_multiply_zero_diag(zero1, diag2):
@@ -73,9 +78,9 @@ def test_multiply_const(const_or_scalar1, const2):
     check_bin_op(B.multiply, const_or_scalar1, const2, asserted_type=Constant)
 
 
-def test_multiply_const_dense(const_or_scalar1, dense2):
-    check_bin_op(B.multiply, const_or_scalar1, dense2, asserted_type=Dense)
-    check_bin_op(B.multiply, dense2, const_or_scalar1, asserted_type=Dense)
+def test_multiply_const_dense(const_or_scalar1, dense_bc):
+    check_bin_op(B.multiply, const_or_scalar1, dense_bc, asserted_type=Dense)
+    check_bin_op(B.multiply, dense_bc, const_or_scalar1, asserted_type=Dense)
 
 
 def test_multiply_const_fallback_warning(const1, diag2):
@@ -207,13 +212,13 @@ def test_multiply_wb_lr(wb1, lr2):
 
 
 def test_multiply_kron(kron1, kron2):
-    if B.shape(kron1.left) == B.shape(kron2.left) and B.shape(kron1.right) == B.shape(
-        kron2.right
-    ):
+    lefts_align = B.shape(kron1.left) == B.shape(kron2.left)
+    rights_align = B.shape(kron1.right) == B.shape(kron2.right)
+    if lefts_align and rights_align:
         check_bin_op(B.multiply, kron1, kron2, asserted_type=Kronecker)
     else:
         with pytest.raises(AssertionError):
-            B.matmul(kron1, kron2)
+            B.multiply(kron1, kron2)
 
 
 def test_multiply_kron_dense(kron1, dense2):

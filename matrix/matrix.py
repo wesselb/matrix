@@ -1,20 +1,21 @@
 import abc
+from typing import Union
 
 import lab as B
 from lab.shape import Shape
 import wbml.out
-from plum import Dispatcher, Referentiable
+from plum import Dispatcher
 from wbml.warning import warn_upmodule
 
 from .shape import assert_matrix
-from .util import indent, dtype_str, ToDenseWarning
+from .util import ToDenseWarning, dtype_str, indent
 
 __all__ = ["AbstractMatrix", "Dense", "repr_format", "structured"]
 
 _dispatch = Dispatcher()
 
 
-class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
+class AbstractMatrix(metaclass=abc.ABCMeta):
     """Abstract matrix type."""
 
     def __neg__(self):
@@ -52,6 +53,9 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
     def __matmul__(self, other):
         return B.matmul(self, other)
 
+    def __rmatmul__(self, other):
+        return B.matmul(other, self)
+
     def __getitem__(self, item):
         if structured(self):
             warn_upmodule(
@@ -70,6 +74,23 @@ class AbstractMatrix(metaclass=Referentiable(abc.ABCMeta)):
     @property
     def dtype(self):
         return B.dtype(self)
+
+    def squeeze(self):
+        return B.squeeze(self)
+
+    @_dispatch
+    def reshape(self, shape: Union[tuple, list]):
+        return B.reshape(self, *shape)
+
+    @_dispatch
+    def reshape(self, *shape: B.Int):
+        return B.reshape(self, *shape)
+
+    def flatten(self):
+        return self.reshape(-1)
+
+    def diagonal(self):
+        return B.diag(self)
 
     @abc.abstractmethod
     def __str__(self):  # pragma: no cover
@@ -119,7 +140,7 @@ class Dense(AbstractMatrix):
         )
 
 
-@_dispatch(object)
+@_dispatch
 def repr_format(a):
     """Format an object for display in `__repr__` methods.
 
@@ -129,20 +150,20 @@ def repr_format(a):
     Returns:
         str: String representation of `a`.
     """
-    return wbml.out.format(a, info=False)
+    return wbml.out.format(a, False)
 
 
-@_dispatch(AbstractMatrix)
-def repr_format(a):
+@_dispatch
+def repr_format(a: AbstractMatrix):
     return repr(a)
 
 
-@_dispatch(object, [object])
+@_dispatch
 def structured(*xs):
     """Check whether there is any structured matrix.
 
     Args:
-        xs (matrices): Matrices to check.
+        *xs (matrix): Matrices to check.
 
     Returns:
         bool: `True` if there is any structure.
@@ -150,16 +171,23 @@ def structured(*xs):
     return any(structured(x) for x in xs)
 
 
-@_dispatch(AbstractMatrix)
+@_dispatch
 def structured(x):
+    raise RuntimeError(
+        f"Could not determine whether {x} is a structured matrix or not."
+    )
+
+
+@_dispatch
+def structured(x: AbstractMatrix):
     return True
 
 
-@_dispatch(Dense)
-def structured(x):
+@_dispatch
+def structured(x: Dense):
     return False
 
 
-@_dispatch(B.Numeric)
-def structured(x):
+@_dispatch
+def structured(x: B.Numeric):
     return False

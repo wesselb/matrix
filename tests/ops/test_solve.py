@@ -4,21 +4,21 @@ from matrix import Dense, Diagonal
 
 # noinspection PyUnresolvedReferences
 from ..util import (
+    AssertDenseWarning,
     approx,
     check_bin_op,
-    AssertDenseWarning,
-    zero1,
-    zero2,
     dense1,
     dense2,
     dense_pd,
     diag1,
     diag2,
     diag_pd,
+    lr_pd,
     lt_pd,
     ut_pd,
-    lr_pd,
     wb_pd,
+    zero1,
+    zero2,
 )
 
 

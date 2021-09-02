@@ -5,7 +5,7 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
-@B.dispatch(object, object, object)
+@B.dispatch
 def iqf_diag(a, b, c):
     """Compute the diagonal of `transpose(b) inv(a) c` where `a` is assumed
     to be positive definite.
@@ -30,11 +30,11 @@ def iqf_diag(a, b, c):
 B.iqf_diag = iqf_diag
 
 
-@B.dispatch(object, object)
+@B.dispatch
 def iqf_diag(a, b):
     return iqf_diag(a, b, b)
 
 
-@B.dispatch(Woodbury, object, object)
-def iqf_diag(a, b, c):
+@B.dispatch
+def iqf_diag(a: Woodbury, b, c):
     return B.matmul_diag(b, B.solve(a, c), tr_a=True)

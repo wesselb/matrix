@@ -4,9 +4,9 @@ from matrix import structured
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    approx,
     AssertDenseWarning,
     ConditionalContext,
+    approx,
     dense1,
     dense2,
     lr1,

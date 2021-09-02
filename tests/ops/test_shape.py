@@ -1,20 +1,24 @@
 import lab as B
 from lab.shape import Shape
+import pytest
 
 # noinspection PyUnresolvedReferences
 from ..util import (
+    AssertDenseWarning,
     approx,
     check_un_op,
-    zero_r,
+    const_r,
     dense_r,
     diag1,
-    const_r,
-    lt1,
-    ut1,
+    kron_r,
     lr1,
     lr_r,
+    lt1,
+    tb1,
+    tb_axis,
+    ut1,
     wb1,
-    kron_r,
+    zero_r,
 )
 
 
@@ -52,3 +56,14 @@ def test_shape_wb(wb1):
 
 def test_shape_kron(kron_r):
     check_un_op(B.shape, kron_r, asserted_type=(tuple, Shape))
+
+
+def test_shape_tb(tb1):
+    with AssertDenseWarning(["tiling", "concatenating"]):
+        check_un_op(B.shape, tb1, asserted_type=tuple)
+
+
+def test_shape_tb_axis(tb1):
+    tb1.axis = 3
+    with pytest.raises(RuntimeError):
+        B.shape(tb1)

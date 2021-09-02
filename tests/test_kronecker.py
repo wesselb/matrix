@@ -1,4 +1,5 @@
 import lab as B
+
 from matrix import Diagonal, Kronecker
 
 

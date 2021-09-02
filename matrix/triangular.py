@@ -1,6 +1,5 @@
 import lab as B
 from lab.shape import Shape
-from plum import Dispatcher, Self
 
 from .matrix import AbstractMatrix, repr_format
 from .util import indent, dtype_str
@@ -18,8 +17,6 @@ class LowerTriangular(AbstractMatrix):
     Args:
         mat (matrix): Dense lower-triangular matrix.
     """
-
-    _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
         assert_matrix(
@@ -56,8 +53,6 @@ class UpperTriangular(AbstractMatrix):
     Args:
         mat (matrix): Dense upper-triangular matrix.
     """
-
-    _dispatch = Dispatcher(in_class=Self)
 
     def __init__(self, mat):
         assert_matrix(

@@ -3,14 +3,14 @@ from algebra import proven
 from plum import convert
 from wbml.warning import warn_upmodule
 
-from ..constant import Zero, Constant
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
+from ..shape import expand_and_broadcast
 from ..triangular import LowerTriangular, UpperTriangular
 from ..util import redirect, ToDenseWarning
-from ..shape import expand_and_broadcast
 from ..woodbury import Woodbury
 
 __all__ = []
@@ -28,7 +28,7 @@ def _shape_matrix_tr(a, tr_a):
         return ar, ac
 
 
-def _assert_composable(a, b, tr_a=False, tr_b=False):
+def _assert_composable(a, b, tr_a: bool = False, tr_b: bool = False):
     s1 = B.shape_matrix(a)
     s2 = B.shape_matrix(b)
     s1 = (s1[1], s1[0]) if tr_a else s1
@@ -41,8 +41,8 @@ def _assert_composable(a, b, tr_a=False, tr_b=False):
 # Zero
 
 
-@B.dispatch(AbstractMatrix, Zero, precedence=proven())
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch(precedence=proven())
+def matmul(a: AbstractMatrix, b: Zero, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     ar, _ = _shape_matrix_tr(a, tr_a)
     _, bc = _shape_matrix_tr(b, tr_b)
@@ -51,8 +51,8 @@ def matmul(a, b, tr_a=False, tr_b=False):
     )
 
 
-@B.dispatch(Zero, AbstractMatrix, precedence=proven())
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch(precedence=proven())
+def matmul(a: Zero, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     ar, _ = _shape_matrix_tr(a, tr_a)
     _, bc = _shape_matrix_tr(b, tr_b)
@@ -64,8 +64,8 @@ def matmul(a, b, tr_a=False, tr_b=False):
 # Multiple multiplication:
 
 
-@B.dispatch(object, object, object)
-def matmul(a, b, c, tr_a=False, tr_b=False, tr_c=False):
+@B.dispatch
+def matmul(a, b, c, tr_a: bool = False, tr_b: bool = False, tr_c: bool = False):
     ar, ac = _shape_matrix_tr(a, tr_a)
     br, bc = _shape_matrix_tr(b, tr_b)
     cr, cc = _shape_matrix_tr(c, tr_c)
@@ -82,28 +82,28 @@ def matmul(a, b, c, tr_a=False, tr_b=False, tr_c=False):
 # Dense
 
 
-@B.dispatch(Dense, Dense)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Dense, b: Dense, tr_a: bool = False, tr_b: bool = False):
     return Dense(B.matmul(a.mat, b.mat, tr_a=tr_a, tr_b=tr_b))
 
 
 # Diagonal
 
 
-@B.dispatch(Diagonal, Diagonal)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Diagonal, b: Diagonal, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     return Diagonal(B.multiply(a.diag, b.diag))
 
 
-@B.dispatch(Diagonal, AbstractMatrix)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Diagonal, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     return Dense(B.expand_dims(a.diag, axis=-1)) * _tr(b, tr_b)
 
 
-@B.dispatch(AbstractMatrix, Diagonal)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: AbstractMatrix, b: Diagonal, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     return _tr(a, tr_a) * Dense(B.expand_dims(b.diag, axis=-2))
 
@@ -111,16 +111,16 @@ def matmul(a, b, tr_a=False, tr_b=False):
 # Constant
 
 
-@B.dispatch(Constant, Constant)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Constant, b: Constant, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
     return Constant(a.const * b.const * a.cols, a.rows, b.cols)
 
 
-@B.dispatch(Constant, AbstractMatrix)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Constant, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
@@ -131,8 +131,8 @@ def matmul(a, b, tr_a=False, tr_b=False):
     )
 
 
-@B.dispatch(AbstractMatrix, Constant)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: AbstractMatrix, b: Constant, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
@@ -149,16 +149,20 @@ redirect(B.matmul, (Constant, Diagonal), (Constant, AbstractMatrix))
 # LowerTriangular
 
 
-@B.dispatch(LowerTriangular, LowerTriangular)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(
+    a: LowerTriangular, b: LowerTriangular, tr_a: bool = False, tr_b: bool = False
+):
     if not tr_a and not tr_b:
         return LowerTriangular(B.matmul(a.mat, b.mat))
     else:
         return matmul(_tr(a, tr_a), _tr(b, tr_b))
 
 
-@B.dispatch(LowerTriangular, AbstractMatrix)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(
+    a: LowerTriangular, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False
+):
     if structured(b):
         warn_upmodule(
             f"Matrix-multiplying {a} and {b}: converting to dense.",
@@ -167,8 +171,10 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return B.matmul(B.dense(a), b, tr_a=tr_a, tr_b=tr_b)
 
 
-@B.dispatch(AbstractMatrix, LowerTriangular)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(
+    a: AbstractMatrix, b: LowerTriangular, tr_a: bool = False, tr_b: bool = False
+):
     if structured(a):
         warn_upmodule(
             f"Matrix-multiplying {a} and {b}: converting to dense.",
@@ -177,16 +183,16 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return B.matmul(a, B.dense(b), tr_a=tr_a, tr_b=tr_b)
 
 
-@B.dispatch(LowerTriangular, Diagonal)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: LowerTriangular, b: Diagonal, tr_a: bool = False, tr_b: bool = False):
     if not tr_a:
         return LowerTriangular(B.matmul(a.mat, b))
     else:
         return matmul(_tr(a, tr_a), b)
 
 
-@B.dispatch(Diagonal, LowerTriangular)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Diagonal, b: LowerTriangular, tr_a: bool = False, tr_b: bool = False):
     if not tr_b:
         return LowerTriangular(B.matmul(a, b.mat))
     else:
@@ -199,24 +205,26 @@ redirect(B.matmul, (LowerTriangular, Constant), (AbstractMatrix, Constant))
 # UpperTriangular
 
 
-@B.dispatch(UpperTriangular, UpperTriangular)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(
+    a: UpperTriangular, b: UpperTriangular, tr_a: bool = False, tr_b: bool = False
+):
     if not tr_a and not tr_b:
         return UpperTriangular(B.matmul(a.mat, b.mat))
     else:
         return matmul(_tr(a, tr_a), _tr(b, tr_b))
 
 
-@B.dispatch(UpperTriangular, Diagonal)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: UpperTriangular, b: Diagonal, tr_a: bool = False, tr_b: bool = False):
     if not tr_a:
         return UpperTriangular(B.matmul(a.mat, b))
     else:
         return matmul(_tr(a, tr_a), b)
 
 
-@B.dispatch(Diagonal, UpperTriangular)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Diagonal, b: UpperTriangular, tr_a: bool = False, tr_b: bool = False):
     if not tr_b:
         return UpperTriangular(B.matmul(a, b.mat))
     else:
@@ -233,8 +241,8 @@ redirect(
 # LowRank
 
 
-@B.dispatch(LowRank, LowRank)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: LowRank, b: LowRank, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
@@ -246,29 +254,29 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return LowRank(a.left, b.right, middle)
 
 
-@B.dispatch(LowRank, AbstractMatrix)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: LowRank, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
     return LowRank(a.left, B.matmul(b, a.right, tr_a=True), a.middle)
 
 
-@B.dispatch(AbstractMatrix, LowRank)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: AbstractMatrix, b: LowRank, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
     return LowRank(B.matmul(a, b.left), b.right, b.middle)
 
 
-@B.dispatch(LowRank, Constant)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: LowRank, b: Constant, tr_a: bool = False, tr_b: bool = False):
     return B.matmul(a, convert(b, LowRank), tr_a=tr_a, tr_b=tr_b)
 
 
-@B.dispatch(Constant, LowRank)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Constant, b: LowRank, tr_a: bool = False, tr_b: bool = False):
     return B.matmul(convert(a, LowRank), b, tr_a=tr_a, tr_b=tr_b)
 
 
@@ -280,8 +288,8 @@ redirect(B.matmul, (LowRank, UpperTriangular), (LowRank, AbstractMatrix))
 # Woodbury
 
 
-@B.dispatch(Woodbury, AbstractMatrix)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Woodbury, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False):
     # Expand out Woodbury matrices.
     return B.add(
         B.matmul(a.diag, b, tr_a=tr_a, tr_b=tr_b),
@@ -289,8 +297,8 @@ def matmul(a, b, tr_a=False, tr_b=False):
     )
 
 
-@B.dispatch(AbstractMatrix, Woodbury)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: AbstractMatrix, b: Woodbury, tr_a: bool = False, tr_b: bool = False):
     # Expand out Woodbury matrices.
     return B.add(
         B.matmul(a, b.diag, tr_a=tr_a, tr_b=tr_b),
@@ -309,8 +317,8 @@ redirect(B.matmul, (Woodbury, UpperTriangular), (Woodbury, AbstractMatrix))
 # Kronecker
 
 
-@B.dispatch(Kronecker, Kronecker)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Kronecker, b: Kronecker, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a.left, b.left, tr_a=tr_a, tr_b=tr_b)
     _assert_composable(a.right, b.right, tr_a=tr_a, tr_b=tr_b)
     return Kronecker(
@@ -336,8 +344,8 @@ def _kron_a_id_b(a, b):
     return _reshape_rows(B.matmul(a, reshaped), -1, B.shape(b)[1])
 
 
-@B.dispatch(Kronecker, AbstractMatrix)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Kronecker, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a, tr_b)
     a = _tr(a, tr_a)
     b = _tr(b, tr_b)
@@ -357,13 +365,13 @@ def matmul(a, b, tr_a=False, tr_b=False):
         return _kron_a_id_b(left, _kron_id_a_b(right, b))
 
 
-@B.dispatch(AbstractMatrix, Kronecker)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: AbstractMatrix, b: Kronecker, tr_a: bool = False, tr_b: bool = False):
     return B.transpose(B.matmul(b, a, tr_a=not tr_b, tr_b=not tr_a))
 
 
-@B.dispatch(Kronecker, Diagonal)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Kronecker, b: Diagonal, tr_a: bool = False, tr_b: bool = False):
     warn_upmodule(
         f"Cannot efficiently matrix-multiply {a} by {b}: "
         f"converting the Kronecker product to dense.",
@@ -372,8 +380,8 @@ def matmul(a, b, tr_a=False, tr_b=False):
     return B.matmul(B.dense(a), b, tr_a=tr_a, tr_b=tr_b)
 
 
-@B.dispatch(Diagonal, Kronecker)
-def matmul(a, b, tr_a=False, tr_b=False):
+@B.dispatch
+def matmul(a: Diagonal, b: Kronecker, tr_a: bool = False, tr_b: bool = False):
     warn_upmodule(
         f"Cannot efficiently matrix-multiply {a} by {b}: "
         f"converting the Kronecker product to dense.",

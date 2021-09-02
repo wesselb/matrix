@@ -5,6 +5,6 @@ from ..matrix import AbstractMatrix
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def rank(a):
+@B.dispatch
+def rank(a: AbstractMatrix):
     return len(B.shape(a))

@@ -1,7 +1,7 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import approx, check_un_op, AssertDenseWarning, diag_pd, lr_pd, wb_pd
+from ..util import AssertDenseWarning, approx, check_un_op, diag_pd, lr_pd, wb_pd
 
 
 def test_pd_schur(wb_pd):

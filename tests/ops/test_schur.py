@@ -1,8 +1,7 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import approx, check_un_op, AssertDenseWarning, diag_pd, lr_pd, wb_pd
-
+from ..util import AssertDenseWarning, approx, check_un_op, diag_pd, lr_pd, wb_pd
 
 # Correctness is tested in `logdet` et cetera.
 

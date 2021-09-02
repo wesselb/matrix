@@ -1,21 +1,21 @@
 import lab as B
 import pytest
 
-from matrix import Dense, Constant, Diagonal, Kronecker, LowerTriangular
+from matrix import Constant, Dense, Diagonal, Kronecker, LowerTriangular
 
 # noinspection PyUnresolvedReferences
 from ..util import (
+    AssertDenseWarning,
     approx,
     check_un_op,
-    AssertDenseWarning,
-    zero1,
+    const_pd,
     dense_pd,
     diag_pd,
-    const_pd,
-    lr_pd,
-    lr1,
-    wb_pd,
     kron_pd,
+    lr1,
+    lr_pd,
+    wb_pd,
+    zero1,
 )
 
 

@@ -2,12 +2,24 @@ import lab as B
 import pytest
 
 from matrix.shape import (
+<<<<<<< HEAD
     assert_vector,
     assert_matrix,
     compatible,
+=======
+    Dimension,
+    Shape,
+>>>>>>> master
     assert_compatible,
+    assert_matrix,
+    assert_scalar,
+    assert_vector,
     broadcast,
+<<<<<<< HEAD
     expand_and_broadcast,
+=======
+    compatible,
+>>>>>>> master
 )
 # noinspection PyUnresolvedReferences
 from .util import dense1

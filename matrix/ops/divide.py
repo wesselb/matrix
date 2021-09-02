@@ -7,8 +7,8 @@ from ..util import ToDenseWarning
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix, AbstractMatrix)
-def divide(a, b):
+@B.dispatch
+def divide(a: AbstractMatrix, b: AbstractMatrix):
     if structured(a, b):
         warn_upmodule(
             f"Dividing {a} by {b}: converting to dense.", category=ToDenseWarning

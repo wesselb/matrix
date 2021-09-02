@@ -5,8 +5,8 @@ from ..diagonal import Diagonal
 __all__ = []
 
 
-@B.dispatch(B.Numeric, B.Int)
-def fill_diag(a, diag_len):
+@B.dispatch
+def fill_diag(a: B.Numeric, diag_len: B.Int):
     """Fill the diagonal of a diagonal matrix with a particular scalar.
 
     Args:

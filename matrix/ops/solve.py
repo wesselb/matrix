@@ -12,13 +12,13 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix, Zero, precedence=proven())
-def solve(a, b):
+@B.dispatch(precedence=proven())
+def solve(a: AbstractMatrix, b: Zero):
     return b
 
 
-@B.dispatch(AbstractMatrix, AbstractMatrix)
-def solve(a, b):
+@B.dispatch
+def solve(a: AbstractMatrix, b: AbstractMatrix):
     if structured(a, b):
         warn_upmodule(
             f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
@@ -26,13 +26,13 @@ def solve(a, b):
     return B.solve(B.dense(a), B.dense(b))
 
 
-@B.dispatch(Diagonal, AbstractMatrix)
-def solve(a, b):
+@B.dispatch
+def solve(a: Diagonal, b: AbstractMatrix):
     return B.matmul(B.inv(a), b)
 
 
-@B.dispatch(LowerTriangular, AbstractMatrix)
-def solve(a, b):
+@B.dispatch
+def solve(a: LowerTriangular, b: AbstractMatrix):
     if structured(b):
         warn_upmodule(
             f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
@@ -40,8 +40,8 @@ def solve(a, b):
     return Dense(B.trisolve(a.mat, B.dense(b), lower_a=True))
 
 
-@B.dispatch(UpperTriangular, AbstractMatrix)
-def solve(a, b):
+@B.dispatch
+def solve(a: UpperTriangular, b: AbstractMatrix):
     if structured(b):
         warn_upmodule(
             f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
@@ -49,7 +49,7 @@ def solve(a, b):
     return Dense(B.trisolve(a.mat, B.dense(b), lower_a=False))
 
 
-@B.dispatch(Woodbury, AbstractMatrix)
-def solve(a, b):
+@B.dispatch
+def solve(a: Woodbury, b: AbstractMatrix):
     # `B.inv` is optimised with the matrix inversion lemma.
     return B.matmul(B.inv(a), b)

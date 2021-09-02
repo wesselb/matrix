@@ -15,7 +15,7 @@ __all__ = [
     "expand_and_broadcast",
 ]
 
-dispatch = Dispatcher()
+_dispatch = Dispatcher()
 
 
 def batch_ones(a):
@@ -78,8 +78,8 @@ def assert_square(x, message):
         raise AssertionError(message)
 
 
-@dispatch(Shape, Shape)
-def compatible(s1, s2):
+@_dispatch
+def compatible(s1: Shape, s2: Shape):
     """Assert that two shapes are compatible shapes.
 
     Args:
@@ -96,7 +96,7 @@ def compatible(s1, s2):
         return False
 
 
-@dispatch(object, [object])
+@_dispatch
 def compatible(*xs):
     return compatible(*(Shape(*x) for x in xs))
 
@@ -114,8 +114,8 @@ def assert_compatible(s1, s2):
         )
 
 
-@dispatch(Shape, Shape)
-def broadcast(s1, s2):
+@_dispatch
+def broadcast(s1: Shape, s2: Shape):
     """Broadcast the shapes of two objects.
 
     Args:
@@ -130,20 +130,20 @@ def broadcast(s1, s2):
     return Shape(*(broadcast(d1, d2) for d1, d2 in zip(s1, s2)))
 
 
-@dispatch(Dimension, Dimension)
-def broadcast(d1, d2):
+@_dispatch
+def broadcast(d1: Dimension, d2: Dimension):
     if d1 != 1 and d2 != 1 and d1 != d2:
         raise RuntimeError(f"Cannot broadcast dimensions with values {d1} and {d2}.")
     return d2 if d1 == 1 else d1
 
 
-@dispatch(object, [object])
+@_dispatch
 def broadcast(*xs):
     return broadcast(*(Shape(*x) for x in xs))
 
 
-@dispatch(Shape, Shape)
-def expand_and_broadcast(s1, s2):
+@_dispatch
+def expand_and_broadcast(s1: Shape, s2: Shape):
     """Expand two shapes to make them of equal rank and then broadcast.
 
     Args:
@@ -162,14 +162,14 @@ def expand_and_broadcast(s1, s2):
         return broadcast(s1, s2)
 
 
-@dispatch(Shape, Shape, [Shape])
-def expand_and_broadcast(shape1, shape2, *further_shapes):
+@_dispatch
+def expand_and_broadcast(shape1: Shape, shape2: Shape, *further_shapes: Shape):
     running_shape = expand_and_broadcast(shape1, shape2)
     for s in further_shapes:
         running_shape = expand_and_broadcast(running_shape, s)
     return running_shape
 
 
-@dispatch(object, [object])
+@_dispatch
 def expand_and_broadcast(*xs):
     return expand_and_broadcast(*(Shape(*x) for x in xs))

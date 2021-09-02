@@ -5,8 +5,8 @@ from ..woodbury import Woodbury
 __all__ = []
 
 
-@B.dispatch(Woodbury)
-def pd_schur(a):
+@B.dispatch
+def pd_schur(a: Woodbury):
     """Compute the Schur complement associated to a positive-definite matrix. A Schur
     complement will need to make sense for the type of `a`.
 

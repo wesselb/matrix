@@ -2,7 +2,7 @@ import lab as B
 from lab.shape import Shape
 
 from .matrix import AbstractMatrix, repr_format
-from .util import indent, dtype_str
+from .util import dtype_str, indent
 
 __all__ = ["Kronecker"]
 

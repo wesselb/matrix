@@ -2,50 +2,54 @@ import lab as B
 import pytest
 
 from matrix import (
-    structured,
+    Constant,
     Dense,
     Diagonal,
-    Zero,
-    Constant,
-    LowerTriangular,
-    UpperTriangular,
-    LowRank,
-    Woodbury,
     Kronecker,
+    LowerTriangular,
+    LowRank,
+    UpperTriangular,
+    Woodbury,
+    Zero,
+    structured,
 )
 
 # noinspection PyUnresolvedReferences
 from ..util import (
-    approx,
-    check_bin_op,
     AssertDenseWarning,
     ConditionalContext,
+    approx,
+    check_bin_op,
     concat_warnings,
     generate,
     loop_batches,
     zero1,
     zero2,
     zero_r,
+    const1,
+    const2,
+    const_or_scalar1,
+    const_or_scalar2,
     dense1,
     dense2,
     dense_r,
     diag1,
     diag2,
-    const_or_scalar1,
-    const_or_scalar2,
-    const1,
-    const2,
+    generate,
+    kron1,
+    kron2,
+    kron_mixed,
+    lr1,
+    lr2,
     lt1,
     lt2,
     ut1,
     ut2,
-    lr1,
-    lr2,
     wb1,
     wb2,
-    kron1,
-    kron2,
-    kron_mixed,
+    zero1,
+    zero2,
+    zero_r,
 )
 
 
@@ -236,7 +240,9 @@ def test_matmul_wb(wb1, wb2):
         structured(wb1.lr.left)
         or structured(wb2.lr.left)
         or wb1.lr.rank == 1 == wb2.lr.rank == 1,
-        AssertDenseWarning("indexing into <diagonal>"),
+        AssertDenseWarning(
+            ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+        ),
     ):
         _check_matmul(wb1, wb2, asserted_type=Woodbury)
 
@@ -252,7 +258,9 @@ def test_matmul_wb_diag(wb1, diag2):
 
 
 def test_matmul_wb_const(wb1, const2):
-    with AssertDenseWarning("indexing into <diagonal>"):
+    with AssertDenseWarning(
+        ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+    ):
         _check_matmul(wb1, const2, asserted_type=LowRank)
         _check_matmul(const2, wb1, asserted_type=LowRank)
 
@@ -260,7 +268,9 @@ def test_matmul_wb_const(wb1, const2):
 def test_matmul_wb_lr(wb1, lr2):
     with ConditionalContext(
         structured(wb1.lr.left) or structured(lr2.left) or wb1.lr.rank == lr2.rank == 1,
-        AssertDenseWarning("indexing into <diagonal>"),
+        AssertDenseWarning(
+            ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+        ),
     ):
         _check_matmul(wb1, lr2, asserted_type=LowRank)
         _check_matmul(lr2, wb1, asserted_type=LowRank)

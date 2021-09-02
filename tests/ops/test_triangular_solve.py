@@ -4,7 +4,7 @@ import pytest
 from matrix import Dense
 
 # noinspection PyUnresolvedReferences
-from ..util import approx, check_bin_op, AssertDenseWarning, lt_pd, ut_pd, dense2
+from ..util import AssertDenseWarning, approx, check_bin_op, dense2, lt_pd, ut_pd
 
 
 def test_cholesky_solve_lt(lt_pd, dense2):
