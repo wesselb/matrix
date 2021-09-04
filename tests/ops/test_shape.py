@@ -3,7 +3,6 @@ import pytest
 from lab.shape import Shape
 
 from matrix.ops.shape import _drop_axis
-
 # noinspection PyUnresolvedReferences
 from ..util import (
     AssertDenseWarning,
@@ -88,4 +87,5 @@ def test_drop_axis():
 
 
 def test_shape_tb(shape, tb1):
-    check_un_op(shape, tb1, asserted_type=(tuple, Shape))
+    with AssertDenseWarning(["tiling", "concatenating"]):
+        check_un_op(shape, tb1, asserted_type=(tuple, Shape))

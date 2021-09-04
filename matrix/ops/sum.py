@@ -112,7 +112,7 @@ def sum(a: Woodbury, axis: Union[B.Int, None] = None):
     else:
         # We're summing over batch dimensions: align the batches first.
         diag, lr = align_batch(a.diag, a.lr)
-        axis = resolved_axis(a, axis)
+        axis = resolve_axis(a, axis)
         return B.sum(diag, axis=axis) + B.sum(lr, axis=axis)
 
 
