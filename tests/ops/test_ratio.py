@@ -1,6 +1,6 @@
 import lab as B
 
-from matrix import structured
+from matrix.ops.util import align_batch
 
 # noinspection PyUnresolvedReferences
 from ..util import (
@@ -21,7 +21,8 @@ def _check_ratio(a, b):
     res = B.ratio(a, b)
 
     # Check correctness.
-    approx(res, B.trace(B.solve(B.dense(b), B.dense(a))))
+    a_dense, b_dense = align_batch(B.dense(a), B.dense(b))
+    approx(res, B.trace(B.solve(b_dense, a_dense)))
 
 
 def test_ratio_dense_diag(dense_pd, diag_pd):

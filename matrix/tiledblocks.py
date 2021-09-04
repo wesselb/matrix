@@ -1,5 +1,6 @@
 import lab as B
 from plum import Dispatcher, Tuple, Union
+from lab.shape import Shape
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_matrix
@@ -23,7 +24,7 @@ class TiledBlocks(AbstractMatrix):
         *blocks (tuple[matrix, int]): Tuples of matrices and integers representing
             how many times to repeat that matrix.
         axis (int, optional): Axis along which to concatenate the repeated blocks.
-            Defaults to `0`.
+            Defaults to `-2`.
     """
 
     @_dispatch
@@ -31,7 +32,7 @@ class TiledBlocks(AbstractMatrix):
         self,
         block: Tuple[Union[B.Numeric, AbstractMatrix], B.Int],
         *blocks: Tuple[Union[B.Numeric, AbstractMatrix], B.Int],
-        axis=0,
+        axis=-2,
     ):
         blocks = (block,) + blocks
         for block, rep in blocks:
@@ -40,39 +41,23 @@ class TiledBlocks(AbstractMatrix):
                 f"Block {block} is not a rank-2 tensor. Can only construct a tile of "
                 "blocks matrices from rank-2 tensors.",
             )
+        # We could also check if the blocks are properly aligned, but this is pretty
+        # complicated, so we leave this to a runtime error.
         self.blocks, self.reps = zip(*blocks)
-
-        def assert_alignment_along_axis(axis_):
-            if not all(
-                [
-                    B.shape(self.blocks[0], axis_) == B.shape(block, axis_)
-                    for block in self.blocks[1:]
-                ]
-            ):
-                raise ValueError(f"Blocks are not aligned along axis {axis_}.")
-
-        if axis == 0:
-            assert_alignment_along_axis(1)
-        elif axis == 1:
-            assert_alignment_along_axis(0)
-        else:
-            raise ValueError(f"Invalid axis {axis}.")
-
         self.axis = axis
         self.dense = None
 
     @_dispatch
-    def __init__(self, *blocks: Union[B.Numeric, AbstractMatrix], axis: B.Int = 0):
+    def __init__(self, *blocks: Union[B.Numeric, AbstractMatrix], axis: B.Int = -2):
         TiledBlocks.__init__(self, *((block, 1) for block in blocks), axis=axis)
 
     @_dispatch
     def __init__(
-        self, block: Union[B.Numeric, AbstractMatrix], reps: B.Int, axis: B.Int = 0
+        self, block: Union[B.Numeric, AbstractMatrix], reps: B.Int, axis: B.Int = -2
     ):
         TiledBlocks.__init__(self, (block, reps), axis=axis)
 
     def __str__(self):
-        rows, cols = B.shape(self)
         return (
             f"<tile of blocks:"
             f" batch={Shape(*B.shape_batch(self))},"

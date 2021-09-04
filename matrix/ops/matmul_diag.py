@@ -21,7 +21,7 @@ def matmul_diag(a, b, tr_a: bool = False, tr_b:bool = False):
     """
     a = _tr(a, not tr_a)
     b = _tr(b, tr_b)
-    return B.sum(B.multiply(a, b), axis=0)
+    return B.sum(B.multiply(a, b), axis=-2)
 
 
 B.matmul_diag = matmul_diag

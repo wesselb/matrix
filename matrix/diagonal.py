@@ -1,6 +1,6 @@
 import lab as B
 from lab.shape import Shape
-from plum import Dispatcher, Self
+from plum import Dispatcher
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_vector

@@ -3,9 +3,6 @@ from lab.shape import Shape, Dimension
 from plum import Dispatcher
 
 __all__ = [
-    "batch_ones",
-    "matrix_axis",
-    "tensor_axis",
     "assert_vector",
     "assert_matrix",
     "assert_square",
@@ -16,29 +13,6 @@ __all__ = [
 ]
 
 _dispatch = Dispatcher()
-
-
-def batch_ones(a):
-    return (1,) * len(B.shape_batch(a))
-
-
-def matrix_axis(a, axis):
-    if axis is None:
-        return None
-
-    # Deal with negative axes.
-    if axis < 0:
-        axis += B.rank(a)
-
-    # Return the matrix axis.
-    return axis - (B.rank(a) - 2)
-
-
-def tensor_axis(a, axis):
-    if axis is None:
-        return None
-
-    return axis + (B.rank(a) - 2)
 
 
 def assert_vector(x, message):
@@ -73,6 +47,7 @@ def assert_square(x, message):
         message (str): Error message to raise in the case that `x` is not a
             square matrix.
     """
+    assert_matrix(x, message)
     shape = B.shape_matrix(x)
     if shape[0] != shape[1]:
         raise AssertionError(message)
@@ -131,6 +106,14 @@ def broadcast(s1: Shape, s2: Shape):
 
 
 @_dispatch
+def broadcast(shape1: Shape, shape2: Shape, *further_shapes: Shape):
+    running_shape = broadcast(shape1, shape2)
+    for s in further_shapes:
+        running_shape = broadcast(running_shape, s)
+    return running_shape
+
+
+@_dispatch
 def broadcast(d1: Dimension, d2: Dimension):
     if d1 != 1 and d2 != 1 and d1 != d2:
         raise RuntimeError(f"Cannot broadcast dimensions with values {d1} and {d2}.")
@@ -139,7 +122,12 @@ def broadcast(d1: Dimension, d2: Dimension):
 
 @_dispatch
 def broadcast(*xs):
-    return broadcast(*(Shape(*x) for x in xs))
+    if len(xs) == 0:
+        raise ValueError("No shapes to broadcast.")
+    elif len(xs) == 1:
+        return xs[0]
+    else:
+        return broadcast(*(Shape(*x) for x in xs))
 
 
 @_dispatch
@@ -172,4 +160,9 @@ def expand_and_broadcast(shape1: Shape, shape2: Shape, *further_shapes: Shape):
 
 @_dispatch
 def expand_and_broadcast(*xs):
-    return expand_and_broadcast(*(Shape(*x) for x in xs))
+    if len(xs) == 0:
+        raise ValueError("No shapes to broadcast.")
+    elif len(xs) == 1:
+        return xs[0]
+    else:
+        return expand_and_broadcast(*(Shape(*x) for x in xs))

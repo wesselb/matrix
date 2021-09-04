@@ -8,7 +8,6 @@ from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
-from ..shape import expand_and_broadcast
 from ..triangular import LowerTriangular, UpperTriangular
 from ..util import redirect, ToDenseWarning
 from ..woodbury import Woodbury
@@ -46,9 +45,7 @@ def matmul(a: AbstractMatrix, b: Zero, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     ar, _ = _shape_matrix_tr(a, tr_a)
     _, bc = _shape_matrix_tr(b, tr_b)
-    return Zero(
-        b.dtype, *expand_and_broadcast(B.shape_batch(a), B.shape_batch(b)), ar, bc
-    )
+    return Zero(b.dtype, *B.shape_batch(a, b), ar, bc)
 
 
 @B.dispatch(precedence=proven())
@@ -56,9 +53,7 @@ def matmul(a: Zero, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     ar, _ = _shape_matrix_tr(a, tr_a)
     _, bc = _shape_matrix_tr(b, tr_b)
-    return Zero(
-        a.dtype, *expand_and_broadcast(B.shape_batch(a), B.shape_batch(b)), ar, bc
-    )
+    return Zero(a.dtype, *B.shape_batch(a, b), ar, bc)
 
 
 # Multiple multiplication:
@@ -328,20 +323,21 @@ def matmul(a: Kronecker, b: Kronecker, tr_a: bool = False, tr_b: bool = False):
 
 
 def _reshape_cols(a, *indices):
-    return B.transpose(B.reshape(B.transpose(a), *reversed(indices)))
+    return B.transpose(B.reshape(B.transpose(a), *B.shape_batch(a), *reversed(indices)))
 
 
-_reshape_rows = B.reshape
+def _reshape_rows(a, *indices):
+    return B.reshape(a, *B.shape_batch(a), *indices)
 
 
 def _kron_id_a_b(a, b):
-    reshaped = _reshape_cols(b, B.shape(a)[1], -1)
-    return _reshape_cols(B.matmul(a, reshaped), -1, B.shape(b)[1])
+    reshaped = _reshape_cols(b, B.shape(a, -1), -1)
+    return _reshape_cols(B.matmul(a, reshaped), -1, B.shape(b, -1))
 
 
 def _kron_a_id_b(a, b):
-    reshaped = _reshape_rows(b, B.shape(a)[1], -1)
-    return _reshape_rows(B.matmul(a, reshaped), -1, B.shape(b)[1])
+    reshaped = _reshape_rows(b, B.shape(a, -1), -1)
+    return _reshape_rows(B.matmul(a, reshaped), -1, B.shape(b, -1))
 
 
 @B.dispatch
@@ -353,16 +349,16 @@ def matmul(a: Kronecker, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = Fal
     # Extract the factors of the product.
     left = a.left
     right = a.right
-    l_rows, l_cols = B.shape(left)
-    r_rows, r_cols = B.shape(right)
+    l_rows, l_cols = B.shape_matrix(left)
+    r_rows, r_cols = B.shape_matrix(right)
 
     cost_first_left = l_rows * l_cols * r_cols + r_rows * r_cols * l_rows
     cost_first_right = r_rows * r_cols * l_cols + l_rows * l_cols * r_rows
 
     if cost_first_left <= cost_first_right:
-        return _kron_id_a_b(right, _kron_a_id_b(left, b))
+        return convert(_kron_id_a_b(right, _kron_a_id_b(left, b)), AbstractMatrix)
     else:
-        return _kron_a_id_b(left, _kron_id_a_b(right, b))
+        return convert(_kron_a_id_b(left, _kron_id_a_b(right, b)), AbstractMatrix)
 
 
 @B.dispatch

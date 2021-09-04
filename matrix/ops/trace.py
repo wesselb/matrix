@@ -8,4 +8,4 @@ __all__ = []
 @B.dispatch
 def trace(a: AbstractMatrix):
     # The implementation of diagonal is optimised, so this should be efficient.
-    return B.sum(B.diag(a))
+    return B.sum(B.diag(a), axis=-1)

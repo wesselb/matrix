@@ -1,5 +1,6 @@
 import lab as B
 import pytest
+
 from matrix import Dense, Diagonal, structured
 
 # noinspection PyUnresolvedReferences
@@ -93,4 +94,8 @@ def test_flatten_dense(dense_bc):
 
 
 def test_diagonal_dense(dense_bc):
+    # The behaviour of `a.diagonal()` is different for dense matrices when a batch
+    # dimension is present.
+    if B.shape_batch(dense_bc) != ():
+        return
     check_un_op(lambda a: a.diagonal(), dense_bc)

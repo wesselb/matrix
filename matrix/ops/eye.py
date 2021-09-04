@@ -9,4 +9,4 @@ __all__ = []
 @B.dispatch
 def eye(a: AbstractMatrix):
     assert_square(a, "Can only construct identity matrices from square matrices.")
-    return B.fill_diag(B.one(a), B.shape(a)[0])
+    return B.fill_diag(B.one(a), B.shape_matrix(a)[0])

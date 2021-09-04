@@ -3,6 +3,7 @@ from lab.shape import Shape
 
 from .matrix import AbstractMatrix, repr_format
 from .util import dtype_str, indent
+from .shape import expand_and_broadcast
 
 __all__ = ["Zero", "Constant"]
 
@@ -56,6 +57,7 @@ class Constant(AbstractMatrix):
 
     Attributes:
         const (scalar): Constant of the matrix.
+        batch (tuple): Shape of batch.
         rows (int): Number of rows.
         cols (int): Number of columns.
         cholesky (:class:`.constant.Constant` or None): Cholesky
@@ -65,14 +67,25 @@ class Constant(AbstractMatrix):
 
     Args:
         const (scalar): Constant.
+        *batch (int, optional): Shape of batch.
         rows (int): Number of rows.
         cols (int): Number of columns.
     """
 
-    def __init__(self, const, rows, cols):
-        self.const = const
-        self.rows = rows
-        self.cols = cols
+    def __init__(self, const, *shape):
+        # Check that at least a rank-2 tensor is specified.
+        if len(shape) < 2:
+            raise ValueError("Must specify the number of rows and columns.")
+        self.rows = shape[-2]
+        self.cols = shape[-1]
+        if shape[:-2] == ():
+            # No batch shape was specified. Infer it from `const`.
+            self.batch = B.shape(const)
+            self.const = const
+        else:
+            # A batch shape was specified. Broadcast it with the shape of `const`.
+            self.batch = expand_and_broadcast(B.shape(const), shape[:-2])
+            self.const = B.broadcast_to(const, *self.batch)
         self.cholesky = None
         self.dense = None
 
@@ -86,9 +99,9 @@ class Constant(AbstractMatrix):
 
     def __repr__(self):
         return (
-                str(self)[:-1]
-                + "\n"
-                + f" const="
-                + indent(repr_format(self.const), " " * 7).strip()
-                + ">"
+            str(self)[:-1]
+            + "\n"
+            + f" const="
+            + indent(repr_format(self.const), " " * 7).strip()
+            + ">"
         )

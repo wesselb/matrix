@@ -5,6 +5,6 @@ from ..matrix import AbstractMatrix
 __all__ = []
 
 
-@B.dispatch(AbstractMatrix)
-def diag_extract(a):
+@B.dispatch
+def diag_extract(a: AbstractMatrix):
     return B.diag(a)

@@ -1,6 +1,7 @@
 import lab as B
 from wbml.warning import warn_upmodule
 
+from .util import align_batch
 from ..constant import Zero
 from ..diagonal import Diagonal
 from ..matrix import Dense
@@ -40,6 +41,8 @@ def block(row, *rows):
         "Could not preserve structure in block matrix: converting to dense.",
         category=ToDenseWarning,
     )
+    # Align batch dimensions to allow concatenation.
+    rows = align_batch(*rows)
     return Dense(B.concat2d(*[[B.dense(x) for x in row] for row in rows]))
 
 
@@ -51,16 +54,17 @@ def _attempt_zero(rows):
     if all([all([isinstance(x, Zero) for x in row]) for row in rows]):
         # Determine the resulting data type and shape.
         dtype = B.dtype(rows[0][0])
-        grid_rows = sum([B.shape(row[0], 0) for row in rows])
-        grid_cols = sum([B.shape(x, 1) for x in rows[0]])
-
-        return Zero(dtype, grid_rows, grid_cols)
+        batch = B.shape_batch(*(x for row in rows for x in row))
+        grid_rows = sum([B.shape_matrix(row[0], 0) for row in rows])
+        grid_cols = sum([B.shape_matrix(x, 1) for x in rows[0]])
+        return Zero(dtype, *batch, grid_rows, grid_cols)
     else:
         return None
 
 
 def _attempt_diagonal(rows):
     # Check whether the result is diagonal.
+    rows = align_batch(*rows)
 
     # Check that the blocks form a square.
     if not all([len(row) == len(rows) for row in rows]):
@@ -70,7 +74,7 @@ def _attempt_diagonal(rows):
     diagonal_blocks = []
     for r in range(len(rows)):
         for c in range(len(rows[0])):
-            block_shape = B.shape(rows[r][c])
+            block_shape = B.shape_matrix(rows[r][c])
             if r == c:
                 # Keep track of all the diagonal blocks.
                 diagonal_blocks.append(rows[r][c])
@@ -87,4 +91,7 @@ def _attempt_diagonal(rows):
                 if not isinstance(rows[r][c], Zero):
                     return None
 
-    return Diagonal(B.concat(*[B.diag(x) for x in diagonal_blocks]))
+    # Align the batch dimensions before concatenating.
+    batch = B.shape_batch(*(x for row in rows for x in row))
+    diagonal_blocks = [B.broadcast_batch_to(x, *batch) for x in diagonal_blocks]
+    return Diagonal(B.concat(*(B.diag(x) for x in diagonal_blocks), axis=-1))

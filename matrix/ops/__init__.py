@@ -1,6 +1,8 @@
+from .abs import *
 from .add import *
 from .block import *
 from .block_diag import *
+from .broadcast_batch_to import *
 from .broadcast_to import *
 from .cholesky import *
 from .cholesky_solve import *
@@ -21,6 +23,7 @@ from .kron import *
 from .logdet import *
 from .matmul import *
 from .matmul_diag import *
+from .mean import *
 from .multiply import *
 from .negative import *
 from .one import *
@@ -50,5 +53,6 @@ from .trace import *
 from .transpose import *
 from .triangular_solve import *
 from .uprank import *
+from .util import *
 from .zero import *
 from .zeros import *

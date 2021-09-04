@@ -2,6 +2,7 @@ import lab as B
 import pytest
 
 from matrix import AbstractMatrix
+from matrix.ops.util import align_batch
 
 # noinspection PyUnresolvedReferences
 from ..util import (
@@ -39,7 +40,7 @@ def test_dense_unknown():
 
 
 def test_dense_zero(zero1):
-    approx(B.dense(zero1), B.zeros(zero1.rows, zero1.cols))
+    approx(B.dense(zero1), B.zeros(*zero1.batch, zero1.rows, zero1.cols))
     _check_cache(zero1)
 
 
@@ -54,12 +55,13 @@ def test_dense_dense(dense1):
 
 
 def test_dense_diag(diag1):
-    approx(B.dense(diag1), B.diag(diag1.diag))
+    approx(B.dense(diag1), B.diag_construct(diag1.diag))
     _check_cache(diag1)
 
 
 def test_dense_const(const1):
-    approx(B.dense(const1), const1.const * B.ones(const1.rows, const1.cols))
+    const = B.expand_dims(const1.const, axis=-1, times=2)
+    approx(B.dense(const1), const * B.ones(*const1.batch, const1.rows, const1.cols))
     _check_cache(const1)
 
 
@@ -75,7 +77,10 @@ def test_dense_ut(ut1):
 
 def test_dense_lr(lr1):
     lr_dense = B.mm(
-        B.dense(lr1.left), B.dense(lr1.middle), B.dense(lr1.right), tr_c=True
+        B.dense(lr1.left),
+        B.dense(lr1.middle),
+        B.dense(lr1.right),
+        tr_c=True,
     )
     approx(B.dense(lr1), lr_dense)
     _check_cache(lr1)
@@ -83,36 +88,24 @@ def test_dense_lr(lr1):
 
 def test_dense_wb(wb1):
     lr_dense = B.mm(
-        B.dense(wb1.lr.left), B.dense(wb1.lr.middle), B.dense(wb1.lr.right), tr_c=True
+        B.dense(wb1.lr.left),
+        B.dense(wb1.lr.middle),
+        B.dense(wb1.lr.right),
+        tr_c=True,
     )
-    approx(B.dense(wb1), B.diag(wb1.diag.diag) + lr_dense)
+    approx(B.dense(wb1), B.diag_construct(wb1.diag.diag) + lr_dense)
     _check_cache(wb1)
 
 
 def test_dense_kron(kron1):
-    approx(B.dense(kron1), B.kron(B.dense(kron1.left), B.dense(kron1.right)))
+    left, right = align_batch(B.dense(kron1.left), B.dense(kron1.right))
+    approx(B.dense(kron1), B.kron(left, right, -2, -1))
     _check_cache(kron1)
 
 
 def test_dense_tb(tb1):
     with AssertDenseWarning(["tiling", "concatenating"]):
-        approx(
-            B.dense(tb1),
-            B.concat(
-                *sum(
-                    [
-                        (B.dense(block),) * rep
-                        for block, rep in zip(tb1.blocks, tb1.reps)
-                    ],
-                    (),
-                ),
-                axis=tb1.axis
-            ),
-        )
+        # We cannot check against a reference implementation. It will hopefully suffice
+        # to just check the shape.
+        assert B.shape(B.dense(tb1)) == B.shape(tb1)
     _check_cache(tb1)
-
-
-def test_dense_tb_axis(tb1):
-    tb1.axis = 3
-    with pytest.raises(RuntimeError):
-        B.dense(tb1)

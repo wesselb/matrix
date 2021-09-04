@@ -7,4 +7,4 @@ __all__ = []
 
 @B.dispatch
 def one(a: AbstractMatrix):
-    return B.one(B.dtype(a), B.shape_batch(a))
+    return B.one(B.dtype(a))

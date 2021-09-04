@@ -18,7 +18,13 @@ def sample(state: B.RandomState, a, num: B.Int = 1):
         tensor: Samples as rank 2 column vectors.
     """
     chol = B.cholesky(a)
-    state, noise = B.randn(state, B.dtype_float(a), B.shape(chol)[1], num)
+    state, noise = B.randn(
+        state,
+        B.dtype_float(a),
+        *B.shape_batch(a),
+        B.shape(chol, -1),
+        num,
+    )
     return state, B.matmul(chol, noise)
 
 

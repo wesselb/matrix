@@ -3,6 +3,7 @@ from typing import Union
 import lab as B
 from wbml.warning import warn_upmodule
 
+from .util import align_batch
 from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
@@ -16,17 +17,17 @@ __all__ = []
 
 
 def _diag_len(a):
-    return B.minimum(*B.shape(a))
+    return B.minimum(*B.shape_matrix(a))
 
 
 @B.dispatch
 def diag(a: Zero):
-    return B.zeros(B.dtype(a), _diag_len(a))
+    return B.zeros(B.dtype(a), *B.shape_batch(a), _diag_len(a))
 
 
 @B.dispatch
 def diag(a: Union[Dense, LowerTriangular, UpperTriangular]):
-    return B.diag(a.mat)
+    return B.diag_extract(a.mat)
 
 
 @B.dispatch
@@ -36,7 +37,8 @@ def diag(a: Diagonal):
 
 @B.dispatch
 def diag(a: Constant):
-    return a.const * B.ones(B.dtype(a), _diag_len(a))
+    ones = B.ones(B.dtype(a), *B.shape_batch(a), _diag_len(a))
+    return B.expand_dims(a.const, axis=-1) * ones
 
 
 @B.dispatch
@@ -47,10 +49,12 @@ def diag(a: LowRank):
             category=ToDenseWarning,
         )
     diag_len = _diag_len(a)
-    left_mul = B.matmul(a.left, a.middle)
     return B.sum(
-        B.multiply(B.dense(left_mul)[:diag_len, :], B.dense(a.right)[:diag_len, :]),
-        axis=1,
+        B.multiply(
+            B.dense(B.matmul(a.left, a.middle))[..., :diag_len, :],
+            B.dense(a.right)[..., :diag_len, :],
+        ),
+        axis=-1,
     )
 
 
@@ -61,4 +65,5 @@ def diag(a: Woodbury):
 
 @B.dispatch
 def diag(a: Kronecker):
-    return B.kron(B.diag(a.left), B.diag(a.right))
+    left, right = align_batch(a.left, a.right)
+    return B.kron(B.diag(left), B.diag(right), -1)

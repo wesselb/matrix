@@ -1,4 +1,5 @@
 import lab as B
+from lab.util import resolve_axis
 
 from ..constant import Constant, Zero
 from ..diagonal import Diagonal
@@ -14,7 +15,7 @@ __all__ = []
 
 @B.dispatch
 def transpose(a: Zero):
-    return Zero(a.dtype, a.cols, a.rows)
+    return Zero(a.dtype, *a.batch, a.cols, a.rows)
 
 
 @B.dispatch
@@ -29,7 +30,7 @@ def transpose(a: Diagonal):
 
 @B.dispatch
 def transpose(a: Constant):
-    return Constant(a.const, a.cols, a.rows)
+    return Constant(a.const, *a.batch, a.cols, a.rows)
 
 
 @B.dispatch
@@ -59,9 +60,14 @@ def transpose(a: Kronecker):
 
 @B.dispatch
 def transpose(a: TiledBlocks):
-    if a.axis not in {0, 1}:
-        raise RuntimeError(f"Invalid axis {a.axis}.")
+    axis = resolve_axis(a, a.axis, negative=True)
+    if axis == -2:
+        transposed_axis = -1
+    elif axis == -1:
+        transposed_axis = -2
+    else:
+        transposed_axis = axis
     return TiledBlocks(
         *((B.transpose(block), rep) for block, rep in zip(a.blocks, a.reps)),
-        axis=1 - a.axis,
+        axis=transposed_axis,
     )

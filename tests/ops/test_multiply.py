@@ -212,8 +212,8 @@ def test_multiply_wb_lr(wb1, lr2):
 
 
 def test_multiply_kron(kron1, kron2):
-    lefts_align = B.shape(kron1.left) == B.shape(kron2.left)
-    rights_align = B.shape(kron1.right) == B.shape(kron2.right)
+    lefts_align = B.shape(kron1.left, -2, -1) == B.shape(kron2.left, -2, -1)
+    rights_align = B.shape(kron1.right, -2, -1) == B.shape(kron2.right, -2, -1)
     if lefts_align and rights_align:
         check_bin_op(B.multiply, kron1, kron2, asserted_type=Kronecker)
     else:

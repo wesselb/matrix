@@ -49,10 +49,10 @@ class LowRank(AbstractMatrix):
                 self._middle,
                 f"Middle factor is not a tensor of at least rank 2. {msg}"
             )
-            if B.shape_matrix(self.left)[1] != B.shape_matrix(self._middle)[0]:
+            if B.shape_matrix(self.left, 1) != B.shape_matrix(self._middle, 0):
                 raise AssertionError(
-                    f"Left factor has {B.shape_matrix(self.left)[1]} columns, "
-                    f"but middle factor has {B.shape_matrix(self.middle)[0]} rows."
+                    f"Left factor has {B.shape_matrix(self.left, 1)} column(s), "
+                    f"but middle factor has {B.shape_matrix(self.middle, 0)} row(s)."
                 )
 
         # Check right factor, if it is given.
@@ -63,17 +63,17 @@ class LowRank(AbstractMatrix):
             )
 
             if self._middle is not None:
-                if B.shape_matrix(self._right)[1] != B.shape_matrix(self._middle)[1]:
+                if B.shape_matrix(self._right, 1) != B.shape_matrix(self._middle, 1):
                     raise AssertionError(
-                        f"Right factor has {B.shape_matrix(self._right)[1]} column(s), "
-                        f"but middle factor has {B.shape_matrix(self.middle)[1]} "
+                        f"Right factor has {B.shape_matrix(self._right, 1)} column(s), "
+                        f"but middle factor has {B.shape_matrix(self.middle, 1)} "
                         f"column(s)."
                     )
             else:
-                if B.shape_matrix(self._right)[1] != B.shape_matrix(self.left)[1]:
+                if B.shape_matrix(self._right, 1) != B.shape_matrix(self.left, 1):
                     raise AssertionError(
-                        f"Right factor has {B.shape_matrix(self._right)[1]} column(s), "
-                        f"but left factor has {B.shape_matrix(self.left)[1]} column(s)."
+                        f"Right factor has {B.shape_matrix(self._right, 1)} column(s), "
+                        f"but left factor has {B.shape_matrix(self.left, 1)} column(s)."
                     )
 
         # Caching attributes:
@@ -82,7 +82,7 @@ class LowRank(AbstractMatrix):
 
         # Determine `rank`.
         if self._middle is None:
-            self.rank = B.shape_matrix(self.left)[1]
+            self.rank = B.shape_matrix(self.left, 1)
         else:
             self.rank = min(B.shape_matrix(self._middle))
 

@@ -19,7 +19,7 @@ def _check_matmul_diag(a, b):
         for tr_b in [False, True]:
             approx(
                 B.matmul_diag(a, b, tr_a=tr_a, tr_b=tr_b),
-                B.diag(B.matmul(B.dense(a), B.dense(b), tr_a=tr_a, tr_b=tr_b)),
+                B.diag_extract(B.matmul(B.dense(a), B.dense(b), tr_a=tr_a, tr_b=tr_b)),
             )
 
 

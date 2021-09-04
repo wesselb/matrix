@@ -22,85 +22,88 @@ pip install backends-matrix
 
 >>> from matrix import Diagonal
 
->>> d = Diagonal(B.ones(3))
+>>> d = Diagonal(B.rand(2, 3))  # A batch of diagonal marices
 
 >>> d
-<diagonal matrix: shape=3x3, data type=float64,
- diag=[1. 1. 1.]>
-  
->>> 2 * d
-<diagonal matrix: shape=3x3, data type=float64
- diag=[2. 2. 2.]>
+<diagonal matrix: batch=(2,), shape=(3, 3), dtype=float64
+ diag=[[0.427 0.912 0.622]
+       [0.777 0.048 0.808]]>
 
+>>> 2 * d
+<diagonal matrix: batch=(2,), shape=(3, 3), dtype=float64
+ diag=[[0.854 1.824 1.243]
+       [1.553 0.096 1.616]]>
+  
 >>> 2 * d + 1
-<Woodbury matrix: shape=3x3, dtype=int64
- diag=<diagonal matrix: shape=3x3, dtype=float64
-       diag=[2. 2. 2.]>
- lr=<low-rank matrix: shape=3x3, dtype=int64, rank=1
+<Woodbury matrix: batch=(2,), shape=(3, 3), dtype=float64
+ diag=<diagonal matrix: batch=(2,), shape=(3, 3), dtype=float64
+       diag=[[0.854 1.824 1.243]
+             [1.553 0.096 1.616]]>
+ lr=<low-rank matrix: batch=(), shape=(3, 3), dtype=int64, rank=1
      left=[[1]
            [1]
            [1]]
-     middle=<diagonal matrix: shape=1x1, dtype=int64
+     middle=<diagonal matrix: batch=(), shape=(1, 1), dtype=int64
              diag=[1]>>>
-  
+
 >>> B.inv(2 * d + 1)
-<Woodbury matrix: shape=3x3, dtype=float64
- diag=<diagonal matrix: shape=3x3, dtype=float64
-       diag=[0.5 0.5 0.5]>
- lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1
-     left=<dense matrix: shape=3x1, dtype=float64
-           mat=[[0.5]
-                [0.5]
-                [0.5]]>
-     middle=<dense matrix: shape=1x1, dtype=float64
-             mat=[[-0.4]]>
-     right=<dense matrix: shape=3x1, dtype=float64
-            mat=[[0.5]
-                 [0.5]
-                 [0.5]]>>>
+<Woodbury matrix: batch=(2,), shape=(3, 3), dtype=float64
+ diag=<diagonal matrix: batch=(2,), shape=(3, 3), dtype=float64
+       diag=[[ 1.171  0.548  0.804]
+             [ 0.644 10.386  0.619]]>
+ lr=<low-rank matrix: batch=(2,), shape=(3, 3), dtype=float64, rank=1
+     left=<dense matrix: batch=(2,), shape=(3, 1), dtype=float64
+           mat=[[[ 1.171]
+                 [ 0.548]
+                 [ 0.804]]
+
+                [[ 0.644]
+                 [10.386]
+                 [ 0.619]]]>
+     middle=<dense matrix: batch=(2,), shape=(1, 1), dtype=float64
+             mat=[[[-0.284]]
+
+                  [[-0.079]]]>
+     right=<dense matrix: batch=(2,), shape=(3, 1), dtype=float64
+            mat=[[[ 1.171]
+                  [ 0.548]
+                  [ 0.804]]
+
+                 [[ 0.644]
+                  [10.386]
+                  [ 0.619]]]>>>
 
 >>> B.inv(B.inv(2 * d + 1))
-<Woodbury matrix: shape=3x3, dtype=float64
- diag=<diagonal matrix: shape=3x3, dtype=float64
-       diag=[2. 2. 2.]>
- lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1
-     left=<dense matrix: shape=3x1, dtype=float64
-           mat=[[1.]
-                [1.]
-                [1.]]>
-     middle=<dense matrix: shape=1x1, dtype=float64
-             mat=[[1.]]>
-     right=<dense matrix: shape=3x1, dtype=float64
-            mat=[[1.]
+<Woodbury matrix: batch=(2,), shape=(3, 3), dtype=float64
+ diag=<diagonal matrix: batch=(2,), shape=(3, 3), dtype=float64
+       diag=[[0.854 1.824 1.243]
+             [1.553 0.096 1.616]]>
+ lr=<low-rank matrix: batch=(2,), shape=(3, 3), dtype=float64, rank=1
+     left=<dense matrix: batch=(2,), shape=(3, 1), dtype=float64
+           mat=[[[1.]
                  [1.]
-                 [1.]]>>>
+                 [1.]]
 
->>> B.inv(B.inv(2 * d + 1)) + 3
-<Woodbury matrix: shape=3x3, dtype=float64
- diag=<diagonal matrix: shape=3x3, dtype=float64
-       diag=[2. 2. 2.]>
- lr=<low-rank matrix: shape=3x3, dtype=float64, rank=1
-     left=[[1.]
-           [1.]
-           [1.]]
-     middle=[[4.]]
-     right=[[1.]
-            [1.]
-            [1.]]>>
+                [[1.]
+                 [1.]
+                 [1.]]]>
+     middle=<dense matrix: batch=(2,), shape=(1, 1), dtype=float64
+             mat=[[[1.]]
 
->>> B.kron(d, 2 * d)
-<Kronecker product: shape=9x9, dtype=float64
- left=<diagonal matrix: shape=3x3, dtype=float64
-       diag=[1. 1. 1.]>
- right=<diagonal matrix: shape=3x3, dtype=float64
-        diag=[2. 2. 2.]>>
+                  [[1.]]]>
+     right=<dense matrix: batch=(2,), shape=(3, 1), dtype=float64
+            mat=[[[1.]
+                  [1.]
+                  [1.]]
 
->>> B.inv(B.kron(d, 2 * d))
-<Kronecker product: shape=9x9, dtype=float64
- left=<diagonal matrix: shape=3x3, dtype=float64
-       diag=[1. 1. 1.]>
- right=<diagonal matrix: shape=3x3, dtype=float64
-        diag=[0.5 0.5 0.5]>>
+                 [[1.]
+                  [1.]
+                  [1.]]]>>>
+
+>>> B.inv(B.inv(2 * d + 1)) - 1
+<diagonal matrix: batch=(2,), shape=(3, 3), dtype=float64
+ diag=[[0.854 1.824 1.243]
+       [1.553 0.096 1.616]]>
 ```
 
 ## Matrix Types
@@ -133,12 +136,18 @@ The following functions are added to LAB.
 They can be accessed with `B.<function>` where `import lab as B`.
 
 ```
-shape_batch(a)
-shape_matrix(a)
+shape(*elements)           # Broadcasted shape of the shapes of `elements`
+shape_batch(a, *indices)
+shape_batch(*elements)     # Broadcasted shape of the shapes of `elements`
+shape_matrix(a, *indices)
+shape_matrix(*elements)    # Broadcasted shape of the shapes of `elements`
+
+broadcast_batch_to(a, *batch)
 
 dense(a)
 fill_diag(a, diag_len)
 block(*rows)
+block_diag(*blocks)
 
 matmul_diag(a, b, tr_a=False, tr_b=False)
 

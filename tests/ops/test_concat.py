@@ -1,4 +1,5 @@
 import lab as B
+from lab.util import resolve_axis
 
 from matrix import Dense, TiledBlocks
 
@@ -18,6 +19,11 @@ from ..util import (
 
 
 def test_concat(dense1, dense2, diag1, diag2):
+    # Concatenation only works for tensors with the same batch dimension.
+    batches = [B.shape_batch(x) for x in [dense1, dense2, diag1, diag2]]
+    if not all(batch == batches[0] for batch in batches):
+        return
+
     with AssertDenseWarning("concatenating <dense>, <dense>, <diagonal>..."):
         res = B.concat(dense1, dense2, diag1, diag2, axis=1)
         dense_res = B.concat(
@@ -27,9 +33,21 @@ def test_concat(dense1, dense2, diag1, diag2):
         assert isinstance(res, Dense)
 
 
+def _other_axis(axis):
+    if axis == -1:
+        return -2
+    elif axis == -2:
+        return -1
+    else:
+        return -1
+
+
 def test_concat_tb(tb1, tb2):
+    axis1 = resolve_axis(tb1, tb1.axis, negative=True)
+    axis2 = resolve_axis(tb2, tb2.axis, negative=True)
+
     # Attempt to align them.
-    if tb1.axis != tb2.axis:
+    if axis1 != axis2:
         tb2 = B.transpose(tb2)
 
     if B.shape(tb1) == B.shape(tb2):
@@ -41,7 +59,7 @@ def test_concat_tb(tb1, tb2):
 
         # Test concatenating along other axis.
         with AssertDenseWarning("cannot nicely concatenate tiled blocks"):
-            res = B.concat(tb1, tb2, axis=1 - tb1.axis)
+            res = B.concat(tb1, tb2, axis=_other_axis(tb1.axis))
         # No warnings here, because the dense versions are cached.
-        approx(B.concat(B.dense(tb1), B.dense(tb2), axis=1 - tb1.axis), res)
+        approx(B.concat(B.dense(tb1), B.dense(tb2), axis=_other_axis(tb1.axis)), res)
         assert isinstance(res, Dense)

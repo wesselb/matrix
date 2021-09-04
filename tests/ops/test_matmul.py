@@ -300,8 +300,8 @@ def test_matmul_wb_ut(wb1, ut2):
 
 def test_matmul_kron(kron1, kron2):
     if (
-        B.shape(kron1.left)[1] == B.shape(kron2.left)[0]
-        and B.shape(kron1.right)[1] == B.shape(kron2.right)[0]
+        B.shape(kron1.left, -1) == B.shape(kron2.left, -2)
+        and B.shape(kron1.right, -1) == B.shape(kron2.right, -2)
     ):
         _check_matmul(kron1, kron2, asserted_type=Kronecker)
     else:

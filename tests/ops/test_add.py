@@ -4,6 +4,7 @@ from plum import Dispatcher
 
 from matrix import (
     Constant,
+    Zero,
     Dense,
     Diagonal,
     LowerTriangular,
@@ -12,7 +13,6 @@ from matrix import (
     Woodbury,
     structured,
 )
-
 # noinspection PyUnresolvedReferences
 from ..util import (
     AssertDenseWarning,
@@ -144,6 +144,13 @@ def test_add_lr(lr1, lr2):
         ),
     ):
         check_bin_op(B.add, lr1, lr2, asserted_type=LowRank)
+    with ConditionalContext(
+        structured(lr1.left),
+        AssertDenseWarning(
+            ["indexing into <diagonal>", "concatenating <diagonal>, <dense>"]
+        ),
+    ):
+        check_bin_op(B.subtract, lr1, lr1, asserted_type=Zero)
 
 
 def test_add_lr_const(lr1, const_or_scalar2):
@@ -154,9 +161,23 @@ def test_add_lr_const(lr1, const_or_scalar2):
         check_bin_op(B.add, lr1, const_or_scalar2, asserted_type=LowRank)
 
 
+def test_add_lr_const_broadcasting():
+    const = B.add.invoke(LowRank, Constant)(Zero(int, 2, 3), Constant(1, 1, 1))
+    assert B.shape(const) == (2, 3)
+    const = B.add.invoke(Constant, LowRank)(Constant(1, 1, 1), Zero(int, 2, 3))
+    assert B.shape(const) == (2, 3)
+
+
 def test_add_lr_diag(lr1, diag2):
     check_bin_op(B.add, lr1, diag2, asserted_type=Woodbury)
     check_bin_op(B.add, diag2, lr1, asserted_type=Woodbury)
+
+
+def test_add_lr_diag_broadcasting():
+    const = B.add.invoke(Diagonal, Constant)(Zero(int, 2, 3), Constant(1, 1, 1))
+    assert B.shape(const) == (2, 3)
+    const = B.add.invoke(Constant, Diagonal)(Constant(1, 1, 1), Zero(int, 2, 3))
+    assert B.shape(const) == (2, 3)
 
 
 def test_add_wb(wb1, wb2):

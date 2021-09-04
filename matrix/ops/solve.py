@@ -2,6 +2,7 @@ import lab as B
 from algebra import proven
 from wbml.warning import warn_upmodule
 
+from .util import align_batch
 from ..constant import Zero
 from ..diagonal import Diagonal
 from ..matrix import AbstractMatrix, Dense, structured
@@ -23,6 +24,7 @@ def solve(a: AbstractMatrix, b: AbstractMatrix):
         warn_upmodule(
             f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
         )
+    a, b = align_batch(a, b)
     return B.solve(B.dense(a), B.dense(b))
 
 
@@ -37,7 +39,8 @@ def solve(a: LowerTriangular, b: AbstractMatrix):
         warn_upmodule(
             f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
         )
-    return Dense(B.trisolve(a.mat, B.dense(b), lower_a=True))
+    a, b = align_batch(a.mat, b)
+    return Dense(B.trisolve(B.dense(a), B.dense(b), lower_a=True))
 
 
 @B.dispatch
@@ -46,7 +49,8 @@ def solve(a: UpperTriangular, b: AbstractMatrix):
         warn_upmodule(
             f"Solving {a} x = {b}: converting to dense.", category=ToDenseWarning
         )
-    return Dense(B.trisolve(a.mat, B.dense(b), lower_a=False))
+    a, b = align_batch(a.mat, b)
+    return Dense(B.trisolve(B.dense(a), B.dense(b), lower_a=False))
 
 
 @B.dispatch

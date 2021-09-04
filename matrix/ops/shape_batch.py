@@ -1,8 +1,5 @@
-from typing import Union
-
 import lab as B
-from lab.shape import Shape
-from plum import convert
+from plum import convert, Union
 
 from ..constant import Zero, Constant
 from ..diagonal import Diagonal
@@ -10,10 +7,31 @@ from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import Dense, AbstractMatrix
 from ..shape import expand_and_broadcast
+from ..tiledblocks import TiledBlocks
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
 
 __all__ = []
+
+
+@B.dispatch
+def shape_batch(a, *dims: B.Int):
+    """Get the batch shape of a tensor.
+
+    Args:
+        a (tensor): Tensor.
+        *dims (int, optional): Dimensions to get.
+
+    Returns:
+        object: Batch shape of `a`.
+    """
+    a_shape_batch = B.shape_batch(a)
+    return B.squeeze(tuple(a_shape_batch[i] for i in dims))
+
+
+@B.dispatch
+def shape_batch(*elements):
+    return expand_and_broadcast(*(B.shape_batch(element) for element in elements))
 
 
 @B.dispatch
@@ -43,25 +61,24 @@ def shape_batch(a: Constant):
 
 @B.dispatch
 def shape_batch(a: LowRank):
-    return expand_and_broadcast(
-        Shape(*B.shape_batch(a.left)),
-        Shape(*B.shape_batch(a.middle)),
-        Shape(*B.shape_batch(a.right)),
-    )
+    return B.shape_batch(a.left, a.right, a.middle)
 
 
 @B.dispatch
 def shape_batch(a: Woodbury):
-    return expand_and_broadcast(
-        Shape(*B.shape_batch(a.lr)), Shape(*B.shape_batch(a.diag))
-    )
+    return B.shape_batch(a.diag, a.lr)
 
 
 @B.dispatch
 def shape_batch(a: Kronecker):
-    return expand_and_broadcast(
-        Shape(*B.shape_batch(a.left)), Shape(*B.shape_batch(a.right))
-    )
+    return B.shape_batch(a.left, a.right)
+
+
+@B.dispatch
+def shape_batch(a: TiledBlocks):
+    # `shape` is directly implemented for `TiledBlocks`, and the batch shape can be
+    # inferred from it.
+    return B.shape(a)[:-2]
 
 
 B.shape_batch = shape_batch

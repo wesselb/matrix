@@ -1,5 +1,4 @@
 import lab as B
-import pytest
 
 from matrix import (
     Constant,
@@ -75,7 +74,10 @@ def test_transpose_tb(tb1):
         check_un_op(B.transpose, tb1, asserted_type=TiledBlocks)
 
 
-def test_transpose_tb_axis(tb1):
-    tb1.axis = 3
-    with pytest.raises(RuntimeError):
-        B.transpose(tb1)
+def test_transpose_tb_batch():
+    # There will be no warning, because all matrices are already dense.
+    check_un_op(
+        B.transpose,
+        TiledBlocks((B.randn(1, 3, 4), 2), (B.randn(2, 3, 4), 3), axis=0),
+        asserted_type=TiledBlocks,
+    )

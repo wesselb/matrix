@@ -11,7 +11,7 @@ from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
 from ..matrix import AbstractMatrix, Dense, structured
-from ..shape import assert_compatible, expand_and_broadcast
+from ..shape import assert_compatible
 from ..triangular import LowerTriangular, UpperTriangular
 from ..util import ToDenseWarning
 from ..woodbury import Woodbury
@@ -33,13 +33,13 @@ def _reverse_call(t0, t1):
 @B.dispatch(precedence=proven())
 def add(a: AbstractMatrix, b: Zero):
     assert_compatible(B.shape(a), B.shape(b))
-    return B.broadcast_to(a, *broadcast(a, b))
+    return B.broadcast_to(a, *B.shape(a, b))
 
 
 @B.dispatch(precedence=proven())
 def add(a: Zero, b: AbstractMatrix):
     assert_compatible(B.shape(a), B.shape(b))
-    return B.broadcast_to(b, *broadcast(a, b))
+    return B.broadcast_to(b, *B.shape(a, b))
 
 
 # Dense
@@ -73,7 +73,7 @@ def add(a: Diagonal, b: Diagonal):
 @B.dispatch
 def add(a: Constant, b: Constant):
     assert_compatible(B.shape(a), B.shape(b))
-    return Constant(B.add(a.const, b.const), *broadcast(a, b))
+    return Constant(B.add(a.const, b.const), *B.shape(a, b))
 
 
 @B.dispatch
@@ -82,13 +82,18 @@ def add(a: Constant, b: AbstractMatrix):
         warn_upmodule(
             f"Adding {a} and {b}: converting to dense.", category=ToDenseWarning
         )
-    return Dense(B.broadcast_to(a.const + B.dense(b), *broadcast(a, b).as_tuple()))
+    return Dense(
+        B.broadcast_to(
+            B.add(B.expand_dims(a.const, axis=-1, times=2), B.dense(b)),
+            *B.shape(a, b),
+        )
+    )
 
 
 @B.dispatch
 def add(a: Constant, b: Diagonal):
     assert_compatible(B.shape(a), B.shape(b))
-    a = Constant(a.const, *broadcast(a, b))
+    a = Constant(a.const, *B.shape_matrix(a, b))
     return add(convert(a, LowRank), b)
 
 
@@ -139,13 +144,13 @@ _reverse_call(UpperTriangular, LowerTriangular)
 
 
 def _pad_zero_row(a):
-    zeros = B.zeros(B.dtype(a), 1, B.shape(a)[1])
-    return B.concat(a, zeros, axis=0)
+    zeros = B.zeros(B.dtype(a), *B.shape_batch(a), 1, B.shape(a, -1))
+    return B.concat(a, zeros, axis=-2)
 
 
 def _pad_zero_col(a):
-    zeros = B.zeros(B.dtype(a), B.shape(a)[0], 1)
-    return B.concat(a, zeros, axis=1)
+    zeros = B.zeros(B.dtype(a), *B.shape_batch(a), B.shape(a, -2), 1)
+    return B.concat(a, zeros, axis=-1)
 
 
 def _pad_zero_both(a):
@@ -154,7 +159,7 @@ def _pad_zero_both(a):
 
 @B.dispatch
 def add(a: LowRank, b: LowRank):
-    assert_compatible(a, b)
+    assert_compatible(B.shape(a), B.shape(b))
 
     l_a_p, l_b_p, l_a_jp, l_b_jp = align(a.left, b.left)
     r_a_p, r_b_p, r_a_jp, r_b_jp = align(a.right, b.right)
@@ -174,13 +179,29 @@ def add(a: LowRank, b: LowRank):
     b_mid = B.take(B.take(_pad_zero_both(b.middle), l_b_p, axis=-2), r_b_p, axis=-1)
     join_middle = add(a_mid, b_mid)
 
-    return LowRank(join_left, join_right, join_middle)
+    # Construct resulting low-rank matrix.
+    lr = LowRank(join_left, join_right, join_middle)
+
+    # The low-rank matrix may be zero. Check this.
+    if B.control_flow.use_cache:
+        is_zero = B.control_flow.get_outcome("add:is_zero")
+    else:
+        is_zero = B.mean(B.abs(join_middle)) < 1e-10
+        if B.control_flow.caching:
+            B.control_flow.set_outcome("add:is_zero", is_zero)
+
+    # Return zero if the low-rank matrix is zero and return the low-rank matrix
+    # otherwise.
+    if is_zero:
+        return B.zeros(lr)
+    else:
+        return lr
 
 
-@B.dispatch(LowRank, Constant)
-def add(a, b):
-    assert_compatible(B.shape(a), B.shape(b))
-    b = Constant(b.const, *expand_and_broadcast(B.shape(a), B.shape(b)))
+@B.dispatch
+def add(a: LowRank, b: Constant):
+    b = Constant(b.const, *B.shape_matrix(a, b))
+    return add(a, convert(b, LowRank))
 
 
 @B.dispatch
@@ -203,12 +224,12 @@ def add(a: Diagonal, b: LowRank):
 
 @B.dispatch
 def add(a: Woodbury, b: Woodbury):
-    return Woodbury(add(a.diag, b.diag), add(a.lr, b.lr))
+    return B.add(add(a.diag, b.diag), add(a.lr, b.lr))
 
 
 @B.dispatch
 def add(a: Woodbury, b: Diagonal):
-    return Woodbury(add(a.diag, b), a.lr)
+    return B.add(add(a.diag, b), a.lr)
 
 
 @B.dispatch
@@ -218,7 +239,7 @@ def add(a: Diagonal, b: Woodbury):
 
 @B.dispatch.multi((Woodbury, Constant), (Woodbury, LowRank))
 def add(a: Woodbury, b: Union[Constant, LowRank]):
-    return Woodbury(a.diag, add(a.lr, b))
+    return B.add(a.diag, add(a.lr, b))
 
 
 @B.dispatch.multi((Constant, Woodbury), (LowRank, Woodbury))

@@ -9,14 +9,14 @@ from .util import AssertDenseWarning, approx, dense1
 
 def test_tb_formatting():
     tb = TiledBlocks((Diagonal(B.ones(3)), 1), (Zero(int, 3, 3), 2), axis=0)
-    assert str(tb) == "<tile of blocks: shape=9x3, axis=0, dtype=float64>"
+    assert str(tb) == "<tile of blocks: batch=(), shape=(9, 3), axis=0, dtype=float64>"
     assert repr(tb) == (
-        "<tile of blocks: shape=9x3, axis=0, dtype=float64\n"
+        "<tile of blocks: batch=(), shape=(9, 3), axis=0, dtype=float64\n"
         " <block: reps=1\n"
-        "  matrix=<diagonal matrix: shape=3x3, dtype=float64\n"
+        "  matrix=<diagonal matrix: batch=(), shape=(3, 3), dtype=float64\n"
         "           diag=[1. 1. 1.]>\n"
         " <block: reps=2\n"
-        "  matrix=<zero matrix: shape=3x3, dtype=int>>"
+        "  matrix=<zero matrix: batch=(), shape=(3, 3), dtype=int>>"
     )
 
 
@@ -48,11 +48,3 @@ def test_tb_checks():
     # Check that inputs must all be matrices.
     with pytest.raises(AssertionError):
         TiledBlocks(B.ones(3), Diagonal(B.ones(2)), axis=0)
-    # Check that the blocks must all align.
-    with pytest.raises(ValueError):
-        TiledBlocks(Diagonal(B.ones(3)), Diagonal(B.ones(2)), axis=0)
-    with pytest.raises(ValueError):
-        TiledBlocks(Diagonal(B.ones(3)), Diagonal(B.ones(2)), axis=1)
-    # Check the value for `axis`.
-    with pytest.raises(ValueError):
-        TiledBlocks(Diagonal(B.ones(3)), Diagonal(B.ones(3)), axis=3)

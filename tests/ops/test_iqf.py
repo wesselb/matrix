@@ -1,14 +1,25 @@
 import lab as B
 
+from matrix.ops.util import align_batch
 # noinspection PyUnresolvedReferences
-from ..util import approx, check_un_op, dense1, dense2, dense_pd, diag_pd, lr_pd, wb_pd
+from ..util import (
+    approx,
+    check_un_op,
+    dense1,
+    dense2,
+    dense_pd,
+    diag_pd,
+    lr_pd,
+    wb_pd,
+)
 
 
 def _check_iqf(a, b, c):
     res = B.iqf(a, b, c)
 
     # Check correctness.
-    approx(res, B.mm(B.dense(b), B.solve(B.dense(a), B.dense(c)), tr_a=True))
+    a_dense, c_dense = align_batch(a, c)
+    approx(res, B.mm(B.dense(b), B.solve(a_dense, c_dense), tr_a=True))
 
 
 def test_iqf_two_arguments(dense_pd, dense1):

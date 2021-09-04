@@ -1,5 +1,4 @@
 import lab as B
-import pytest
 
 from matrix import Diagonal
 
@@ -26,8 +25,3 @@ def test_diagonal_attributes():
 
 def test_conversion_to_diagonal(dense1):
     approx(Diagonal(dense1), B.diag_construct(B.diag_extract(dense1)))
-
-
-def test_diagonal_checks():
-    with pytest.raises(AssertionError):
-        Diagonal(B.ones(3, 3))

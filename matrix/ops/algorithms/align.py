@@ -21,13 +21,16 @@ def align(a, b):
         b_join_perm = B.control_flow.get_outcome("align:b_join_perm")
         return a_perm, b_perm, a_join_perm, b_join_perm
 
+    # We perform the sorting based on the first elements.
+    a0 = a[(0,) * len(B.shape_batch(a)) + (slice(None), slice(None))]
+    b0 = b[(0,) * len(B.shape_batch(b)) + (slice(None), slice(None))]
+
     def equal(index_a, index_b):
-        dist = B.mean(B.subtract(a[..., :, index_a], b[..., :, index_b]) ** 2)
-        return dist < 1e-10
+        return B.mean(B.subtract(a0[:, index_a], b0[:, index_b]) ** 2) < 1e-10
 
     # We need the norms later on.
-    a_norms = B.sum(B.multiply(a, a), axis=0)
-    b_norms = B.sum(B.multiply(b, b), axis=0)
+    a_norms = B.sum(B.multiply(a0, a0), axis=0)
+    b_norms = B.sum(B.multiply(b0, b0), axis=0)
 
     # Perform sorting to enable linear-time algorithm. These need to be regular Python
     # lists.

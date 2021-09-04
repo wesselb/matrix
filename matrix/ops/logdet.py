@@ -19,7 +19,7 @@ def logdet(a: AbstractMatrix):
 
 @B.dispatch
 def logdet(a: Union[Diagonal, LowerTriangular, UpperTriangular]):
-    return B.sum(B.log(B.diag(a)))
+    return B.sum(B.log(B.diag(a)), axis=-1)
 
 
 @B.dispatch
@@ -36,6 +36,6 @@ def logdet(a: Kronecker):
         a.right,
         f"Right factor of {a} must be square to compute the log-determinant.",
     )
-    n = B.shape(a.left)[0]
-    m = B.shape(a.right)[0]
+    n = B.shape_matrix(a.left, 0)
+    m = B.shape_matrix(a.right, 0)
     return m * B.logdet(a.left) + n * B.logdet(a.right)

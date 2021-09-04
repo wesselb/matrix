@@ -31,7 +31,7 @@ def root(a: B.Numeric):  # pragma: no cover
     """
     _assert_square_root(a)
     u, s, _ = B.svd(a)
-    return B.mm(u, B.diag(B.sqrt(s)), u, tr_c=True)
+    return B.mm(u, B.diag_construct(B.sqrt(s)), u, tr_c=True)
 
 
 B.root = root

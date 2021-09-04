@@ -3,6 +3,7 @@ import warnings
 from itertools import product
 
 import lab as B
+import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 from plum import Dispatcher, Union
@@ -19,6 +20,7 @@ from matrix import (
     Woodbury,
     Zero,
 )
+from matrix.ops.util import align_batch
 from matrix.util import ToDenseWarning
 
 __all__ = [
@@ -30,6 +32,7 @@ __all__ = [
     "ConditionalContext",
     "concat_warnings",
     # Fixtures:
+    "gen_batch_code",
     "mat1",
     "mat2",
     "vec1",
@@ -108,22 +111,40 @@ def _assert_instance(x, asserted_type):
     ), f"Expected instance of type {asserted_type} but got {type(x)}."
 
 
-def check_un_op(op, x, asserted_type=object):
+def check_un_op(op, x, ref=None, asserted_type=object):
     """Assert the correct of a unary operation by checking whether the
     result is the same on the dense version of the argument.
 
     Args:
         op (function): Unary operation to check.
+        ref (function, optional): Set this as the function to be used as the reference
+            to which the dense matrices will be fed.
         x (object): Argument.
         asserted_type (type, optional): Type of result.
     """
+    if ref:
+        op_ref = ref
+    else:
+        op_ref = op
+
     x_dense = B.dense(x)
+
     res = op(x)
-    approx(res, op(x_dense))
+    res_ref = op_ref(x_dense)
+    approx(res, res_ref)
+
     _assert_instance(res, asserted_type)
 
 
-def check_bin_op(op, x, y, asserted_type=object, check_broadcasting=True):
+def check_bin_op(
+    op,
+    x,
+    y,
+    ref=None,
+    asserted_type=object,
+    check_broadcasting=True,
+    align_dense_batch=False,
+):
     """Assert the correct of a binary operation by checking whether the
     result is the same on the dense versions of the arguments.
 
@@ -131,20 +152,35 @@ def check_bin_op(op, x, y, asserted_type=object, check_broadcasting=True):
         op (function): Binary operation to check.
         x (object): First argument.
         y (object): Second argument.
+        ref (function, optional): Set this as the function to be used as the reference
+            to which the dense matrices will be fed.
         asserted_type (type, optional): Type of result.
         check_broadcasting (bool, optional): Check broadcasting behaviour.
+        align_dense_batch (bool, optional): Broadcast the batch dimensions of the
+            dense matrices to check against. This can be used if the operation for
+            dense matrices does not support broadcasting of batch dimensions.
     """
+    if ref:
+        op_ref = ref
+    else:
+        op_ref = op
+
     x_dense = B.dense(x)
     y_dense = B.dense(y)
-    res = op(x, y)
+    if align_dense_batch:
+        x_dense, y_dense = align_batch(x_dense, y_dense)
 
-    approx(res, op(x_dense, y_dense))
+    res = op(x, y)
+    res_ref = op_ref(x_dense, y_dense)
+    approx(res, res_ref)
+
+    # Test any possible caching.
+    approx(op(x, y), op_ref(x_dense, y_dense))
 
     with IgnoreDenseWarning():
         if check_broadcasting:
-            approx(op(x_dense, y), op(x_dense, y_dense))
-            approx(op(x, y_dense), op(x_dense, y_dense))
-        approx(op(x_dense, y_dense), op(x_dense, y_dense))
+            approx(op(x_dense, y), res_ref)
+            approx(op(x, y_dense), res_ref)
 
     _assert_instance(res, asserted_type)
 
@@ -312,21 +348,34 @@ concat_warnings = [
 
 # Fixtures:
 
-batch_prefixes = ["|", "3|", "2,3|"]
+batch_prefixes = ["|", "3|"]
 
 
-@_dispatch(str)
-def loop_batches(code):
+@pytest.fixture(params=[0, 1, 2])
+def gen_batch_code(request):
+    if request.param == 0:
+        # No batches
+        return lambda: "|"
+    elif request.param == 1:
+        # All batched
+        return lambda: "3|"
+    else:
+        # Random mixture
+        return lambda: np.random.choice(batch_prefixes)
+
+
+@_dispatch
+def loop_batches(code: str):
     return [prefix + code for prefix in batch_prefixes]
 
 
-@_dispatch(tuple)
-def loop_batches(codes):
+@_dispatch
+def loop_batches(codes: tuple):
     return list(product(*(loop_batches(code) for code in codes)))
 
 
-@_dispatch(list)
-def loop_batches(codes):
+@_dispatch
+def loop_batches(codes: list):
     return [prefixed_code for code in codes for prefixed_code in loop_batches(code)]
 
 
@@ -435,12 +484,12 @@ def const_pd(request):
     return generate(request.param)
 
 
-@pytest.fixture(params=loop_batches(["randn:", "const:6,6"]))
+@pytest.fixture(params=["|randn:"] + loop_batches(["const:6,6"]))
 def const_or_scalar1(request):
     return generate(request.param)
 
 
-@pytest.fixture(params=loop_batches(["randn:", "const:6,6"]))
+@pytest.fixture(params=["|randn:"] + loop_batches(["const:6,6"]))
 def const_or_scalar2(request):
     return generate(request.param)
 
@@ -476,12 +525,14 @@ def ut_pd(request):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("dense:6,1", "dense:1,1"),
-        ("dense:6,2", "dense:2,2"),
-        ("dense:6,3", "dense:3,3"),
-        ("diag:6", "dense:6,6"),
-    ])
+    params=loop_batches(
+        [
+            ("dense:6,1", "dense:1,1"),
+            ("dense:6,2", "dense:2,2"),
+            ("dense:6,3", "dense:3,3"),
+            ("diag:6", "dense:6,6"),
+        ]
+    )
 )
 def lr1(request):
     code_lr, code_m = request.param
@@ -489,12 +540,14 @@ def lr1(request):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("dense:6,1", "dense:1,1"),
-        ("dense:6,2", "dense:2,2"),
-        ("dense:6,3", "dense:3,3"),
-        ("diag:6", "dense:6,6"),
-    ])
+    params=loop_batches(
+        [
+            ("dense:6,1", "dense:1,1"),
+            ("dense:6,2", "dense:2,2"),
+            ("dense:6,3", "dense:3,3"),
+            ("diag:6", "dense:6,6"),
+        ]
+    )
 )
 def lr2(request):
     code_lr, code_m = request.param
@@ -502,12 +555,14 @@ def lr2(request):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("dense:6,1", "dense:4,1", "dense:1,1"),
-        ("dense:6,2", "dense:4,2", "dense:2,2"),
-        ("dense:6,3", "dense:4,3", "dense:3,3"),
-        ("diag:6", "dense:4,6", "dense:6,6"),
-    ])
+    params=loop_batches(
+        [
+            ("dense:6,1", "dense:4,1", "dense:1,1"),
+            ("dense:6,2", "dense:4,2", "dense:2,2"),
+            ("dense:6,3", "dense:4,3", "dense:3,3"),
+            ("diag:6", "dense:4,6", "dense:6,6"),
+        ]
+    )
 )
 def lr_r(request):
     code_l, code_r, code_m = request.param
@@ -515,12 +570,14 @@ def lr_r(request):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("dense:6,1", "dense_pd:1,2"),
-        ("dense:6,2", "dense_pd:2,2"),
-        ("dense:6,3", "dense_pd:3,3"),
-        ("diag:6", "diag_pd:6"),
-    ])
+    params=loop_batches(
+        [
+            ("dense:6,1", "dense_pd:1,2"),
+            ("dense:6,2", "dense_pd:2,2"),
+            ("dense:6,3", "dense_pd:3,3"),
+            ("diag:6", "diag_pd:6"),
+        ]
+    )
 )
 def lr_pd(request):
     code_l, code_m = request.param
@@ -543,16 +600,18 @@ def wb_pd(diag_pd, lr_pd):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("diag:1", "diag:6"),
-        ("diag:2", "diag:3"),
-        ("diag:3", "diag:2"),
-        ("diag:6", "diag:1"),
-        ("dense:1,1", "dense:6,6"),
-        ("dense:2,2", "dense:3,3"),
-        ("dense:3,3", "dense:2,2"),
-        ("dense:6,6", "dense:1,1"),
-    ])
+    params=loop_batches(
+        [
+            ("diag:1", "diag:6"),
+            ("diag:2", "diag:3"),
+            ("diag:3", "diag:2"),
+            ("diag:6", "diag:1"),
+            ("dense:1,1", "dense:6,6"),
+            ("dense:2,2", "dense:3,3"),
+            ("dense:3,3", "dense:2,2"),
+            ("dense:6,6", "dense:1,1"),
+        ]
+    )
 )
 def kron1(request):
     code1, code2 = request.param
@@ -560,16 +619,18 @@ def kron1(request):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("diag:1", "diag:6"),
-        ("diag:2", "diag:3"),
-        ("diag:3", "diag:2"),
-        ("diag:6", "diag:1"),
-        ("dense:1,1", "dense:1,1"),
-        ("dense:2,2", "dense:3,3"),
-        ("dense:3,3", "dense:2,2"),
-        ("dense:6,6", "dense:1,1"),
-    ])
+    params=loop_batches(
+        [
+            ("diag:1", "diag:6"),
+            ("diag:2", "diag:3"),
+            ("diag:3", "diag:2"),
+            ("diag:6", "diag:1"),
+            ("dense:1,1", "dense:1,1"),
+            ("dense:2,2", "dense:3,3"),
+            ("dense:3,3", "dense:2,2"),
+            ("dense:6,6", "dense:1,1"),
+        ]
+    )
 )
 def kron2(request):
     code1, code2 = request.param
@@ -577,12 +638,14 @@ def kron2(request):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("diag:2", "dense:3,2"),
-        ("dense:3,2", "diag:2"),
-        ("dense:1,4", "dense:6,1"),
-        ("dense:6,1", "dense:1,4"),
-    ])
+    params=loop_batches(
+        [
+            ("diag:2", "dense:3,2"),
+            ("dense:3,2", "diag:2"),
+            ("dense:1,4", "dense:6,1"),
+            ("dense:6,1", "dense:1,4"),
+        ]
+    )
 )
 def kron_r(request):
     code1, code2 = request.param
@@ -590,16 +653,18 @@ def kron_r(request):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("diag_pd:1", "diag_pd:6"),
-        ("diag_pd:2", "diag_pd:3"),
-        ("diag_pd:3", "diag_pd:2"),
-        ("diag_pd:6", "diag_pd:1"),
-        ("dense_pd:1,1", "dense_pd:6,6"),
-        ("dense_pd:2,2", "dense_pd:3,3"),
-        ("dense_pd:3,3", "dense_pd:2,2"),
-        ("dense_pd:6,6", "dense_pd:1,1"),
-    ])
+    params=loop_batches(
+        [
+            ("diag_pd:1", "diag_pd:6"),
+            ("diag_pd:2", "diag_pd:3"),
+            ("diag_pd:3", "diag_pd:2"),
+            ("diag_pd:6", "diag_pd:1"),
+            ("dense_pd:1,1", "dense_pd:6,6"),
+            ("dense_pd:2,2", "dense_pd:3,3"),
+            ("dense_pd:3,3", "dense_pd:2,2"),
+            ("dense_pd:6,6", "dense_pd:1,1"),
+        ]
+    )
 )
 def kron_pd(request):
     code1, code2 = request.param
@@ -607,35 +672,46 @@ def kron_pd(request):
 
 
 @pytest.fixture(
-    params=loop_batches([
-        ("diag:1", "diag:6"),
-        ("diag:2", "diag:3"),
-        ("diag:3", "diag:2"),
-        ("diag:6", "diag:1"),
-        ("dense:1,6", "dense:6,1"),
-        ("dense:2,3", "dense:3,2"),
-        ("dense:3,2", "dense:2,3"),
-        ("dense:6,1", "dense:1,6"),
-    ])
+    params=loop_batches(
+        [
+            ("diag:1", "diag:6"),
+            ("diag:2", "diag:3"),
+            ("diag:3", "diag:2"),
+            ("diag:6", "diag:1"),
+            ("dense:1,6", "dense:6,1"),
+            ("dense:2,3", "dense:3,2"),
+            ("dense:3,2", "dense:2,3"),
+            ("dense:6,1", "dense:1,6"),
+        ]
+    )
 )
 def kron_mixed(request):
     code1, code2 = request.param
     return Kronecker(generate(code1), generate(code2))
 
 
-@pytest.fixture(params=[0, 1])
+@pytest.fixture(params=[-2, -1, 0, 1, 2])
 def tb_axis(request):
     return request.param
 
 
 _tb_codes = [
-    [("dense:3,3", 2), ("zero:3,3", 3), ("lt:3,3", 4)],
-    [("diag:3", 2), ("ut:3,3", 3), ("diag:3", 1)],
+    [(c1, 2), (c2, 3), (c3, 4)]
+    for c1, c2, c3 in loop_batches([("dense:3,3", "zero:3,3", "lt:3,3")])
+] + [
+    [(c1, 2), (c2, 3), (c3, 1)]
+    for c1, c2, c3 in loop_batches([("diag:3", "ut:3,3", "diag:3")])
 ]
 
 
 @pytest.fixture(params=_tb_codes)
 def tb1(request, tb_axis):
+    # Ensure that the axis is compatible.
+    if tb_axis in {-2, 2} and all(code.startswith("|") for code, _ in request.param):
+        if tb_axis == -2:
+            tb_axis = -1
+        else:
+            tb_axis = 1
     return TiledBlocks(
         *((generate(code), rep) for code, rep in request.param), axis=tb_axis
     )
@@ -643,6 +719,12 @@ def tb1(request, tb_axis):
 
 @pytest.fixture(params=_tb_codes)
 def tb2(request, tb_axis):
+    # Ensure that the axis is compatible.
+    if tb_axis in {-2, 2} and all(code.startswith("|") for code, _ in request.param):
+        if tb_axis == -2:
+            tb_axis = -1
+        else:
+            tb_axis = 1
     return TiledBlocks(
         *((generate(code), rep) for code, rep in request.param), axis=tb_axis
     )

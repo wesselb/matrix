@@ -9,8 +9,8 @@ __all__ = []
 
 
 def _product_shape(a, b):
-    ar, ac = B.shape(a)
-    br, bc = B.shape(b)
+    ar, ac = B.shape_matrix(a)
+    br, bc = B.shape_matrix(b)
     return ar * br, ac * bc
 
 
@@ -19,7 +19,7 @@ def _product_shape(a, b):
 
 @B.dispatch(precedence=proven())
 def kron(a: AbstractMatrix, b: Zero):
-    return Zero(B.dtype(b), *_product_shape(a, b))
+    return Zero(B.dtype(b), *B.shape_batch(a, b), *_product_shape(a, b))
 
 
 @B.dispatch(precedence=proven())

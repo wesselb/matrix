@@ -9,10 +9,31 @@ from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import Dense, AbstractMatrix
 from ..shape import broadcast
+from ..tiledblocks import TiledBlocks
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
 
 __all__ = []
+
+
+@B.dispatch
+def shape_matrix(a, *dims: B.Int):
+    """Get the matrix shape of a tensor.
+
+    Args:
+        a (tensor): Tensor.
+        *dims (int, optional): Dimensions to get.
+
+    Returns:
+        object: Matrix shape of `a`.
+    """
+    a_shape_matrix = B.shape_matrix(a)
+    return B.squeeze(tuple(a_shape_matrix[i] for i in dims))
+
+
+@B.dispatch
+def shape_matrix(*elements):
+    return broadcast(*(B.shape_matrix(element) for element in elements))
 
 
 @B.dispatch
@@ -27,7 +48,7 @@ def shape_matrix(a: Union[Dense, LowerTriangular, UpperTriangular]):
 
 @B.dispatch
 def shape_matrix(a: Diagonal):
-    diag_len = B.shape(a.diag)[-1]
+    diag_len = B.shape(a.diag, -1)
     return diag_len, diag_len
 
 
@@ -38,12 +59,12 @@ def shape_matrix(a: Union[Zero, Constant]):
 
 @B.dispatch
 def shape_matrix(a: LowRank):
-    return B.shape_matrix(a.left)[0], B.shape_matrix(a.right)[0]
+    return B.shape_matrix(a.left, 0), B.shape_matrix(a.right, 0)
 
 
 @B.dispatch
 def shape_matrix(a: Woodbury):
-    return broadcast(B.shape_matrix(a.diag), B.shape_matrix(a.lr))
+    return B.shape_matrix(a.diag, a.lr)
 
 
 @B.dispatch
@@ -54,21 +75,10 @@ def shape_matrix(a: Kronecker):
 
 
 @B.dispatch
-def shape(a: TiledBlocks):
-    if a.axis == 0:
-        cols = B.shape(a.blocks[0], 1)
-        rows = 0
-        for block, rep in zip(a.blocks, a.reps):
-            rows += rep * B.shape(block, 0)
-        return rows, cols
-    elif a.axis == 1:
-        rows = B.shape(a.blocks[0], 0)
-        cols = 0
-        for block, rep in zip(a.blocks, a.reps):
-            cols += rep * B.shape(block, 1)
-        return rows, cols
-    else:
-        raise RuntimeError(f"Invalid axis {a.axis}.")
+def shape_matrix(a: TiledBlocks):
+    # `shape` is directly implemented for `TiledBlocks`, and the matrix shape can be
+    # inferred from it.
+    return B.shape(a)[-2:]
 
 
 B.shape_matrix = shape_matrix
