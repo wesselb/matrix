@@ -46,8 +46,7 @@ class LowRank(AbstractMatrix):
         # Check middle factor, if it is given.
         if self._middle is not None:
             assert_matrix(
-                self._middle,
-                f"Middle factor is not a tensor of at least rank 2. {msg}"
+                self._middle, f"Middle factor is not a tensor of at least rank 2. {msg}"
             )
             if B.shape_matrix(self.left, 1) != B.shape_matrix(self._middle, 0):
                 raise AssertionError(
@@ -58,8 +57,7 @@ class LowRank(AbstractMatrix):
         # Check right factor, if it is given.
         if self._right is not None:
             assert_matrix(
-                self._right,
-                f"Right factor is tensor of at least rank 2. {msg}"
+                self._right, f"Right factor is tensor of at least rank 2. {msg}"
             )
 
             if self._middle is not None:

@@ -3,6 +3,7 @@ import pytest
 from lab.shape import Shape
 
 from matrix.ops.shape import _drop_axis
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     AssertDenseWarning,

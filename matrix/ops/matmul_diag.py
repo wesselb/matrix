@@ -7,7 +7,7 @@ __all__ = []
 
 
 @B.dispatch
-def matmul_diag(a, b, tr_a: bool = False, tr_b:bool = False):
+def matmul_diag(a, b, tr_a: bool = False, tr_b: bool = False):
     """Compute the diagonal of the matrix product of `a` and `b`.
 
     Args:
@@ -28,5 +28,5 @@ B.matmul_diag = matmul_diag
 
 
 @B.dispatch
-def matmul_diag(a: LowRank, b: LowRank, tr_a: bool = False, tr_b:bool = False):
+def matmul_diag(a: LowRank, b: LowRank, tr_a: bool = False, tr_b: bool = False):
     return B.diag(B.matmul(a, b, tr_a=tr_a, tr_b=tr_b))

@@ -2,6 +2,7 @@ import lab as B
 from scipy.linalg import block_diag
 
 from matrix import Dense, Diagonal, TiledBlocks, Zero
+
 # noinspection PyUnresolvedReferences
 from ..util import AssertDenseWarning, approx, generate, gen_batch_code as gen
 

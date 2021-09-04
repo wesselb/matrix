@@ -2,6 +2,7 @@ import lab as B
 
 from matrix import Dense, Diagonal, Zero
 from matrix.ops.util import align_batch
+
 # noinspection PyUnresolvedReferences
 from ..util import AssertDenseWarning, approx, generate, gen_batch_code as gen
 

@@ -36,7 +36,7 @@ def tile(a: Constant, *repetitions: B.Int):
     if B.rank(a) != len(repetitions):
         raise ValueError(f"Must give one repetition for every dimension of {a}.")
     return Constant(
-        B.tile(a.const, *repetitions[:len(a.batch)]),
+        B.tile(a.const, *repetitions[: len(a.batch)]),
         a.rows * repetitions[-2],
         a.cols * repetitions[-1],
     )

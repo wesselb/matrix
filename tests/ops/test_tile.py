@@ -2,6 +2,7 @@ import lab.jax as B
 import pytest
 
 from matrix import Constant, Dense, Zero
+
 # noinspection PyUnresolvedReferences
 from ..util import AssertDenseWarning, approx, check_un_op, const1, dense1, diag1, zero1
 

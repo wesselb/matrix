@@ -2,6 +2,7 @@ import lab as B
 
 from matrix import Constant, Kronecker, Zero
 from matrix.ops.util import align_batch
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     AssertDenseWarning,

@@ -13,6 +13,7 @@ from matrix import (
     Woodbury,
     structured,
 )
+
 # noinspection PyUnresolvedReferences
 from ..util import (
     AssertDenseWarning,
