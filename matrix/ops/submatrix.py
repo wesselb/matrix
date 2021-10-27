@@ -3,7 +3,6 @@ import numpy as np
 from plum import Dispatcher
 from wbml.warning import warn_upmodule
 
-from .take import _count_indices_or_mask
 from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..lowrank import LowRank
@@ -11,6 +10,7 @@ from ..matrix import AbstractMatrix, Dense, structured
 from ..triangular import LowerTriangular, UpperTriangular
 from ..util import ToDenseWarning
 from ..woodbury import Woodbury
+from .take import _count_indices_or_mask
 
 __all__ = []
 

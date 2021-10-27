@@ -39,7 +39,10 @@ from .sample import *
 from .schur import *
 from .shape import *
 from .shape_batch import *
+from .shape_batch_broadcast import *
+from .shape_broadcast import *
 from .shape_matrix import *
+from .shape_matrix_broadcast import *
 from .solve import *
 from .sqrt import *
 from .squeeze import *

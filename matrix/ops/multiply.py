@@ -34,7 +34,7 @@ def multiply(a: AbstractMatrix, b: Zero):
 @B.dispatch(precedence=proven())
 def multiply(a: Zero, b: AbstractMatrix):
     assert_compatible(B.shape(a), B.shape(b))
-    return B.broadcast_to(a, *B.shape(a, b))
+    return B.broadcast_to(a, *B.shape_broadcast(a, b))
 
 
 # Dense
@@ -89,7 +89,7 @@ _reverse_call(Diagonal, AbstractMatrix)
 @B.dispatch
 def multiply(a: Constant, b: Constant):
     assert_compatible(B.shape(a), B.shape(b))
-    return Constant(B.multiply(a.const, b.const), *B.shape(a, b))
+    return Constant(B.multiply(a.const, b.const), *B.shape_broadcast(a, b))
 
 
 @B.dispatch
@@ -102,7 +102,7 @@ def multiply(a: Constant, b: AbstractMatrix):
     return Dense(
         B.broadcast_to(
             B.multiply(B.expand_dims(a.const, axis=-1, times=2), B.dense(b)),
-            *B.shape(a, b),
+            *B.shape_broadcast(a, b),
         )
     )
 

@@ -18,7 +18,7 @@ def align_batch(*xs: Union[B.Numeric, AbstractMatrix]):
     Returns:
         matrix or tuple[matrix]: `xs` with broadcasted batch dimensions.
     """
-    batch = B.shape_batch(*xs)
+    batch = B.shape_batch_broadcast(*xs)
     return B.squeeze([B.broadcast_batch_to(x, *batch) for x in xs])
 
 
@@ -32,7 +32,7 @@ def align_batch(*collections: List[Union[B.Numeric, AbstractMatrix]]):
     Returns:
         list[list[matrix]]: Inputs with broadcasted batch dimensions.
     """
-    batch = B.shape_batch(*(x for xs in collections for x in xs))
+    batch = B.shape_batch_broadcast(*(x for xs in collections for x in xs))
     return [[B.broadcast_batch_to(x, *batch) for x in xs] for xs in collections]
 
 

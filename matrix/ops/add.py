@@ -33,13 +33,13 @@ def _reverse_call(t0, t1):
 @B.dispatch(precedence=proven())
 def add(a: AbstractMatrix, b: Zero):
     assert_compatible(B.shape(a), B.shape(b))
-    return B.broadcast_to(a, *B.shape(a, b))
+    return B.broadcast_to(a, *B.shape_broadcast(a, b))
 
 
 @B.dispatch(precedence=proven())
 def add(a: Zero, b: AbstractMatrix):
     assert_compatible(B.shape(a), B.shape(b))
-    return B.broadcast_to(b, *B.shape(a, b))
+    return B.broadcast_to(b, *B.shape_broadcast(a, b))
 
 
 # Dense
@@ -73,7 +73,7 @@ def add(a: Diagonal, b: Diagonal):
 @B.dispatch
 def add(a: Constant, b: Constant):
     assert_compatible(B.shape(a), B.shape(b))
-    return Constant(B.add(a.const, b.const), *B.shape(a, b))
+    return Constant(B.add(a.const, b.const), *B.shape_broadcast(a, b))
 
 
 @B.dispatch
@@ -85,7 +85,7 @@ def add(a: Constant, b: AbstractMatrix):
     return Dense(
         B.broadcast_to(
             B.add(B.expand_dims(a.const, axis=-1, times=2), B.dense(b)),
-            *B.shape(a, b),
+            *B.shape_broadcast(a, b),
         )
     )
 
@@ -93,7 +93,7 @@ def add(a: Constant, b: AbstractMatrix):
 @B.dispatch
 def add(a: Constant, b: Diagonal):
     assert_compatible(B.shape(a), B.shape(b))
-    a = Constant(a.const, *B.shape_matrix(a, b))
+    a = Constant(a.const, *B.shape_matrix_broadcast(a, b))
     return add(convert(a, LowRank), b)
 
 
@@ -200,7 +200,7 @@ def add(a: LowRank, b: LowRank):
 
 @B.dispatch
 def add(a: LowRank, b: Constant):
-    b = Constant(b.const, *B.shape_matrix(a, b))
+    b = Constant(b.const, *B.shape_matrix_broadcast(a, b))
     return add(a, convert(b, LowRank))
 
 

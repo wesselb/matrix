@@ -1,7 +1,7 @@
 import lab as B
 
 from ..matrix import AbstractMatrix
-from ..shape import broadcast, expand_and_broadcast
+from ..shape import broadcast
 from ..tiledblocks import TiledBlocks
 
 __all__ = []
@@ -10,11 +10,6 @@ __all__ = []
 @B.dispatch
 def shape(a: AbstractMatrix):
     return B.shape_batch(a) + B.shape_matrix(a)
-
-
-@B.dispatch
-def shape(*elements):
-    return expand_and_broadcast(*(B.shape(element) for element in elements))
 
 
 def _drop_axis(x, i):

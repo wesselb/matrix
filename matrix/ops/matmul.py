@@ -45,7 +45,7 @@ def matmul(a: AbstractMatrix, b: Zero, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     ar, _ = _shape_matrix_tr(a, tr_a)
     _, bc = _shape_matrix_tr(b, tr_b)
-    return Zero(b.dtype, *B.shape_batch(a, b), ar, bc)
+    return Zero(b.dtype, *B.shape_batch_broadcast(a, b), ar, bc)
 
 
 @B.dispatch(precedence=proven())
@@ -53,7 +53,7 @@ def matmul(a: Zero, b: AbstractMatrix, tr_a: bool = False, tr_b: bool = False):
     _assert_composable(a, b, tr_a=tr_a, tr_b=tr_b)
     ar, _ = _shape_matrix_tr(a, tr_a)
     _, bc = _shape_matrix_tr(b, tr_b)
-    return Zero(a.dtype, *B.shape_batch(a, b), ar, bc)
+    return Zero(a.dtype, *B.shape_batch_broadcast(a, b), ar, bc)
 
 
 # Multiple multiplication:

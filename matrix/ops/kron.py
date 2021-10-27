@@ -19,7 +19,7 @@ def _product_shape(a, b):
 
 @B.dispatch(precedence=proven())
 def kron(a: AbstractMatrix, b: Zero):
-    return Zero(B.dtype(b), *B.shape_batch(a, b), *_product_shape(a, b))
+    return Zero(B.dtype(b), *B.shape_batch_broadcast(a, b), *_product_shape(a, b))
 
 
 @B.dispatch(precedence=proven())

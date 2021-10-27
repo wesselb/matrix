@@ -90,7 +90,7 @@ def block_diag(
 def _attempt_zero(blocks):
     if all([isinstance(block, Zero) for block in blocks]):
         dtype = B.dtype(blocks[0])
-        batch = B.shape_batch(*blocks)
+        batch = B.shape_batch_broadcast(*blocks)
         rows = sum([B.shape(block, -2) for block in blocks])
         cols = sum([B.shape(block, -1) for block in blocks])
         return Zero(dtype, *batch, rows, cols)

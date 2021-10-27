@@ -14,7 +14,7 @@ def check_block_diag(res, blocks):
         approx(res, block_diag(*(B.dense(block) for block in blocks)))
     else:
         rows, cols = map(sum, zip(*(B.shape_matrix(block) for block in blocks)))
-        assert B.shape(res) == B.shape_batch(*blocks) + (rows, cols)
+        assert B.shape(res) == B.shape_batch_broadcast(*blocks) + (rows, cols)
 
 
 def test_block_diag_one_block(gen):

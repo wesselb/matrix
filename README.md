@@ -136,11 +136,11 @@ The following functions are added to LAB.
 They can be accessed with `B.<function>` where `import lab as B`.
 
 ```
-shape(*elements)           # Broadcasted shape of the shapes of `elements`
+shape_broadcast(*elements)
 shape_batch(a, *indices)
-shape_batch(*elements)     # Broadcasted shape of the shapes of `elements`
+shape_batch_broadcast(*elements)
 shape_matrix(a, *indices)
-shape_matrix(*elements)    # Broadcasted shape of the shapes of `elements`
+shape_matrix_broadcast(*elements)
 
 broadcast_batch_to(a, *batch)
 

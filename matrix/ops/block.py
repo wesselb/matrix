@@ -54,7 +54,7 @@ def _attempt_zero(rows):
     if all([all([isinstance(x, Zero) for x in row]) for row in rows]):
         # Determine the resulting data type and shape.
         dtype = B.dtype(rows[0][0])
-        batch = B.shape_batch(*(x for row in rows for x in row))
+        batch = B.shape_batch_broadcast(*(x for row in rows for x in row))
         grid_rows = sum([B.shape_matrix(row[0], 0) for row in rows])
         grid_cols = sum([B.shape_matrix(x, 1) for x in rows[0]])
         return Zero(dtype, *batch, grid_rows, grid_cols)
@@ -92,6 +92,6 @@ def _attempt_diagonal(rows):
                     return None
 
     # Align the batch dimensions before concatenating.
-    batch = B.shape_batch(*(x for row in rows for x in row))
+    batch = B.shape_batch_broadcast(*(x for row in rows for x in row))
     diagonal_blocks = [B.broadcast_batch_to(x, *batch) for x in diagonal_blocks]
     return Diagonal(B.concat(*(B.diag(x) for x in diagonal_blocks), axis=-1))

@@ -6,7 +6,6 @@ from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
 from ..matrix import Dense, AbstractMatrix
-from ..shape import expand_and_broadcast
 from ..tiledblocks import TiledBlocks
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury
@@ -27,11 +26,6 @@ def shape_batch(a, *dims: B.Int):
     """
     a_shape_batch = B.shape_batch(a)
     return B.squeeze(tuple(a_shape_batch[i] for i in dims))
-
-
-@B.dispatch
-def shape_batch(*elements):
-    return expand_and_broadcast(*(B.shape_batch(element) for element in elements))
 
 
 @B.dispatch
@@ -61,17 +55,17 @@ def shape_batch(a: Constant):
 
 @B.dispatch
 def shape_batch(a: LowRank):
-    return B.shape_batch(a.left, a.right, a.middle)
+    return B.shape_batch_broadcast(a.left, a.right, a.middle)
 
 
 @B.dispatch
 def shape_batch(a: Woodbury):
-    return B.shape_batch(a.diag, a.lr)
+    return B.shape_batch_broadcast(a.diag, a.lr)
 
 
 @B.dispatch
 def shape_batch(a: Kronecker):
-    return B.shape_batch(a.left, a.right)
+    return B.shape_batch_broadcast(a.left, a.right)
 
 
 @B.dispatch

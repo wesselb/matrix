@@ -24,10 +24,11 @@ from ..util import (
 )
 
 
-def test_shape_multiple():
-    assert B.shape(B.ones(3, 1, 1), B.ones(4, 1), B.ones(1, 5)) == (3, 4, 5)
-    assert B.shape_batch(B.ones(3, 1, 1), B.ones(4, 1), B.ones(1, 5)) == (3,)
-    assert B.shape_matrix(B.ones(3, 1, 1), B.ones(4, 1), B.ones(1, 5)) == (4, 5)
+def test_shape_broadcast():
+    assert B.shape_broadcast(B.ones(3, 1, 1), B.ones(4, 1), B.ones(1, 5)) == (3, 4, 5)
+    assert B.shape_batch_broadcast(B.ones(3, 1, 1), B.ones(4, 1), B.ones(1, 5)) == (3,)
+    shape = B.shape_matrix_broadcast(B.ones(3, 1, 1), B.ones(4, 1), B.ones(1, 5))
+    assert shape == (4, 5)
 
 
 def test_shape_indexing():

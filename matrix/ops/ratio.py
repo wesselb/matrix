@@ -12,7 +12,7 @@ def ratio(a, b):
         b (matrix): Denominator.
 
     Returns:
-        matrix: Ratio.
+        scalar: Ratio.
     """
     chol = B.cholesky(a)
     return B.sum(B.iqf_diag(b, chol), axis=-1)
