@@ -13,13 +13,11 @@ add_promotion_rule(AbstractMatrix, AbstractMatrix, AbstractMatrix)
 
 @conversion_method(B.Numeric, AbstractMatrix)
 def convert(x):
-    if B.rank(x) == 0:
+    if B.is_scalar(x):
         if isinstance(x, B.Number) and x == 0:
             return Zero(B.dtype(x), 1, 1)
         else:
             return Constant(x, 1, 1)
-    elif B.rank(x) == 1:
-        raise RuntimeError(f"Cannot convert rank 1 input to a matrix.")
     else:
         return Dense(x)
 
