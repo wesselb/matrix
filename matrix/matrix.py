@@ -2,12 +2,11 @@ import abc
 from typing import Union
 
 import lab as B
-from lab.shape import Shape
 import wbml.out
+from lab.shape import Shape
 from plum import Dispatcher
 from wbml.warning import warn_upmodule
 
-from .shape import assert_matrix
 from .util import ToDenseWarning, dtype_str, indent
 
 __all__ = ["AbstractMatrix", "Dense", "repr_format", "structured"]
@@ -114,12 +113,7 @@ class Dense(AbstractMatrix):
     """
 
     def __init__(self, mat):
-        assert_matrix(
-            mat,
-            "Input is not a tensor of at least rank 2. "
-            "Can only construct dense matrices from tensors of at least rank 2.",
-        )
-        self.mat = B.dense(mat)
+        self.mat = B.uprank(B.dense(mat))
         self.cholesky = None
 
     def __str__(self):

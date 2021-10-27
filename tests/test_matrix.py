@@ -2,7 +2,6 @@ import lab as B
 import pytest
 
 from matrix import Dense, Diagonal, structured
-
 # noinspection PyUnresolvedReferences
 from .util import (
     AssertDenseWarning,
@@ -67,6 +66,12 @@ def test_structured():
 def test_conversion_to_dense(diag1):
     approx(Dense(diag1), diag1)
     assert isinstance(Dense(diag1).mat, B.Numeric)
+
+
+def test_construction_from_vector():
+    vec = B.randn(3)
+    dense = Dense(vec)
+    approx(B.dense(dense), vec[:, None])
 
 
 def test_indexing_dense(dense1):
