@@ -28,7 +28,7 @@ def _reverse_call(t0, t1):
 @B.dispatch(precedence=proven())
 def multiply(a: AbstractMatrix, b: Zero):
     assert_compatible(B.shape(a), B.shape(b))
-    return B.broadcast_to(b, *B.shape(a, b))
+    return B.broadcast_to(b, *B.shape_broadcast(a, b))
 
 
 @B.dispatch(precedence=proven())
