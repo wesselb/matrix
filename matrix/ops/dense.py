@@ -59,7 +59,7 @@ def dense(a: Diagonal):
 @B.dispatch
 def dense(a: Constant):
     if a.dense is None:
-        const = B.expand_dims(a.const, axis=-1, times=2)
+        const = B.expand_dims(a.const, axis=-1, times=2, ignore_scalar=True)
         a.dense = const * B.ones(B.dtype(a.const), *batch_ones(a), *B.shape_matrix(a))
     return a.dense
 

@@ -38,7 +38,7 @@ def diag(a: Diagonal):
 @B.dispatch
 def diag(a: Constant):
     ones = B.ones(B.dtype(a), *B.shape_batch(a), _diag_len(a))
-    return B.expand_dims(a.const, axis=-1) * ones
+    return B.expand_dims(a.const, axis=-1, ignore_scalar=True) * ones
 
 
 @B.dispatch

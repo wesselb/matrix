@@ -58,10 +58,10 @@ def sum(a: Constant, axis: Union[B.Int, None] = None):
     if resolved_axis is None:
         return B.sum(a.const) * a.rows * a.cols
     elif resolved_axis == -2:
-        const = B.expand_dims(a.const, axis=-1)
+        const = B.expand_dims(a.const, axis=-1, ignore_scalar=True)
         return const * a.rows * B.ones(B.dtype(a.const), *batch_ones(a), a.cols)
     elif resolved_axis == -1:
-        const = B.expand_dims(a.const, axis=-1)
+        const = B.expand_dims(a.const, axis=-1, ignore_scalar=True)
         return const * a.cols * B.ones(B.dtype(a.const), *batch_ones(a), a.rows)
     else:
         # Make the axis positive: `a.const` has a different rank.

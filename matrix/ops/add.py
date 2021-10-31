@@ -84,7 +84,10 @@ def add(a: Constant, b: AbstractMatrix):
         )
     return Dense(
         B.broadcast_to(
-            B.add(B.expand_dims(a.const, axis=-1, times=2), B.dense(b)),
+            B.add(
+                B.expand_dims(a.const, axis=-1, times=2, ignore_scalar=True),
+                B.dense(b),
+            ),
             *B.shape_broadcast(a, b),
         )
     )

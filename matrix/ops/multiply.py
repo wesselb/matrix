@@ -101,7 +101,10 @@ def multiply(a: Constant, b: AbstractMatrix):
         )
     return Dense(
         B.broadcast_to(
-            B.multiply(B.expand_dims(a.const, axis=-1, times=2), B.dense(b)),
+            B.multiply(
+                B.expand_dims(a.const, axis=-1, times=2, ignore_scalar=True),
+                B.dense(b),
+            ),
             *B.shape_broadcast(a, b),
         )
     )
@@ -110,7 +113,9 @@ def multiply(a: Constant, b: AbstractMatrix):
 @B.dispatch
 def multiply(a: Constant, b: Diagonal):
     assert_compatible(B.shape(a), B.shape(b))
-    return Diagonal(B.multiply(B.expand_dims(a.const, axis=-1), b.diag))
+    return Diagonal(
+        B.multiply(B.expand_dims(a.const, axis=-1, ignore_scalar=True), b.diag)
+    )
 
 
 _reverse_call(Constant, AbstractMatrix)
@@ -133,7 +138,9 @@ def multiply(a: LowerTriangular, b: AbstractMatrix):
 
 @B.dispatch
 def multiply(a: LowerTriangular, b: Constant):
-    return LowerTriangular(B.multiply(a.mat, B.expand_dims(b.const, axis=-1, times=2)))
+    return LowerTriangular(
+        B.multiply(a.mat, B.expand_dims(b.const, axis=-1, times=2, ignore_scalar=True))
+    )
 
 
 _reverse_call(LowerTriangular, AbstractMatrix)
@@ -163,7 +170,9 @@ def multiply(a: UpperTriangular, b: AbstractMatrix):
 
 @B.dispatch
 def multiply(a: UpperTriangular, b: Constant):
-    return UpperTriangular(B.multiply(a.mat, B.expand_dims(b.const, axis=-1, times=2)))
+    return UpperTriangular(
+        B.multiply(a.mat, B.expand_dims(b.const, axis=-1, times=2, ignore_scalar=True))
+    )
 
 
 _reverse_call(UpperTriangular, LowerTriangular)
@@ -225,7 +234,10 @@ def multiply(a: Constant, b: LowRank):
     return LowRank(
         b.left,
         b.right,
-        B.multiply(B.expand_dims(a.const, axis=-1, times=2), b.middle),
+        B.multiply(
+            B.expand_dims(a.const, axis=-1, times=2, ignore_scalar=True),
+            b.middle,
+        ),
     )
 
 
@@ -273,7 +285,9 @@ def multiply(a: Kronecker, b: Kronecker):
 def multiply(a: Constant, b: Kronecker):
     assert_compatible(B.shape(a), B.shape(b))
     return Kronecker(
-        B.multiply(B.expand_dims(a.const, axis=-1, times=2), b.left),
+        B.multiply(
+            B.expand_dims(a.const, axis=-1, times=2, ignore_scalar=True), b.left
+        ),
         b.right,
     )
 

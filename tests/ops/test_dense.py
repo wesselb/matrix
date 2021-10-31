@@ -60,7 +60,7 @@ def test_dense_diag(diag1):
 
 
 def test_dense_const(const1):
-    const = B.expand_dims(const1.const, axis=-1, times=2)
+    const = B.expand_dims(const1.const, axis=-1, times=2, ignore_scalar=True)
     approx(B.dense(const1), const * B.ones(*const1.batch, const1.rows, const1.cols))
     _check_cache(const1)
 
