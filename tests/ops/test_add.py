@@ -34,7 +34,7 @@ from ..util import (
     kron2,
     lr1,
     lr2,
-    lr_pd,
+    lr1_pd,
     lt1,
     lt2,
     ut1,

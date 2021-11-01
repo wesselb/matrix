@@ -21,7 +21,7 @@ from ..util import (
     diag1,
     kron1,
     lr1,
-    lr_pd,
+    lr1_pd,
     lt1,
     ut1,
     wb1,

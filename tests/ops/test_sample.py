@@ -9,11 +9,11 @@ from ..util import (
     AssertDenseWarning,
     approx,
     check_un_op,
-    dense_pd,
-    diag_pd,
+    dense1_pd,
+    diag1_pd,
     kron_pd,
-    lr_pd,
-    wb_pd,
+    lr1_pd,
+    wb1_pd,
 )
 
 
@@ -38,24 +38,24 @@ def test_sample_conversion():
     assert B.issubdtype(B.dtype(sample), np.floating)
 
 
-def test_sample_dense(dense_pd):
-    _est_cov(dense_pd)
-    _check_state(dense_pd)
+def test_sample_dense(dense1_pd):
+    _est_cov(dense1_pd)
+    _check_state(dense1_pd)
 
 
-def test_sample_diag(diag_pd):
-    _est_cov(diag_pd)
-    _check_state(diag_pd)
+def test_sample_diag(diag1_pd):
+    _est_cov(diag1_pd)
+    _check_state(diag1_pd)
 
 
-def test_sample_lr(lr_pd):
-    _est_cov(lr_pd)
-    _check_state(lr_pd)
+def test_sample_lr(lr1_pd):
+    _est_cov(lr1_pd)
+    _check_state(lr1_pd)
 
 
-def test_sample_wb(wb_pd):
-    _est_cov(wb_pd)
-    _check_state(wb_pd)
+def test_sample_wb(wb1_pd):
+    _est_cov(wb1_pd)
+    _check_state(wb1_pd)
 
 
 def test_sample_kron(kron_pd):

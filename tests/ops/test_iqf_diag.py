@@ -1,7 +1,7 @@
 import lab as B
 
 # noinspection PyUnresolvedReferences
-from ..util import approx, check_un_op, dense1, dense2, dense_pd, diag_pd, lr_pd, wb_pd
+from ..util import approx, check_un_op, dense1, dense2, dense1_pd, diag1_pd, lr1_pd, wb1_pd
 
 
 def _check_iqf(a, b, c):
@@ -11,20 +11,20 @@ def _check_iqf(a, b, c):
     approx(res, B.diag(B.iqf(a, b, c)))
 
 
-def test_iqf_diag_two_arguments(dense_pd, dense1):
-    approx(B.iqf_diag(dense_pd, dense1), B.iqf_diag(dense_pd, dense1, dense1))
+def test_iqf_diag_two_arguments(dense1_pd, dense1):
+    approx(B.iqf_diag(dense1_pd, dense1), B.iqf_diag(dense1_pd, dense1, dense1))
 
 
-def test_iqf_diag_dense(dense_pd, dense1, dense2):
-    _check_iqf(dense_pd, dense1, dense2)
-    _check_iqf(dense_pd, dense1, dense1)
+def test_iqf_diag_dense(dense1_pd, dense1, dense2):
+    _check_iqf(dense1_pd, dense1, dense2)
+    _check_iqf(dense1_pd, dense1, dense1)
 
 
-def test_iqf_diag_diag(diag_pd, dense1, dense2):
-    _check_iqf(diag_pd, dense1, dense2)
-    _check_iqf(diag_pd, dense1, dense1)
+def test_iqf_diag_diag(diag1_pd, dense1, dense2):
+    _check_iqf(diag1_pd, dense1, dense2)
+    _check_iqf(diag1_pd, dense1, dense1)
 
 
-def test_iqf_diag_wb(wb_pd, dense1, dense2):
-    _check_iqf(wb_pd, dense1, dense2)
-    _check_iqf(wb_pd, dense1, dense1)
+def test_iqf_diag_wb(wb1_pd, dense1, dense2):
+    _check_iqf(wb1_pd, dense1, dense2)
+    _check_iqf(wb1_pd, dense1, dense1)

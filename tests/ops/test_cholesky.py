@@ -9,12 +9,12 @@ from ..util import (
     approx,
     check_un_op,
     const_pd,
-    dense_pd,
-    diag_pd,
+    dense1_pd,
+    diag1_pd,
     kron_pd,
     lr1,
-    lr_pd,
-    wb_pd,
+    lr1_pd,
+    wb1_pd,
     zero1,
 )
 
@@ -34,14 +34,14 @@ def test_cholesky_zero(zero1):
     assert B.cholesky(zero1) is zero1
 
 
-def test_cholesky_dense(dense_pd):
-    check_un_op(B.cholesky, dense_pd, asserted_type=LowerTriangular)
-    _check_cache(dense_pd)
+def test_cholesky_dense(dense1_pd):
+    check_un_op(B.cholesky, dense1_pd, asserted_type=LowerTriangular)
+    _check_cache(dense1_pd)
 
 
-def test_cholesky_diag(diag_pd):
-    check_un_op(B.cholesky, diag_pd, asserted_type=Diagonal)
-    _check_cache(diag_pd)
+def test_cholesky_diag(diag1_pd):
+    check_un_op(B.cholesky, diag1_pd, asserted_type=Diagonal)
+    _check_cache(diag1_pd)
 
 
 def test_cholesky_const(const_pd):
@@ -50,15 +50,15 @@ def test_cholesky_const(const_pd):
     _check_cache(const_pd)
 
 
-def test_cholesky_lr(lr_pd):
-    chol = B.dense(B.cholesky(lr_pd))
-    approx(B.matmul(chol, chol, tr_b=True), lr_pd)
-    _check_cache(lr_pd)
+def test_cholesky_lr(lr1_pd):
+    chol = B.dense(B.cholesky(lr1_pd))
+    approx(B.matmul(chol, chol, tr_b=True), lr1_pd)
+    _check_cache(lr1_pd)
 
 
-def test_cholesky_wb(wb_pd):
+def test_cholesky_wb(wb1_pd):
     with AssertDenseWarning("converting <woodbury> to dense"):
-        check_un_op(B.cholesky, wb_pd, asserted_type=LowerTriangular)
+        check_un_op(B.cholesky, wb1_pd, asserted_type=LowerTriangular)
 
 
 def test_cholesky_kron(kron_pd):

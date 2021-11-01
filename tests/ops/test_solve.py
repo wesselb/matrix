@@ -9,39 +9,39 @@ from ..util import (
     check_bin_op,
     dense1,
     dense2,
-    dense_pd,
+    dense1_pd,
     diag1,
     diag2,
-    diag_pd,
-    lr_pd,
+    diag1_pd,
+    lr1_pd,
     lt_pd,
     ut_pd,
-    wb_pd,
+    wb1_pd,
     zero1,
     zero2,
 )
 
 
-def test_solve_zero(dense_pd, zero2):
-    assert B.solve(dense_pd, zero2) is zero2
+def test_solve_zero(dense1_pd, zero2):
+    assert B.solve(dense1_pd, zero2) is zero2
 
 
-def test_solve_dense_dense(dense_pd, dense2):
-    check_bin_op(B.solve, dense_pd, dense2, align_dense_batch=True)
+def test_solve_dense_dense(dense1_pd, dense2):
+    check_bin_op(B.solve, dense1_pd, dense2, align_dense_batch=True)
 
 
-def test_solve_dense_diag(dense_pd, diag2):
+def test_solve_dense_diag(dense1_pd, diag2):
     with AssertDenseWarning("solving <dense> x = <diagonal>"):
-        check_bin_op(B.solve, dense_pd, diag2, align_dense_batch=True)
+        check_bin_op(B.solve, dense1_pd, diag2, align_dense_batch=True)
 
 
-def test_solve_diag_dense(diag_pd, dense2):
-    check_bin_op(B.solve, diag_pd, dense2, asserted_type=Dense, align_dense_batch=True)
+def test_solve_diag_dense(diag1_pd, dense2):
+    check_bin_op(B.solve, diag1_pd, dense2, asserted_type=Dense, align_dense_batch=True)
 
 
-def test_solve_diag_diag(diag_pd, diag2):
+def test_solve_diag_diag(diag1_pd, diag2):
     check_bin_op(
-        B.solve, diag_pd, diag2, asserted_type=Diagonal, align_dense_batch=True
+        B.solve, diag1_pd, diag2, asserted_type=Diagonal, align_dense_batch=True
     )
 
 
@@ -63,9 +63,9 @@ def test_solve_ut_diag(ut_pd, diag2):
         check_bin_op(B.solve, ut_pd, diag2, asserted_type=Dense, align_dense_batch=True)
 
 
-def test_solve_wb_dense(wb_pd, dense2):
-    check_bin_op(B.solve, wb_pd, dense2, align_dense_batch=True)
+def test_solve_wb_dense(wb1_pd, dense2):
+    check_bin_op(B.solve, wb1_pd, dense2, align_dense_batch=True)
 
 
-def test_solve_wb_diag(wb_pd, diag2):
-    check_bin_op(B.solve, wb_pd, diag2, align_dense_batch=True)
+def test_solve_wb_diag(wb1_pd, diag2):
+    check_bin_op(B.solve, wb1_pd, diag2, align_dense_batch=True)

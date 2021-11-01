@@ -7,28 +7,28 @@ from ..util import (
     approx,
     check_un_op,
     const_pd,
-    dense_pd,
-    diag_pd,
+    dense1_pd,
+    diag1_pd,
     kron_pd,
-    lr_pd,
-    wb_pd,
+    lr1_pd,
+    wb1_pd,
 )
 
 
-def test_pd_inv_correctness(dense_pd):
-    approx(B.pd_inv(dense_pd), B.inv(dense_pd))
+def test_pd_inv_correctness(dense1_pd):
+    approx(B.pd_inv(dense1_pd), B.inv(dense1_pd))
 
 
-def test_pd_inv_dense(dense_pd):
-    check_un_op(B.pd_inv, dense_pd, asserted_type=Dense)
+def test_pd_inv_dense(dense1_pd):
+    check_un_op(B.pd_inv, dense1_pd, asserted_type=Dense)
 
 
-def test_pd_inv_diag(diag_pd):
-    check_un_op(B.pd_inv, diag_pd, asserted_type=Diagonal)
+def test_pd_inv_diag(diag1_pd):
+    check_un_op(B.pd_inv, diag1_pd, asserted_type=Diagonal)
 
 
-def test_pd_inv_wb(wb_pd):
-    check_un_op(B.pd_inv, wb_pd, asserted_type=Woodbury)
+def test_pd_inv_wb(wb1_pd):
+    check_un_op(B.pd_inv, wb1_pd, asserted_type=Woodbury)
 
 
 def test_pd_inv_kron(kron_pd):

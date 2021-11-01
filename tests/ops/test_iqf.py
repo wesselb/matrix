@@ -8,10 +8,10 @@ from ..util import (
     check_un_op,
     dense1,
     dense2,
-    dense_pd,
-    diag_pd,
-    lr_pd,
-    wb_pd,
+    dense1_pd,
+    diag1_pd,
+    lr1_pd,
+    wb1_pd,
 )
 
 
@@ -23,20 +23,20 @@ def _check_iqf(a, b, c):
     approx(res, B.mm(B.dense(b), B.solve(a_dense, c_dense), tr_a=True))
 
 
-def test_iqf_two_arguments(dense_pd, dense1):
-    approx(B.iqf(dense_pd, dense1), B.iqf(dense_pd, dense1, dense1))
+def test_iqf_two_arguments(dense1_pd, dense1):
+    approx(B.iqf(dense1_pd, dense1), B.iqf(dense1_pd, dense1, dense1))
 
 
-def test_iqf_dense(dense_pd, dense1, dense2):
-    _check_iqf(dense_pd, dense1, dense2)
-    _check_iqf(dense_pd, dense1, dense1)
+def test_iqf_dense(dense1_pd, dense1, dense2):
+    _check_iqf(dense1_pd, dense1, dense2)
+    _check_iqf(dense1_pd, dense1, dense1)
 
 
-def test_iqf_diag(diag_pd, dense1, dense2):
-    _check_iqf(diag_pd, dense1, dense2)
-    _check_iqf(diag_pd, dense1, dense1)
+def test_iqf_diag(diag1_pd, dense1, dense2):
+    _check_iqf(diag1_pd, dense1, dense2)
+    _check_iqf(diag1_pd, dense1, dense1)
 
 
-def test_iqf_wb(wb_pd, dense1, dense2):
-    _check_iqf(wb_pd, dense1, dense2)
-    _check_iqf(wb_pd, dense1, dense1)
+def test_iqf_wb(wb1_pd, dense1, dense2):
+    _check_iqf(wb1_pd, dense1, dense2)
+    _check_iqf(wb1_pd, dense1, dense1)

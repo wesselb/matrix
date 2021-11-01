@@ -7,26 +7,26 @@ from ..util import (
     ConditionalContext,
     AssertDenseWarning,
     approx,
-    dense_pd,
-    diag_pd,
+    dense1_pd,
+    diag1_pd,
     kron_pd,
 )
 
 
-def test_cholesky_solve_diag(diag_pd):
-    chol = B.cholesky(diag_pd)
-    approx(B.cholesky_solve(chol, B.eye(chol)), B.inv(diag_pd))
+def test_cholesky_solve_diag(diag1_pd):
+    chol = B.cholesky(diag1_pd)
+    approx(B.cholesky_solve(chol, B.eye(chol)), B.inv(diag1_pd))
 
 
-def test_cholesky_solve_lt(dense_pd):
-    chol = B.cholesky(dense_pd)
+def test_cholesky_solve_lt(dense1_pd):
+    chol = B.cholesky(dense1_pd)
 
     with AssertDenseWarning("solving <lower-triangular> x = <diagonal>"):
-        approx(B.cholesky_solve(chol, B.eye(chol)), B.inv(dense_pd))
+        approx(B.cholesky_solve(chol, B.eye(chol)), B.inv(dense1_pd))
 
 
-def test_cholesky_solve_ut(dense_pd):
-    chol = B.cholesky(dense_pd)
+def test_cholesky_solve_ut(dense1_pd):
+    chol = B.cholesky(dense1_pd)
 
     with AssertDenseWarning(
         [

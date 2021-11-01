@@ -46,10 +46,12 @@ __all__ = [
     "dense2",
     "dense_bc",
     "dense_r",
-    "dense_pd",
+    "dense1_pd",
+    "dense2_pd",
     "diag1",
     "diag2",
-    "diag_pd",
+    "diag1_pd",
+    "diag2_pd",
     "const1",
     "const2",
     "const_r",
@@ -65,10 +67,12 @@ __all__ = [
     "lr1",
     "lr2",
     "lr_r",
-    "lr_pd",
+    "lr1_pd",
+    "lr2_pd",
     "wb1",
     "wb2",
-    "wb_pd",
+    "wb1_pd",
+    "wb2_pd",
     "kron1",
     "kron2",
     "kron_r",
@@ -445,7 +449,12 @@ def dense_r(request):
 
 
 @pytest.fixture(params=loop_batches("dense_pd:6,6"))
-def dense_pd(request):
+def dense1_pd(request):
+    return generate(request.param)
+
+
+@pytest.fixture(params=loop_batches("dense_pd:6,6"))
+def dense2_pd(request):
     return generate(request.param)
 
 
@@ -460,7 +469,12 @@ def diag2(request):
 
 
 @pytest.fixture(params=loop_batches("diag_pd:6"))
-def diag_pd(request):
+def diag1_pd(request):
+    return generate(request.param)
+
+
+@pytest.fixture(params=loop_batches("diag_pd:6"))
+def diag2_pd(request):
     return generate(request.param)
 
 
@@ -579,7 +593,22 @@ def lr_r(request):
         ]
     )
 )
-def lr_pd(request):
+def lr1_pd(request):
+    code_l, code_m = request.param
+    return LowRank(generate(code_l), middle=generate(code_m))
+
+
+@pytest.fixture(
+    params=loop_batches(
+        [
+            ("dense:6,1", "dense_pd:1,2"),
+            ("dense:6,2", "dense_pd:2,2"),
+            ("dense:6,3", "dense_pd:3,3"),
+            ("diag:6", "diag_pd:6"),
+        ]
+    )
+)
+def lr2_pd(request):
     code_l, code_m = request.param
     return LowRank(generate(code_l), middle=generate(code_m))
 
@@ -595,8 +624,13 @@ def wb2(diag2, lr2):
 
 
 @pytest.fixture()
-def wb_pd(diag_pd, lr_pd):
-    return Woodbury(diag_pd, lr_pd)
+def wb1_pd(diag1_pd, lr1_pd):
+    return Woodbury(diag1_pd, lr1_pd)
+
+
+@pytest.fixture()
+def wb2_pd(diag2_pd, lr2_pd):
+    return Woodbury(diag2_pd, lr2_pd)
 
 
 @pytest.fixture(
