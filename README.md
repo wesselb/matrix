@@ -129,7 +129,6 @@ Kronecker
 TiledBlocks
 ```
 
-
 ## Functions
 
 The following functions are added to LAB.
