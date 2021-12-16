@@ -54,6 +54,7 @@ from .take import *
 from .tile import *
 from .to_numpy import *
 from .trace import *
+from .transpose import *
 from .triangular_solve import *
 from .uprank import *
 from .util import *
