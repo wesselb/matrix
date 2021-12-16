@@ -4,6 +4,7 @@ from .block import *
 from .block_diag import *
 from .broadcast_batch_to import *
 from .broadcast_to import *
+from .cast import *
 from .cholesky import *
 from .cholesky_solve import *
 from .concat import *
@@ -53,7 +54,6 @@ from .take import *
 from .tile import *
 from .to_numpy import *
 from .trace import *
-from .transpose import *
 from .triangular_solve import *
 from .uprank import *
 from .util import *
