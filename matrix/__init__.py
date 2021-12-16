@@ -8,5 +8,6 @@ from .matrix import *
 from .ops import *
 from .promote import *
 from .tiledblocks import *
+from .transposed import *
 from .triangular import *
 from .woodbury import *
