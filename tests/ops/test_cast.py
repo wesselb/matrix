@@ -5,6 +5,7 @@ import numpy as np
 from ..util import (
     approx,
     check_un_op,
+    IgnoreDenseWarning,
     const1,
     dense1,
     diag1,
@@ -22,7 +23,8 @@ from ..util import (
 def check_casting(x):
     assert B.default_dtype != complex
     assert B.dtype(B.cast(np.int64, x)) == np.int64
-    check_un_op(lambda x: B.cast(complex, x), x)
+    with IgnoreDenseWarning():
+        check_un_op(lambda x: B.cast(complex, x), x)
 
 
 def test_dtype_zero(zero1):
