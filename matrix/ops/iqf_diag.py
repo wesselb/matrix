@@ -37,4 +37,4 @@ def iqf_diag(a, b):
 
 @B.dispatch
 def iqf_diag(a: Woodbury, b, c):
-    return B.matmul_diag(b, B.solve(a, c), tr_a=True)
+    return B.matmul_diag(b, B.mm(B.pd_inv(a), c), tr_a=True)
