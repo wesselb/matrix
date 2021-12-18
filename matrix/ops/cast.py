@@ -17,11 +17,18 @@ def cast(dtype: B.DType, a: Zero):
     return Zero(dtype, *B.shape(a))
 
 
-for T in [Dense, LowerTriangular, UpperTriangular]:
+@B.dispatch
+def cast(dtype: B.DType, a: Dense):
+    return Dense(B.cast(dtype, a.mat))
 
-    @B.dispatch
-    def cast(dtype: B.DType, a: T):
-        return T(B.cast(dtype, a.mat))
+
+@B.dispatch
+def cast(dtype: B.DType, a: LowerTriangular):
+    return LowerTriangular(B.cast(dtype, a.mat))
+
+
+def cast(dtype: B.DType, a: UpperTriangular):
+    return UpperTriangular(B.cast(dtype, a.mat))
 
 
 @B.dispatch
