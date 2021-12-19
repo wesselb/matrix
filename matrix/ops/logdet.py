@@ -24,7 +24,7 @@ def logdet(a: Union[Diagonal, LowerTriangular, UpperTriangular]):
 
 @B.dispatch
 def logdet(a: Woodbury):
-    return B.logdet(a.diag) + B.logdet(a.lr.middle) + B.logdet(B.schur(a))
+    return B.logdet(a.diag) + B.logdet(a.lr.middle) + B.logdet(B.pd_schur(a))
 
 
 @B.dispatch
