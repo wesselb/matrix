@@ -16,7 +16,7 @@ _dispatch = Dispatcher()
 @B.dispatch
 def broadcast_to(a: AbstractMatrix, *shape: B.Int):
     # If the shape is already right, do nothing.
-    if B.shape(a) == shape:
+    if Shape(*B.shape(a)) == Shape(*shape):
         return a
     else:
         return _broadcast_to(a, *shape)
@@ -26,7 +26,7 @@ def broadcast_to(a: AbstractMatrix, *shape: B.Int):
 def _broadcast_to(a: AbstractMatrix, *shape: B.Int):
     # Check whether the matrix shapes align. If they do, defer the job to
     # `broadcast_batch_to`, which is always able to preserve the matrix type.
-    if B.shape(a)[-2:] == shape[-2:]:
+    if Shape(*B.shape(a)[-2:]) == Shape(*shape[-2:]):
         return B.broadcast_batch_to(a, *shape[:-2])
     else:
         if structured(a):
