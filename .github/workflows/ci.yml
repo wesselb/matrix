@@ -26,7 +26,6 @@ jobs:
           pip install --no-cache-dir -U -r requirements.txt | cat
           pip install --upgrade numpy
       - name: Test
-        env:
         run: |
           JAX_ENABLE_X64=1 pytest -v --cov=matrix --cov-report term-missing -Werror -W ignore::DeprecationWarning
           coveralls --service=github
