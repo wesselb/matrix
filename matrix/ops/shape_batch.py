@@ -1,11 +1,13 @@
-import lab as B
-from plum import convert, Union
+from typing import Union
 
-from ..constant import Zero, Constant
+import lab as B
+from plum import convert
+
+from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
 from ..lowrank import LowRank
-from ..matrix import Dense, AbstractMatrix
+from ..matrix import AbstractMatrix, Dense
 from ..tiledblocks import TiledBlocks
 from ..triangular import LowerTriangular, UpperTriangular
 from ..woodbury import Woodbury

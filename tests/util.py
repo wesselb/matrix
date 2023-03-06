@@ -1,13 +1,11 @@
 import re
 import warnings
 from itertools import product
+from typing import Union
 
 import lab as B
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose
-from plum import Dispatcher, Union
-
 from matrix import (
     Constant,
     Dense,
@@ -22,6 +20,8 @@ from matrix import (
 )
 from matrix.ops.util import align_batch
 from matrix.util import ToDenseWarning
+from numpy.testing import assert_allclose
+from plum import Dispatcher
 
 __all__ = [
     "approx",
@@ -299,7 +299,7 @@ def generate(code):
 
         # If it is a scalar or vector, just pointwise square it.
         if len(shape) in {0, 1}:
-            return mat ** 2 + 1
+            return mat**2 + 1
         else:
             return B.matmul(mat, mat, tr_b=True) + B.eye(*batch, shape[0], shape[0])
 

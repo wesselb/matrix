@@ -1,6 +1,6 @@
 import lab as B
-
 from matrix import LowerTriangular, UpperTriangular
+from plum import isinstance
 
 # noinspection PyUnresolvedReferences
 from .util import approx, dense1, dense2, diag1

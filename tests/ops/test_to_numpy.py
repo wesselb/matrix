@@ -1,4 +1,5 @@
 import lab as B
+from plum import isinstance
 
 # noinspection PyUnresolvedReferences
 from ..util import AssertDenseWarning, approx, check_un_op, dense1, diag1

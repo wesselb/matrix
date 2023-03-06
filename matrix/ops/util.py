@@ -1,5 +1,7 @@
+from typing import List, Union
+
 import lab as B
-from plum import Union, List, Dispatcher
+from plum import Dispatcher
 
 from ..matrix import AbstractMatrix
 

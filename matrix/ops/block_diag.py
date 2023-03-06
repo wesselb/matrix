@@ -1,13 +1,14 @@
+from typing import Union
+
 import lab as B
-from plum import Union
 from wbml.warning import warn_upmodule
 
-from .util import align_batch
 from ..constant import Zero
 from ..diagonal import Diagonal
 from ..matrix import AbstractMatrix, Dense
 from ..tiledblocks import TiledBlocks
 from ..util import ToDenseWarning
+from .util import align_batch
 
 __all__ = []
 

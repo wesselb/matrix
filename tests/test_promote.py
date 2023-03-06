@@ -2,6 +2,7 @@ import lab as B
 from plum import convert, promote
 
 from matrix import LowRank, Zero, Constant, Dense
+
 # noinspection PyUnresolvedReferences
 from .util import approx, const1, const_r, dense1
 

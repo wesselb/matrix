@@ -15,9 +15,9 @@ def test_blr(sample_truth):
 
         def check_posterior(m, x):
             for p, noise in [
-                (f_noisy, 0.2 ** 2),
-                (slope_noisy, 0.1 ** 2),
-                (intercept_noisy, 0.1 ** 2),
+                (f_noisy, 0.2**2),
+                (slope_noisy, 0.1**2),
+                (intercept_noisy, 0.1**2),
             ]:
                 fdd = p(x, noise)
                 # Check that the posterior is of the right form and mimics the prior.
@@ -50,22 +50,22 @@ def test_blr(sample_truth):
         else:
             y_obs = f_noisy(x).sample()
 
-        m = m | (m(f)(x, 0.2 ** 2), y_obs)
+        m = m | (m(f)(x, 0.2**2), y_obs)
         check_posterior(m, x)
 
-        m = m | (m(slope)(x0, 0.1 ** 2), true_slope)
+        m = m | (m(slope)(x0, 0.1**2), true_slope)
         check_posterior(m, x)
 
         # Sample more and condition on `y` and the intercept.
         if sample_truth:
             y_obs = true_slope * x + true_intercept
         else:
-            y_obs = m(f)(x, 0.2 ** 2).sample()
+            y_obs = m(f)(x, 0.2**2).sample()
 
-        m = m | (m(f)(x, 0.2 ** 2), y_obs)
+        m = m | (m(f)(x, 0.2**2), y_obs)
         check_posterior(m, x)
 
-        m = m | (m(intercept)(x0, 0.1 ** 2), true_intercept)
+        m = m | (m(intercept)(x0, 0.1**2), true_intercept)
         check_posterior(m, x)
 
         if sample_truth:
@@ -82,7 +82,7 @@ def test_blr_jax_jit():
             a = GP(1, measure=prior)
             b = GP(1, measure=prior)
             c = GP(1, measure=prior)
-            f = a + b * (lambda x: x) + c * (lambda x: x ** 2)
+            f = a + b * (lambda x: x) + c * (lambda x: x**2)
 
             e1 = GP(0.1 * Delta(), measure=prior)
             e2 = GP(0.2 * Delta(), measure=prior)

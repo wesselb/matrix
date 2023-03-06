@@ -1,6 +1,8 @@
+from typing import Tuple, Union
+
 import lab as B
-from plum import Dispatcher, Tuple, Union
 from lab.shape import Shape
+from plum import Dispatcher
 
 from .matrix import AbstractMatrix, repr_format
 from .shape import assert_matrix

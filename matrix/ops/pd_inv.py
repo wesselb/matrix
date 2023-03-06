@@ -1,5 +1,7 @@
+from typing import Union
+
 import lab as B
-from plum import Union, convert
+from plum import convert
 
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker

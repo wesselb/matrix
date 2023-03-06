@@ -1,9 +1,9 @@
 from functools import reduce
 from operator import mul
+from typing import Union
 
 import lab as B
 from lab.util import resolve_axis
-from plum import Union
 
 from ..matrix import AbstractMatrix
 

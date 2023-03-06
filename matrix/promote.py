@@ -1,5 +1,5 @@
 import lab as B
-from plum import add_promotion_rule, conversion_method
+from plum import add_promotion_rule, conversion_method, isinstance
 
 from .constant import Constant, Zero
 from .lowrank import LowRank

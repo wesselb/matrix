@@ -1,7 +1,8 @@
 import lab as B
 import pytest
-
 from matrix import Dense, Diagonal, structured
+from plum import isinstance
+
 # noinspection PyUnresolvedReferences
 from .util import (
     AssertDenseWarning,
@@ -24,7 +25,7 @@ def test_dispatch(dense1, dense2):
     assert isinstance(dense1.__rmul__(dense2), Dense)
     assert isinstance(dense1 / dense2, Dense)
     assert isinstance(dense1.__rtruediv__(dense2), Dense)
-    assert isinstance(dense1 ** 2, Dense)
+    assert isinstance(dense1**2, Dense)
     assert isinstance(dense1 @ dense2, Dense)
     assert isinstance(dense1.__rmatmul__(dense2), Dense)
 

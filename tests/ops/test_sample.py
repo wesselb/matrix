@@ -1,8 +1,8 @@
 import lab as B
 import numpy as np
 import pytest
-
 from matrix import Constant
+from plum import isinstance
 
 # noinspection PyUnresolvedReferences
 from ..util import (

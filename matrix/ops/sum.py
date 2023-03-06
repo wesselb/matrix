@@ -1,9 +1,9 @@
+from typing import Union
+
 import lab as B
 from lab.util import resolve_axis
-from plum import Union
 from wbml.warning import warn_upmodule
 
-from .util import align_batch, batch_ones
 from ..constant import Constant, Zero
 from ..diagonal import Diagonal
 from ..kronecker import Kronecker
@@ -12,6 +12,7 @@ from ..matrix import Dense
 from ..triangular import LowerTriangular, UpperTriangular
 from ..util import ToDenseWarning
 from ..woodbury import Woodbury
+from .util import align_batch, batch_ones
 
 __all__ = []
 

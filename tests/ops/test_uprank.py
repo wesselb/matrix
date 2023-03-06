@@ -12,4 +12,3 @@ def test_uprank_dense(dense1):
     B.uprank(dense1, rank=2)
     with pytest.raises(ValueError):
         B.uprank(dense1, rank=3)
-
